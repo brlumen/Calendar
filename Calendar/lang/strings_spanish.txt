@@ -111,7 +111,7 @@ $s_plugin_Calendar_update_successful_button = 'Evento cambiado';
 $s_plugin_Calendar_save_button = 'Guardar';
 $s_plugin_Calendar_close_button = 'Cerrar';
 
-$s_plugin_Calendar_week = 'Semana actual';
+$s_plugin_Calendar_week = 'Semana';
 $s_plugin_Calendar_day = 'Día';
 $s_plugin_Calendar_next_period = 'Siguiente';
 $s_plugin_Calendar_current_period = 'Período actual';
@@ -141,3 +141,25 @@ $s_plugin_Calendar_ERROR_MIN_MEMBERS = 'EL EVENTO DEBE SER UN MIEMBRO';
 $s_plugin_Calendar_ERROR_EVENT_TIME_PERIOD_NOT_FOUND = 'EL EVENTO #%1$s NO EXISTE EN EL PERÍODO ESPECIFICADO.';
 $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_DESCRIPTION = 'Faltan dependencias requeridas en Calendar/api/vendor/';
 $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_STATUS_MESSAGE = 'Si descargó la versión de desarrollo, ejecute composer install para descargar las dependencias. De lo contrario, descargue el archivo Calendar-vX_X_X.zip desde https://github.com/mantisbt-plugins/Calendar/releases';
+
+$s_plugin_Calendar_month_view = 'Mes';
+$s_plugin_Calendar_more_events = '%d eventos más';
+
+$s_plugin_Calendar_events_for_date = 'Eventos para %s';
+
+$s_plugin_Calendar_january = 'Enero';
+$s_plugin_Calendar_february = 'Febrero';
+$s_plugin_Calendar_march = 'Marzo';
+$s_plugin_Calendar_april = 'Abril';
+$s_plugin_Calendar_may = 'Mayo';
+$s_plugin_Calendar_june = 'Junio';
+$s_plugin_Calendar_july = 'Julio';
+$s_plugin_Calendar_august = 'Agosto';
+$s_plugin_Calendar_september = 'Septiembre';
+$s_plugin_Calendar_october = 'Octubre';
+$s_plugin_Calendar_november = 'Noviembre';
+$s_plugin_Calendar_december = 'Diciembre';
+
+$s_plugin_Calendar_month = 'Mes';
+$s_plugin_Calendar_week_view = 'Semana';
+$s_plugin_Calendar_view_selector = 'Vista del Calendario';

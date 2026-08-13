@@ -20,4 +20,8 @@ $(document).ready(function () {
         $(this).parent().submit();
     });
 
+    // Обработчик для поля выбора даты
+    $('.datetimepicker').on('dp.change', function(e) {
+        $('#select_date_form').submit();
+    });
 });

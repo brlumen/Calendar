@@ -295,6 +295,8 @@ class CalendarPlugin extends MantisPlugin {
                                   //Time settings
                                   'datetime_picker_format'                              => 'DD-MM-Y',
                                   'short_date_format'                                   => 'd-m-Y',
+                                  'datetime_picker_month_date_format'                   => 'MM-YYYY',
+                                  'month_date_format'                                   => 'm-Y',
                                   'event_time_start_stop_picker_format'                 => 'HH:mm',
                                   'startStepDays'                                       => 0,
 //                                  'startStepDays'                        => date( 'w' )-1,
@@ -362,6 +364,7 @@ class CalendarPlugin extends MantisPlugin {
         require_once 'core/classes/DayColumn.class.php';
         require_once 'core/classes/EventArea.class.php';
         require_once 'core/classes/ColumnViewIssuePage.class.php';
+        require_once 'core/classes/ViewMonthCalendar.class.php';
 
         global $g_calendar_show_menu_bottom;
         $g_calendar_show_menu_bottom = TRUE;
@@ -388,19 +391,22 @@ class CalendarPlugin extends MantisPlugin {
     }
 
     function resources() {
-        return '<link rel="stylesheet" type="text/css" href="' . plugin_file( 'Calendar_1553843497.css' ) . '"></link>'
-                . '<script type="text/javascript" src="' . plugin_file( 'calendar_filter.js' ) . '"></script>';
+        return '<link rel="stylesheet" type="text/css" href="' . plugin_file( 'Calendar_1741524407.css' ) . '"></link>'
+                . '<script type="text/javascript" src="' . plugin_file( 'calendar_filter.js' ) . '"></script>'
+//                . '<script type="text/javascript" src="' . plugin_file( 'calendar_modal.js' ) . '"></script>'
+//                . '<script type="text/javascript" src="' . plugin_file( 'calendar_event_create.js' ) . '"></script>'
+                . '<script type="text/javascript" src="' . plugin_file( 'calendar_events.js' ) . '"></script>'
+                . '<script type="text/javascript" src="' . plugin_file( 'date_time_picker.js' ) . '"></script>';
     }
 
     function menu_main_front() {
-        return array(
-                                  array(
-                                                            'url'          => plugin_page( 'calendar_user_page' ),
-                                                            'title'        => plugin_lang_get( 'menu_main_front' ),
-                                                            'access_level' => plugin_config_get( 'calendar_view_threshold' ),
-                                                            'icon'         => 'fa-random'
-                                  ),
+        $t_links = array();
+        $t_links[] = array(
+            'title' => plugin_lang_get( 'menu_main_front' ),
+            'url' => plugin_page( 'calendar_user_page' ),
+            'icon' => 'fa-calendar'
         );
+        return $t_links;
     }
 
     function html_print_calendar( $p_first_option, $p_bug_id ) {

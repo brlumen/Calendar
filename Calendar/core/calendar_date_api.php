@@ -336,12 +336,15 @@ function get_days_object( $p_ar_all_days, $p_project_id, $p_user_id = ALL_USERS,
                             $t_is              = $t_recurrenci_rule->getOccurrencesBetween( $t_time_start_day, $t_time_finish_day );
                             if( $t_is != NULL ) {
                                 $t_event_row['date_from'] = date_timestamp_get( $t_is[0] );
+                                $t_event_row['duration'] = event_get_field( $t_event_row['id'], "duration" );
+                                $t_event_row['name'] = event_get_field( $t_event_row['id'], "name" );
                                 $t_events_row[] = $t_event_row;
-//                                $t_days[$t_day][date_timestamp_get( $t_is[0] )][] = (int)$t_row["id"];
                             }
                         } else {
+                            $t_event_row['date_from'] = event_get_field( $t_event_row['id'], "date_from" );
+                            $t_event_row['duration'] = event_get_field( $t_event_row['id'], "duration" );
+                            $t_event_row['name'] = event_get_field( $t_event_row['id'], "name" );
                             $t_events_row[] = $t_event_row;
-//                            $t_days[$t_day][$t_time_event_start][] = (int)$t_event_row["id"];
                         }
                     }
                 }
@@ -356,4 +359,52 @@ function get_days_object( $p_ar_all_days, $p_project_id, $p_user_id = ALL_USERS,
     }
 //    return $t_days_object;
     return $t_days;
+}
+
+function event_get_rows($p_start_date, $p_end_date, $p_project_id, $p_user_id = ALL_USERS) {
+    $t_table_calendar_events = plugin_table('events');
+    $t_table_calendar_members = plugin_table('event_member');
+    
+    $t_project_all = project_hierarchy_get_all_subprojects($p_project_id);
+    $t_project_all = array_merge($t_project_all, array($p_project_id));
+    
+    if (db_table_exists($t_table_calendar_events) && db_table_exists($t_table_calendar_members) && db_is_connected()) {
+        db_param_push();
+        
+        if ($p_user_id == ALL_USERS) {
+            $t_query = "SELECT e.* FROM " . $t_table_calendar_events . " e" .
+                    " WHERE e.activity = 'Y' AND e.project_id IN (" . implode(',', $t_project_all) . ")" .
+                    " AND ((e.date_from BETWEEN " . db_param() . " AND " . db_param() . ")" .
+                    " OR (e.date_from < " . db_param() . " AND e.date_to > " . db_param() . "))";
+            $t_result = db_query($t_query, array(
+                $p_start_date,
+                $p_end_date,
+                $p_start_date,
+                $p_end_date
+            ));
+        } else {
+            $t_query = "SELECT e.* FROM " . $t_table_calendar_events . " e" .
+                    " JOIN " . $t_table_calendar_members . " m ON e.id = m.event_id" .
+                    " WHERE e.activity = 'Y' AND e.project_id IN (" . implode(',', $t_project_all) . ")" .
+                    " AND m.user_id = " . db_param() .
+                    " AND ((e.date_from BETWEEN " . db_param() . " AND " . db_param() . ")" .
+                    " OR (e.date_from < " . db_param() . " AND e.date_to > " . db_param() . "))";
+            $t_result = db_query($t_query, array(
+                $p_user_id,
+                $p_start_date,
+                $p_end_date,
+                $p_start_date,
+                $p_end_date
+            ));
+        }
+        
+        $t_rows = array();
+        while ($t_row = db_fetch_array($t_result)) {
+            $t_rows[] = $t_row;
+        }
+        
+        return $t_rows;
+    }
+    
+    return array();
 }
