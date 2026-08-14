@@ -143,3 +143,4 @@ $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_DESCRIPTION = 'Required depen
 $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_STATUS_MESSAGE = 'If you downloaded the development version, then run composer install to download the dependencies. Otherwise, download the Calendar-vX_X_X.zip file from https://github.com/mantisbt-plugins/Calendar/releases';
 $s_plugin_Calendar_recurrence_migration_confirm_msg = 'The upgrade will re-anchor the recurrence rules of %1$d event(s) to the timezones of their authors (daylight saving time fix). Proceed?';
 $s_plugin_Calendar_recurrence_migration_confirm_button = 'Upgrade';
+$s_plugin_Calendar_recurrence_migration_timezone_col = 'Timezone';

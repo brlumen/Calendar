@@ -138,17 +138,6 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
         require_once __DIR__ . '/api/vendor/autoload.php';
         require_once __DIR__ . '/core/classes/RSetExt.class.php';
 
-        # Show the administrator the scope of the conversion before running it.
-        # The confirmation page re-posts the same upgrade request with _confirmed=1
-        # (the form security token is only purged after plugin_upgrade() finishes),
-        # so on confirm this function is entered again and falls through.
-        $t_query = "SELECT COUNT(*) FROM " . $t_table_calendar_events . " WHERE recurrence_pattern <> ''";
-        $t_count = (int)db_result( db_query( $t_query ) );
-        if( $t_count > 0 && php_sapi_name() != 'cli' ) {
-            helper_ensure_confirmed( sprintf( plugin_lang_get( 'recurrence_migration_confirm_msg' ), $t_count ),
-                                     plugin_lang_get( 'recurrence_migration_confirm_button' ) );
-        }
-
         # Existing patterns store DTSTART as UTC, so occurrences are frozen at a
         # fixed UTC time and their local time shifts on DST transitions (issue #104).
         # Re-anchor DTSTART to the timezone of the event's author — the wall time
@@ -156,8 +145,9 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
         # to the instance timezone for unknown authors or invalid timezone names.
         $t_default_timezone = config_get_global( 'default_timezone' );
         $t_timezones        = array();
+        $t_events           = array();
 
-        $t_query = "SELECT id, author_id, recurrence_pattern FROM " . $t_table_calendar_events . " WHERE recurrence_pattern <> ''";
+        $t_query = "SELECT id, name, author_id, recurrence_pattern FROM " . $t_table_calendar_events . " WHERE recurrence_pattern <> '' ORDER BY id";
         $arRes   = db_query( $t_query, NULL, -1, -1 );
 
         foreach( $arRes as $key => $t_event ) {
@@ -177,7 +167,40 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
                     $t_timezones[$t_timezone_name] = new DateTimeZone( $t_default_timezone );
                 }
             }
-            $t_timezone = $t_timezones[$t_timezone_name];
+            $t_event['timezone'] = $t_timezones[$t_timezone_name]->getName();
+            # after the fallback the resolved name may differ from the requested one
+            $t_timezones[$t_event['timezone']] = $t_timezones[$t_timezone_name];
+            $t_events[]          = $t_event;
+        }
+
+        # Show the administrator exactly what will be converted before running it.
+        # The confirmation page re-posts the same upgrade request with _confirmed=1
+        # (the form security token is only purged after plugin_upgrade() finishes),
+        # so on confirm this function is entered again and falls through.
+        if( count( $t_events ) > 0 && php_sapi_name() != 'cli' ) {
+            $t_message = sprintf( plugin_lang_get( 'recurrence_migration_confirm_msg' ), count( $t_events ) );
+            $t_message .= '</p><table class="table table-bordered table-condensed"><thead><tr>'
+                    . '<th>ID</th>'
+                    . '<th>' . plugin_lang_get( 'name_event' ) . '</th>'
+                    . '<th>' . lang_get( 'username' ) . '</th>'
+                    . '<th>' . plugin_lang_get( 'recurrence_migration_timezone_col' ) . '</th>'
+                    . '</tr></thead><tbody>';
+            foreach( $t_events as $t_event ) {
+                $t_message .= '<tr>'
+                        . '<td>' . (int)$t_event['id'] . '</td>'
+                        . '<td>' . string_display_line( $t_event['name'] ) . '</td>'
+                        . '<td>' . string_display_line( user_get_name( (int)$t_event['author_id'] ) ) . '</td>'
+                        . '<td>' . string_display_line( $t_event['timezone'] ) . '</td>'
+                        . '</tr>';
+            }
+            $t_message .= '</tbody></table><p>';
+
+            helper_ensure_confirmed( $t_message, plugin_lang_get( 'recurrence_migration_confirm_button' ) );
+        }
+
+        foreach( $t_events as $t_event ) {
+
+            $t_timezone = $t_timezones[$t_event['timezone']];
 
             $t_rset_old = new \RRule\RSet( $t_event['recurrence_pattern'] );
             $t_rset_new = new CalendarPluginRRuleExt\RSetExt();

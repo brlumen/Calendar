@@ -143,3 +143,4 @@ $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_DESCRIPTION = 'Отсутст
 $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_STATUS_MESSAGE = 'Если вы загрузили версию для разработки, то выполните composer install для загрузки зависимостей. Иначе загрузите файл Calendar-vX_X_X.zip из https://github.com/mantisbt-plugins/Calendar/releases';
 $s_plugin_Calendar_recurrence_migration_confirm_msg = 'Обновление перепривяжет правила повторения %1$d событий к таймзонам их авторов (исправление перехода на летнее время). Продолжить?';
 $s_plugin_Calendar_recurrence_migration_confirm_button = 'Обновить';
+$s_plugin_Calendar_recurrence_migration_timezone_col = 'Часовой пояс';

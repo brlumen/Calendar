@@ -143,3 +143,4 @@ $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_DESCRIPTION = 'Calendar/api/v
 $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_STATUS_MESSAGE = '如果您下载的是开发版本，请运行 composer install 以下载依赖项。否则，请从 https://github.com/mantisbt-plugins/Calendar/releases 下载 Calendar-vX_X_X.zip 文件';
 $s_plugin_Calendar_recurrence_migration_confirm_msg = '升级将把 %1$d 个事件的重复规则重新锚定到其作者的时区（夏令时修复）。是否继续？';
 $s_plugin_Calendar_recurrence_migration_confirm_button = '升级';
+$s_plugin_Calendar_recurrence_migration_timezone_col = '时区';
