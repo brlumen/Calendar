@@ -149,3 +149,4 @@ $s_plugin_Calendar_recurrence_migration_backup_checkbox = 'He hecho una copia de
 $s_plugin_Calendar_event_timezone = 'Zona horaria';
 $s_plugin_Calendar_view_event_timezone_recurrence = 'la repetición sigue %1$s';
 $s_plugin_Calendar_view_event_timezone_set = 'establecido en %1$s';
+$s_plugin_Calendar_recurrence_migration_column_msg = 'La actualización también añadirá la columna timezone a la tabla de eventos para almacenar la zona horaria de cada evento.';

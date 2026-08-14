@@ -149,3 +149,4 @@ $s_plugin_Calendar_recurrence_migration_backup_checkbox = '我已备份数据库
 $s_plugin_Calendar_event_timezone = '时区';
 $s_plugin_Calendar_view_event_timezone_recurrence = '重复按 %1$s';
 $s_plugin_Calendar_view_event_timezone_set = '设置为 %1$s';
+$s_plugin_Calendar_recurrence_migration_column_msg = '升级还将在事件表中添加 timezone 列，用于存储每个事件的时区。';
