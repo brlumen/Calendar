@@ -281,83 +281,76 @@ function get_days_object( $p_ar_all_days, $p_project_id, $p_user_id = ALL_USERS,
 
     $t_project_all = project_hierarchy_get_all_subprojects( $p_project_id );
     $t_project_all = array_merge($t_project_all, array($p_project_id));
-    
-    $t_days_object = array();
 
-    if( db_table_exists( $t_table_calendar_events ) && db_table_exists( $t_table_calendar_members ) && db_is_connected() ) {
+    $t_days = array();
 
-        $t_days = array();
+    if( count( $p_ar_all_days ) > 0 && db_table_exists( $t_table_calendar_events ) && db_table_exists( $t_table_calendar_members ) && db_is_connected() ) {
+
+        $t_range_start  = (int)min( $p_ar_all_days );
+        $t_range_finish = (int)max( $p_ar_all_days ) + 86399;
+
         db_param_push();
 
+        # A single range query for the whole set of days; rows are bucketed per day below
         if( $p_user_id == ALL_USERS ) {
-            $p_query = "SELECT id,date_from,duration,recurrence_pattern FROM " . $t_table_calendar_events .
-                    " WHERE "
-                    . "activity = 'Y' AND project_id IN (" . implode( ',', $t_project_all ) . ") AND date_from BETWEEN " . db_param() . " AND " . db_param() . " "
-                    . "OR "
-                    . "( activity = 'Y' AND project_id IN (" . implode( ',', $t_project_all ) . ") AND date_from < " . db_param() . " AND date_to > " . db_param() . " AND recurrence_pattern > '' )";
+            $p_query = "SELECT id,project_id,date_from,date_to,duration,name,recurrence_pattern FROM " . $t_table_calendar_events .
+                    " WHERE activity = 'Y' AND project_id IN (" . implode( ',', $t_project_all ) . ")" .
+                    " AND ( date_from BETWEEN " . db_param() . " AND " . db_param() .
+                    " OR ( date_from < " . db_param() . " AND date_to > " . db_param() . " AND recurrence_pattern > '' ) )";
+            $t_result = db_query( $p_query, array( $t_range_start, $t_range_finish, $t_range_finish, $t_range_start ) );
         } else {
-            $p_query = "SELECT id,project_id,date_from,duration,recurrence_pattern FROM " . $t_table_calendar_events . " AS et" . 
+            $p_query = "SELECT et.id,et.project_id,et.date_from,et.date_to,et.duration,et.name,et.recurrence_pattern FROM " . $t_table_calendar_events . " AS et" .
                     " INNER JOIN " . $t_table_calendar_members . " AS mt" .
                     " ON et.id = mt.event_id" .
-                    " WHERE "
-                    . "activity = 'Y' AND project_id IN (" . implode( ',', $t_project_all ) . ") AND date_from BETWEEN " . db_param() . " AND " . db_param() . " AND mt.user_id = " . db_param() . " "
-                    . "OR "
-                    . "( activity = 'Y' AND project_id IN (" . implode( ',', $t_project_all ) . ") AND date_from < " . db_param() . " AND date_to > " . db_param() . " AND recurrence_pattern > '' AND mt.user_id = " . db_param() . " )";
+                    " WHERE et.activity = 'Y' AND et.project_id IN (" . implode( ',', $t_project_all ) . ") AND mt.user_id = " . db_param() .
+                    " AND ( et.date_from BETWEEN " . db_param() . " AND " . db_param() .
+                    " OR ( et.date_from < " . db_param() . " AND et.date_to > " . db_param() . " AND et.recurrence_pattern > '' ) )";
+            $t_result = db_query( $p_query, array( $p_user_id, $t_range_start, $t_range_finish, $t_range_finish, $t_range_start ) );
         }
 
+        # Collect the visible events once; the access check runs once per event
+        $t_events = array();
+        $t_rules = array();
+        while( $t_row = db_fetch_array( $t_result ) ) {
+            $t_event_id = (int)$t_row['id'];
 
-        
-        
+            if( isset( $t_events[$t_event_id] ) || in_array( $t_event_id, $p_excluded_events ) ) {
+                continue;
+            }
+            if( access_has_event_level( plugin_config_get( 'view_event_threshold' ), $t_event_id ) != TRUE ) {
+                continue;
+            }
+
+            $t_events[$t_event_id] = $t_row;
+            if( !is_blank( $t_row['recurrence_pattern'] ) ) {
+                $t_rules[$t_event_id] = RRule\RRule::createFromRfcString( $t_row['recurrence_pattern'] );
+            }
+        }
+
         foreach( $p_ar_all_days as $t_day ) {
 
             $t_time_start_day  = (int) $t_day;
-            $t_time_finish_day = $t_day + 86399;
+            $t_time_finish_day = $t_time_start_day + 86399;
 
-            if( $p_user_id == ALL_USERS ) {
-                $t_result = db_query( $p_query, array( $t_time_start_day, $t_time_finish_day, $t_time_finish_day, $t_time_start_day ) );
-            } else {
-                $t_result = db_query( $p_query, array( $t_time_start_day, $t_time_finish_day, $p_user_id, $t_time_finish_day, $t_time_start_day, $p_user_id ) );
-            }
-            $t_event_count = db_num_rows( $t_result );
-            if( $t_event_count > 0 ) {
-                $t_events_row = array();
-                $t_days[$t_day] = [];
-                for( $i = 0; $i < $t_event_count; $i++ ) {
-                    $t_event_row = db_fetch_array( $t_result );
+            $t_days[$t_day] = [];
+            foreach( $t_events as $t_event_id => $t_event_row ) {
 
-                    $t_access_show_current_user = access_has_event_level( plugin_config_get( 'view_event_threshold' ), (int)$t_event_row["id"] );
-//
-                    if( $t_access_show_current_user == TRUE && !in_array( $t_event_row['id'], $p_excluded_events )) {
-
-                        $t_time_event_start = (int)$t_event_row['date_from'];
-                        $t_rrule_raw        = $t_event_row['recurrence_pattern'];
-                        if( $t_time_event_start < $t_day || $t_rrule_raw != NULL ) {
-                            $t_recurrenci_rule = RRule\RRule::createFromRfcString( $t_rrule_raw );
-                            $t_is              = $t_recurrenci_rule->getOccurrencesBetween( $t_time_start_day, $t_time_finish_day );
-                            if( $t_is != NULL ) {
-                                $t_event_row['date_from'] = date_timestamp_get( $t_is[0] );
-                                $t_event_row['duration'] = event_get_field( $t_event_row['id'], "duration" );
-                                $t_event_row['name'] = event_get_field( $t_event_row['id'], "name" );
-                                $t_events_row[] = $t_event_row;
-                            }
-                        } else {
-                            $t_event_row['date_from'] = event_get_field( $t_event_row['id'], "date_from" );
-                            $t_event_row['duration'] = event_get_field( $t_event_row['id'], "duration" );
-                            $t_event_row['name'] = event_get_field( $t_event_row['id'], "name" );
-                            $t_events_row[] = $t_event_row;
-                        }
+                if( isset( $t_rules[$t_event_id] ) ) {
+                    $t_is = $t_rules[$t_event_id]->getOccurrencesBetween( $t_time_start_day, $t_time_finish_day );
+                    if( $t_is != NULL ) {
+                        $t_event_row['date_from'] = date_timestamp_get( $t_is[0] );
+                        $t_days[$t_day][] = $t_event_row;
+                    }
+                } else {
+                    $t_time_event_start = (int)$t_event_row['date_from'];
+                    if( $t_time_event_start >= $t_time_start_day && $t_time_event_start <= $t_time_finish_day ) {
+                        $t_days[$t_day][] = $t_event_row;
                     }
                 }
-//                $t_days_object[] = new DayColumn( $t_day, $t_events_row );
-                $t_days[$t_day] = $t_events_row;
-            } else {
-//                $t_days_object[] = new DayColumn( $t_day );
-                $t_days[$t_day] = [];
             }
         }
-        
     }
-//    return $t_days_object;
+
     return $t_days;
 }
 
