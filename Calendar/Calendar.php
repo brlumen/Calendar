@@ -130,7 +130,7 @@ function install_recurrence_pattern_set_notnull() { //version 2.4.8 (schema 14)
     return TRUE;
 }
 
-function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
+function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 17)
     $t_table_calendar_events = plugin_table( 'events' );
 
     if( db_table_exists( $t_table_calendar_events ) && db_is_connected() ) {
@@ -437,6 +437,10 @@ class CalendarPlugin extends MantisPlugin {
                                         recurrence_pattern X $t_notnull
                                 " ) ),
                                   //version 2.8.1 (schema 16)
+                                  array( 'AddColumnSQL', array( plugin_table( "events" ), "
+                                        timezone C(64) $t_notnull DEFAULT \" '' \"
+                                " ) ),
+                                  //version 2.8.1 (schema 17)
                                   array( 'UpdateFunction', 'recurrence_pattern_tzid' ),
         );
     }

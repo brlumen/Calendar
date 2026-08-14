@@ -212,6 +212,9 @@ if( !is_blank( $t_rrule_string ) && isset( $t_rrules[0] ) ) {
         echo ' (', sprintf( plugin_lang_get( 'view_event_timezone_recurrence' ),
                 string_display_line( $t_dtstart_rule->getTimezone()->getName() ) ), ')';
     }
+} elseif( !is_blank( $t_event->timezone ) && $t_event->timezone != date_default_timezone_get() ) {
+    echo ' (', sprintf( plugin_lang_get( 'view_event_timezone_set' ),
+            string_display_line( $t_event->timezone ) ), ')';
 }
 echo '</td>';
 echo '</tr>';

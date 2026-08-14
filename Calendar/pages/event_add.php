@@ -40,6 +40,7 @@ $t_event_data->activity   = "Y";
 $t_event_data->author_id  = auth_get_current_user_id();
 $t_event_data->date_from  = calendar_strtotime_in_timezone( gpc_get_string( 'date_event' ), $t_event_timezone ) + $f_event_time_start;
 $t_event_data->duration   = $f_event_time_finish - $f_event_time_start;
+$t_event_data->timezone   = $t_event_timezone->getName();
 
 switch( $f_selected_freq ) {
     case 'DAILY':

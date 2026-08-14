@@ -30,6 +30,7 @@ class CalendarEventData {
     protected $date_to            = 1;
     protected $duration           = 0;
     protected $recurrence_pattern = '';
+    protected $timezone           = '';
     private $loading              = false;
 
     /**
@@ -46,6 +47,7 @@ class CalendarEventData {
                 break;
 
             case 'name':
+            case 'timezone':
                 $value = trim( $value );
                 break;
 
@@ -127,18 +129,21 @@ class CalendarEventData {
                                                 ( project_id, name,
                                                   activity, author_id, date_changed,
                                                   changed_user_id, date_from, date_to,
-                                                  duration, recurrence_pattern, parent_id
+                                                  duration, recurrence_pattern, parent_id,
+                                                  timezone
                                                 )
                                               VALUES
                                                 ( " . db_param() . ',' . db_param() . ",
                                                   " . db_param() . ',' . db_param() . ',' . db_param() . ",
                                                   " . db_param() . ',' . db_param() . ',' . db_param() . ",
-                                                  " . db_param() . ',' . db_param() . ',' . db_param() . ')';
+                                                  " . db_param() . ',' . db_param() . ',' . db_param() . ",
+                                                  " . db_param() . ')';
 
         db_query( $query, Array( $this->project_id, $this->name,
                                   $this->activity, $this->author_id, $this->date_changed,
                                   $this->changed_user_id, $this->date_from, $this->date_to,
-                                  $this->duration, $this->recurrence_pattern, $this->parent_id ) );
+                                  $this->duration, $this->recurrence_pattern, $this->parent_id,
+                                  $this->timezone ) );
 
         $this->id = db_insert_id( $t_event_table );
 //
@@ -177,13 +182,13 @@ class CalendarEventData {
                                             SET name=" . db_param() . ",
 						activity=" . db_param() . ", changed_user_id=" . db_param() . ",
                                                 date_from=" . db_param() . ", date_to=" . db_param() . ", duration=" . db_param() . ",
-                                                recurrence_pattern=" . db_param() . ", parent_id=" . db_param();
+                                                recurrence_pattern=" . db_param() . ", parent_id=" . db_param() . ", timezone=" . db_param();
 
         $t_fields = Array(
                                   $this->name,
                                   $this->activity, $this->changed_user_id,
                                   $this->date_from, $this->date_to, $this->duration,
-                                  $this->recurrence_pattern, $this->parent_id,
+                                  $this->recurrence_pattern, $this->parent_id, $this->timezone,
         );
 
         $query .= " WHERE id=" . db_param();

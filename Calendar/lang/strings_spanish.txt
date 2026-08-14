@@ -148,3 +148,4 @@ $s_plugin_Calendar_recurrence_migration_backup_warning = '¡Haga una copia de se
 $s_plugin_Calendar_recurrence_migration_backup_checkbox = 'He hecho una copia de seguridad de la base de datos';
 $s_plugin_Calendar_event_timezone = 'Zona horaria';
 $s_plugin_Calendar_view_event_timezone_recurrence = 'la repetición sigue %1$s';
+$s_plugin_Calendar_view_event_timezone_set = 'establecido en %1$s';

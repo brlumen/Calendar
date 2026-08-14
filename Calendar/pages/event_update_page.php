@@ -45,9 +45,10 @@ if( $t_event->project_id != $t_current_project ) {
 
 $t_bugs_id = event_get_attached_bugs_id( $f_event_id );
 
-# dates in this form are rendered and re-interpreted in the anchor timezone
-# of the recurrence rule, so that saving an untouched form keeps the event
-# as is; single events have no stored timezone — the viewer's one is used
+# dates in this form are rendered and re-interpreted in the event's own
+# timezone, so that saving an untouched form keeps the event as is:
+# the stored timezone if any, else the recurrence anchor timezone,
+# else the viewer's
 $t_rrule_string = event_get_field( $f_event_id, 'recurrence_pattern' );
 $t_rule         = array();
 if( !is_blank( $t_rrule_string ) ) {
@@ -55,9 +56,13 @@ if( !is_blank( $t_rrule_string ) ) {
     $t_rrules = $t_rset->getRRules();
     $t_rule   = $t_rrules[0]->getRule();
 }
-$t_form_timezone = isset( $t_rule['DTSTART'] ) && $t_rule['DTSTART'] instanceof DateTimeInterface
-        ? $t_rule['DTSTART']->getTimezone()
-        : new DateTimeZone( date_default_timezone_get() );
+if( !is_blank( $t_event->timezone ) ) {
+    $t_form_timezone = calendar_timezone_get( $t_event->timezone );
+} elseif( isset( $t_rule['DTSTART'] ) && $t_rule['DTSTART'] instanceof DateTimeInterface ) {
+    $t_form_timezone = $t_rule['DTSTART']->getTimezone();
+} else {
+    $t_form_timezone = new DateTimeZone( date_default_timezone_get() );
+}
 
 layout_page_header();
 

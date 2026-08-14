@@ -148,3 +148,4 @@ $s_plugin_Calendar_recurrence_migration_backup_warning = 'Перед обнов�
 $s_plugin_Calendar_recurrence_migration_backup_checkbox = 'Резервная копия базы данных сделана';
 $s_plugin_Calendar_event_timezone = 'Часовой пояс';
 $s_plugin_Calendar_view_event_timezone_recurrence = 'повторение по %1$s';
+$s_plugin_Calendar_view_event_timezone_set = 'задан пояс %1$s';
