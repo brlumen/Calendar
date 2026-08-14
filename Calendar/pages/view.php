@@ -179,9 +179,25 @@ echo '<tr>';
 echo '<th class="bug-reporter category">', plugin_lang_get( 'event_is_repeated' ), '</th>';
 echo '<td class="bug-reporter" >';
 $t_rrule_string = event_get_field( $t_event_id, 'recurrence_pattern' );
+$t_rrules = array();
 if( !is_blank( $t_rrule_string ) ) {
     $t_rset   = new \RRule\RSet( $t_rrule_string );
     $t_rrules = $t_rset->getRRules();
+}
+
+#timezone the event was created in: the stored one, else the anchor of the
+#recurrence rule, else the viewer's (events older than the timezone column)
+$t_event_timezone_name = date_default_timezone_get();
+if( !is_blank( $t_event->timezone ) ) {
+    $t_event_timezone_name = $t_event->timezone;
+} elseif( isset( $t_rrules[0] ) ) {
+    $t_dtstart_rule = $t_rrules[0]->getRule()['DTSTART'];
+    if( $t_dtstart_rule instanceof DateTimeInterface ) {
+        $t_event_timezone_name = $t_dtstart_rule->getTimezone()->getName();
+    }
+}
+
+if( count( $t_rrules ) > 0 ) {
     foreach( $t_rrules as $t_rrule ) {
         $t_rule = $t_rrule->getRule();
         echo $t_rule['INTERVAL'];
@@ -190,7 +206,8 @@ if( !is_blank( $t_rrule_string ) ) {
         echo " ";
         echo plugin_lang_get( 'repeat_to' );
         echo " ";
-        echo $t_rule['UNTIL']->format( config_get( 'normal_date_format' ) );
+        # UNTIL is serialized in UTC per RFC 5545; show it in the event timezone
+        echo $t_rule['UNTIL']->setTimezone( new DateTimeZone( $t_event_timezone_name ) )->format( config_get( 'normal_date_format' ) );
     }
 } else {
     echo plugin_lang_get( 'not_repeat' );
@@ -199,17 +216,6 @@ if( !is_blank( $t_rrule_string ) ) {
 echo '</td>';
 echo '</tr>';
 
-#timezone the event was created in: the stored one, else the anchor of the
-#recurrence rule, else the viewer's (events older than the timezone column)
-$t_event_timezone_name = date_default_timezone_get();
-if( !is_blank( $t_event->timezone ) ) {
-    $t_event_timezone_name = $t_event->timezone;
-} elseif( !is_blank( $t_rrule_string ) && isset( $t_rrules[0] ) ) {
-    $t_dtstart_rule = $t_rrules[0]->getRule()['DTSTART'];
-    if( $t_dtstart_rule instanceof DateTimeInterface ) {
-        $t_event_timezone_name = $t_dtstart_rule->getTimezone()->getName();
-    }
-}
 echo '<tr>';
 echo '<th class="bug-reporter category">', plugin_lang_get( 'event_timezone' ), '</th>';
 echo '<td class="bug-reporter" >';
