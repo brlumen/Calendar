@@ -144,3 +144,5 @@ $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_STATUS_MESSAGE = 'Si descarg�
 $s_plugin_Calendar_recurrence_migration_confirm_msg = 'La actualización volverá a anclar las reglas de repetición de %1$d evento(s) a las zonas horarias de sus autores (corrección del horario de verano). ¿Continuar?';
 $s_plugin_Calendar_recurrence_migration_confirm_button = 'Actualizar';
 $s_plugin_Calendar_recurrence_migration_timezone_col = 'Zona horaria';
+$s_plugin_Calendar_recurrence_migration_backup_warning = '¡Haga una copia de seguridad de la base de datos antes de actualizar!';
+$s_plugin_Calendar_recurrence_migration_backup_checkbox = 'He hecho una copia de seguridad de la base de datos';

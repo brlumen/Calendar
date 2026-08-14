@@ -173,29 +173,68 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
             $t_events[]          = $t_event;
         }
 
-        # Show the administrator exactly what will be converted before running it.
-        # The confirmation page re-posts the same upgrade request with _confirmed=1
-        # (the form security token is only purged after plugin_upgrade() finishes),
-        # so on confirm this function is entered again and falls through.
-        if( count( $t_events ) > 0 && php_sapi_name() != 'cli' ) {
-            $t_message = sprintf( plugin_lang_get( 'recurrence_migration_confirm_msg' ), count( $t_events ) );
-            $t_message .= '</p><table class="table table-bordered table-condensed"><thead><tr>'
+        # Show the administrator exactly what will be converted before running it,
+        # and require an explicit "database backup done" checkbox. Modeled on
+        # helper_ensure_confirmed(): the form re-posts the same upgrade request
+        # with _confirmed=1 (the form security token is only purged after
+        # plugin_upgrade() finishes), so on confirm this function is entered
+        # again and falls through. The checkbox is enforced server-side; the CSS
+        # gate on the button is a courtesy (the CSP forbids inline JS but allows
+        # inline styles).
+        if( count( $t_events ) > 0 && php_sapi_name() != 'cli'
+                && !( gpc_get_bool( '_confirmed' ) && gpc_get_bool( 'backup_confirmed' ) ) ) {
+
+            layout_page_header();
+            layout_page_begin();
+
+            echo '<div class="col-md-12 col-xs-12">';
+            echo '<div class="space-10"></div>';
+            echo '<div class="alert alert-warning center">';
+            echo '<p class="bigger-110"><strong>' . plugin_lang_get( 'recurrence_migration_backup_warning' ) . '</strong></p>';
+            echo '<p class="bigger-110">';
+            echo "\n" . sprintf( plugin_lang_get( 'recurrence_migration_confirm_msg' ), count( $t_events ) ) . "\n";
+            echo '</p>';
+
+            echo '<table class="table table-bordered table-condensed"><thead><tr>'
                     . '<th>ID</th>'
                     . '<th>' . plugin_lang_get( 'name_event' ) . '</th>'
                     . '<th>' . lang_get( 'username' ) . '</th>'
                     . '<th>' . plugin_lang_get( 'recurrence_migration_timezone_col' ) . '</th>'
                     . '</tr></thead><tbody>';
             foreach( $t_events as $t_event ) {
-                $t_message .= '<tr>'
+                echo '<tr>'
                         . '<td>' . (int)$t_event['id'] . '</td>'
                         . '<td>' . string_display_line( $t_event['name'] ) . '</td>'
                         . '<td>' . string_display_line( user_get_name( (int)$t_event['author_id'] ) ) . '</td>'
                         . '<td>' . string_display_line( $t_event['timezone'] ) . '</td>'
                         . '</tr>';
             }
-            $t_message .= '</tbody></table><p>';
+            echo '</tbody></table>';
+            echo '<div class="space-10"></div>';
 
-            helper_ensure_confirmed( $t_message, plugin_lang_get( 'recurrence_migration_confirm_button' ) );
+            echo '<style>#backup_confirmed:not(:checked) ~ input[type="submit"] { pointer-events: none; opacity: .45; }</style>';
+
+            echo '<form method="post" class="center" action="">' . "\n";
+            # CSRF protection not required here - user needs to confirm action
+            # before the form is accepted.
+            $t_post = $_POST;
+            $t_get  = $_GET;
+            unset( $t_post['_confirmed'], $t_post['backup_confirmed'], $t_get['_confirmed'], $t_get['backup_confirmed'] );
+            print_hidden_inputs( $t_post );
+            print_hidden_inputs( $t_get );
+
+            echo '<input type="hidden" name="_confirmed" value="1" />', "\n";
+            echo '<input type="checkbox" id="backup_confirmed" name="backup_confirmed" value="1" /> ';
+            echo '<label for="backup_confirmed" class="bold">' . plugin_lang_get( 'recurrence_migration_backup_checkbox' ) . '</label>';
+            echo '<div class="space-10"></div>';
+            echo '<input type="submit" class="btn btn-primary btn-white btn-round" value="' . plugin_lang_get( 'recurrence_migration_confirm_button' ) . '" />';
+            echo "\n</form>\n";
+
+            echo '<div class="space-10"></div>';
+            echo '</div></div>';
+
+            layout_page_end();
+            exit;
         }
 
         foreach( $t_events as $t_event ) {

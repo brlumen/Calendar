@@ -144,3 +144,5 @@ $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_STATUS_MESSAGE = '如果您�
 $s_plugin_Calendar_recurrence_migration_confirm_msg = '升级将把 %1$d 个事件的重复规则重新锚定到其作者的时区（夏令时修复）。是否继续？';
 $s_plugin_Calendar_recurrence_migration_confirm_button = '升级';
 $s_plugin_Calendar_recurrence_migration_timezone_col = '时区';
+$s_plugin_Calendar_recurrence_migration_backup_warning = '升级前请务必备份数据库！';
+$s_plugin_Calendar_recurrence_migration_backup_checkbox = '我已备份数据库';

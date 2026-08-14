@@ -144,3 +144,5 @@ $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_STATUS_MESSAGE = 'If you down
 $s_plugin_Calendar_recurrence_migration_confirm_msg = 'The upgrade will re-anchor the recurrence rules of %1$d event(s) to the timezones of their authors (daylight saving time fix). Proceed?';
 $s_plugin_Calendar_recurrence_migration_confirm_button = 'Upgrade';
 $s_plugin_Calendar_recurrence_migration_timezone_col = 'Timezone';
+$s_plugin_Calendar_recurrence_migration_backup_warning = 'Back up the database before upgrading!';
+$s_plugin_Calendar_recurrence_migration_backup_checkbox = 'I have backed up the database';
