@@ -150,3 +150,5 @@ $s_plugin_Calendar_event_timezone = 'Zona horaria';
 $s_plugin_Calendar_view_event_timezone_recurrence = 'la repetición sigue %1$s';
 $s_plugin_Calendar_view_event_timezone_set = 'establecido en %1$s';
 $s_plugin_Calendar_recurrence_migration_column_msg = 'La actualización también añadirá la columna timezone a la tabla de eventos para almacenar la zona horaria de cada evento.';
+$s_plugin_Calendar_recurrence_migration_timezones_warning = 'Antes de actualizar, asegúrese de que las zonas horarias en los perfiles de los autores de eventos estén al día (vea la tabla siguiente). Las reglas de repetición se anclarán a la zona horaria actual de cada autor: si es incorrecta, los eventos se repetirán según una zona horaria errónea, y después solo podrá corregirse volviendo a guardar cada evento.';
+$s_plugin_Calendar_recurrence_migration_timezones_checkbox = 'Las zonas horarias de los usuarios están al día';

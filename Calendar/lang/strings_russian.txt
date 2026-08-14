@@ -150,3 +150,5 @@ $s_plugin_Calendar_event_timezone = 'Часовой пояс';
 $s_plugin_Calendar_view_event_timezone_recurrence = 'повторение по %1$s';
 $s_plugin_Calendar_view_event_timezone_set = 'задан пояс %1$s';
 $s_plugin_Calendar_recurrence_migration_column_msg = 'Также обновление добавит в таблицу событий колонку timezone для хранения часового пояса события.';
+$s_plugin_Calendar_recurrence_migration_timezones_warning = 'Перед обновлением актуализируйте часовые пояса в профилях авторов событий (см. таблицу ниже). Правила повторения будут привязаны к текущему поясу автора: если пояс указан неверно, события будут повторяться по неверному поясу, и исправить это потом можно будет только пересохранением каждого события.';
+$s_plugin_Calendar_recurrence_migration_timezones_checkbox = 'Часовые пояса пользователей актуальны';

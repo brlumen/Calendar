@@ -182,7 +182,7 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
         # gate on the button is a courtesy (the CSP forbids inline JS but allows
         # inline styles).
         if( count( $t_events ) > 0 && php_sapi_name() != 'cli'
-                && !( gpc_get_bool( '_confirmed' ) && gpc_get_bool( 'backup_confirmed' ) ) ) {
+                && !( gpc_get_bool( '_confirmed' ) && gpc_get_bool( 'backup_confirmed' ) && gpc_get_bool( 'timezones_confirmed' ) ) ) {
 
             layout_page_header();
             layout_page_begin();
@@ -191,6 +191,7 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
             echo '<div class="space-10"></div>';
             echo '<div class="alert alert-warning center">';
             echo '<p class="bigger-110"><strong>' . plugin_lang_get( 'recurrence_migration_backup_warning' ) . '</strong></p>';
+            echo '<p class="bigger-110">' . plugin_lang_get( 'recurrence_migration_timezones_warning' ) . '</p>';
             echo '<p class="bigger-110">';
             echo "\n" . sprintf( plugin_lang_get( 'recurrence_migration_confirm_msg' ), count( $t_events ) ) . "\n";
             echo '</p>';
@@ -217,7 +218,8 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
             # the table body against its header — force one alignment for both
             echo '<style>'
                     . '#recurrence_migration_table th, #recurrence_migration_table td { text-align: left; }'
-                    . '#backup_confirmed:not(:checked) ~ input[type="submit"] { pointer-events: none; opacity: .45; }'
+                    . '#backup_confirmed:not(:checked) ~ input[type="submit"],'
+                    . '#timezones_confirmed:not(:checked) ~ input[type="submit"] { pointer-events: none; opacity: .45; }'
                     . '</style>';
 
             echo '<form method="post" class="center" action="">' . "\n";
@@ -225,11 +227,15 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
             # before the form is accepted.
             $t_post = $_POST;
             $t_get  = $_GET;
-            unset( $t_post['_confirmed'], $t_post['backup_confirmed'], $t_get['_confirmed'], $t_get['backup_confirmed'] );
+            unset( $t_post['_confirmed'], $t_post['backup_confirmed'], $t_post['timezones_confirmed'],
+                    $t_get['_confirmed'], $t_get['backup_confirmed'], $t_get['timezones_confirmed'] );
             print_hidden_inputs( $t_post );
             print_hidden_inputs( $t_get );
 
             echo '<input type="hidden" name="_confirmed" value="1" />', "\n";
+            echo '<input type="checkbox" id="timezones_confirmed" name="timezones_confirmed" value="1" /> ';
+            echo '<label for="timezones_confirmed" class="bold">' . plugin_lang_get( 'recurrence_migration_timezones_checkbox' ) . '</label>';
+            echo '<br />';
             echo '<input type="checkbox" id="backup_confirmed" name="backup_confirmed" value="1" /> ';
             echo '<label for="backup_confirmed" class="bold">' . plugin_lang_get( 'recurrence_migration_backup_checkbox' ) . '</label>';
             echo '<div class="space-10"></div>';

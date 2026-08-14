@@ -150,3 +150,5 @@ $s_plugin_Calendar_event_timezone = 'Timezone';
 $s_plugin_Calendar_view_event_timezone_recurrence = 'recurrence follows %1$s';
 $s_plugin_Calendar_view_event_timezone_set = 'set to %1$s';
 $s_plugin_Calendar_recurrence_migration_column_msg = 'The upgrade will also add the timezone column to the events table to store the timezone of each event.';
+$s_plugin_Calendar_recurrence_migration_timezones_warning = 'Before upgrading, make sure the timezones in the profiles of the event authors are up to date (see the table below). Recurrence rules will be anchored to the current timezone of each author: if it is wrong, the events will recur by the wrong timezone, and the only way to fix them afterwards is to re-save each event.';
+$s_plugin_Calendar_recurrence_migration_timezones_checkbox = 'User timezones are up to date';
