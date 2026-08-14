@@ -196,7 +196,7 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
             echo '</p>';
             echo '<p class="bigger-110">' . plugin_lang_get( 'recurrence_migration_column_msg' ) . '</p>';
 
-            echo '<table class="table table-bordered table-condensed"><thead><tr>'
+            echo '<table id="recurrence_migration_table" class="table table-bordered table-condensed"><thead><tr>'
                     . '<th>ID</th>'
                     . '<th>' . plugin_lang_get( 'name_event' ) . '</th>'
                     . '<th>' . lang_get( 'username' ) . '</th>'
@@ -213,7 +213,12 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
             echo '</tbody></table>';
             echo '<div class="space-10"></div>';
 
-            echo '<style>#backup_confirmed:not(:checked) ~ input[type="submit"] { pointer-events: none; opacity: .45; }</style>';
+            # the surrounding alert block centers text, which visually misaligns
+            # the table body against its header — force one alignment for both
+            echo '<style>'
+                    . '#recurrence_migration_table th, #recurrence_migration_table td { text-align: left; }'
+                    . '#backup_confirmed:not(:checked) ~ input[type="submit"] { pointer-events: none; opacity: .45; }'
+                    . '</style>';
 
             echo '<form method="post" class="center" action="">' . "\n";
             # CSRF protection not required here - user needs to confirm action
