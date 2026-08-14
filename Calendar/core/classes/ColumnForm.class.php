@@ -10,9 +10,12 @@ abstract class ColumnForm {
     const HOUR              = 3600;
     const DAY_MIN_TIME      = 0;
     const DAY_MAX_TIME      = 86400;
+    const HEADER_HEIGHT     = 38;
+    const OUT_OF_RANGE_ROW_HEIGHT = 20;
 
-    protected $title_text    = '';
-    protected $last_row_text = '';
+    protected $title_text     = '';
+    protected $first_row_text = '';
+    protected $last_row_text  = '';
     public static $time_period_list   = array();
     public static $intervals_per_hour = 0;
     public static $is_initialized    = false;
@@ -54,11 +57,19 @@ abstract class ColumnForm {
         return '';
     }
 
+    protected function html_hour_li_attr( $p_time ) {
+        return '';
+    }
+
     final public function html() {
         $t_result = '';
 
         $t_result .= $this->html_column_param();
         $t_result .= '<ul class="column-header-day"><span>' . $this->title_text . '</span></ul>';
+
+        $t_result .= "<ul class=\"hour first-row\" id=\"area_hour_top\">";
+        $t_result .= "<li>" . $this->first_row_text . "</li>";
+        $t_result .= "</ul>";
 
         $t_result .= $this->html_body();
 
@@ -73,7 +84,7 @@ abstract class ColumnForm {
                 break;
             }
 
-            $t_result .= "<li>";
+            $t_result .= "<li" . $this->html_hour_li_attr( $t_time ) . ">";
             $t_result .= $this->html_hour_text( $t_time );
             $t_result .= "</li>";
 

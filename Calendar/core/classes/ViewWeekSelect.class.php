@@ -31,6 +31,12 @@ class ViewWeekSelect extends ViewWeekCalendar {
         echo '';
     }
 
+    protected function add_event_url() {
+        $t_url = parent::add_event_url();
+
+        return $t_url === NULL ? NULL : $t_url . '&bug_id=' . $this->bug_id;
+    }
+
     protected function print_spacer_bottom() {
         echo '<div class="space-10">';
         echo '</div>';

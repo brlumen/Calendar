@@ -129,6 +129,8 @@ $s_plugin_Calendar_event_relationships_bugs = '关联任务';
 $s_plugin_Calendar_date_from = '事件开始时间';
 $s_plugin_Calendar_date_to = '事件结束时间';
 $s_plugin_Calendar_out_of_range = '超出范围的事件';
+$s_plugin_Calendar_out_of_range_above = '个事件在上方';
+$s_plugin_Calendar_out_of_range_below = '个事件在下方';
 
 $s_plugin_Calendar_view_submitted_event_link = '查看已创建事件 %1$s';
 

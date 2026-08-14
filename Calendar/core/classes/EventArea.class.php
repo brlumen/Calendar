@@ -57,7 +57,7 @@ class EventArea {
                 . ' style="z-index:' . (100 + $this->current_number_in_group) . ';'
                 . ' height:' . $t_hight . 'px;'
                 . ' width:' . $t_width . '%;'
-                . ' top:' . ($t_top + 38) . 'px;'
+                . ' top:' . ($t_top + ColumnForm::HEADER_HEIGHT + ColumnForm::OUT_OF_RANGE_ROW_HEIGHT) . 'px;'
                 . ' left: ' . $t_left . '%;">' . $t_text_area . '</a>';
 
         return $t_result;

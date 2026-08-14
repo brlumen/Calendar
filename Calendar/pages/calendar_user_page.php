@@ -18,16 +18,9 @@ auth_ensure_user_authenticated();
 
 access_ensure_project_level( plugin_config_get( 'calendar_view_threshold' ) );
 
-# Get view type (week/month)
-$f_view_type = gpc_get_string( 'view', '' );
-
-// Если вид не указан в параметрах, пробуем получить из куки
-if (empty($f_view_type)) {
-    $f_view_type = gpc_get_cookie('calendar_view_type', 'week');
-} else {
-    // Сохраняем выбранный вид в куки на 1 год
-    gpc_set_cookie('calendar_view_type', $f_view_type, true);
-}
+# The calendar view (week/month) and the time range are remembered between requests
+$f_view_type   = calendar_view_type_get();
+$f_is_fulltime = calendar_full_time_get();
 
 layout_page_header( plugin_lang_get( $f_view_type ) );
 
@@ -58,7 +51,6 @@ $p_date_selected = $f_view_type === 'week' ? strtotime( $f_string_date_selected 
 $f_week        = gpc_get_int( "week", !$p_date_selected ? $t_current_week : date( "W", $p_date_selected ) );
 $f_month       = gpc_get_int( "month", !$p_date_selected ? $t_current_month : date( "n", $p_date_selected ) );
 $f_year        = gpc_get_int( "year", !$p_date_selected ? $t_current_year : date( "o", $p_date_selected ) );
-$f_is_fulltime = gpc_get_bool( "full_time" );
 $f_for_user    = gpc_get_int( "for_user", auth_get_current_user_id() );
 //$t_access_level_current_user        = access_get_project_level();
 //$t_access_level_global_current_user = access_get_global_level();
@@ -78,40 +70,40 @@ if( $f_view_type === 'week' ) {
 
     $t_calendar = new ViewWeekCalendar( $f_week, $f_for_user, $f_is_fulltime, $t_days_events, plugin_page( 'view' ), $f_year, $p_date_selected );
 } else {
-    # Получаем первый день месяца и определяем количество дней
+    # Get the first day of the month and work out the number of days
     $t_first_date = strtotime(sprintf('%04d-%02d-01', $f_year, $f_month));
     $t_first_weekday = date('w', $t_first_date);
     $t_first_day = ($t_first_weekday == 0) ? 6 : $t_first_weekday - 1;
     
-    # Получаем дни предыдущего месяца
+    # Get the days of the previous month
     $t_prev_month = $f_month == 1 ? 12 : $f_month - 1;
     $t_prev_year = $f_month == 1 ? $f_year - 1 : $f_year;
     $t_days_in_prev_month = date('t', strtotime("$t_prev_year-$t_prev_month-01"));
     $t_start_day_prev_month = $t_days_in_prev_month - $t_first_day + 1;
     
-    # Получаем дни текущего месяца
+    # Get the days of the current month
     $t_days_in_month = date('t', $t_first_date);
     
-    # Вычисляем количество дней следующего месяца
+    # Work out how many days of the next month are needed
     $t_cells = $t_first_day + $t_days_in_month;
     $t_days_in_next_month = ceil($t_cells / 7) * 7 - $t_cells;
     
-    # Создаем массив всех дней для отображения
+    # Build the array of all days to display
     $t_days = array();
     
-    # Добавляем дни предыдущего месяца
+    # Add the days of the previous month
     for ($i = $t_start_day_prev_month; $i <= $t_days_in_prev_month; $i++) {
         $t_timestamp = strtotime("$t_prev_year-$t_prev_month-$i");
         $t_days[] = $t_timestamp;
     }
     
-    # Добавляем дни текущего месяца
+    # Add the days of the current month
     for ($i = 1; $i <= $t_days_in_month; $i++) {
         $t_timestamp = strtotime("$f_year-$f_month-$i");
         $t_days[] = $t_timestamp;
     }
     
-    # Добавляем дни следующего месяца
+    # Add the days of the next month
     $t_next_month = $f_month == 12 ? 1 : $f_month + 1;
     $t_next_year = $f_month == 12 ? $f_year + 1 : $f_year;
     for ($i = 1; $i <= $t_days_in_next_month; $i++) {
@@ -119,10 +111,10 @@ if( $f_view_type === 'week' ) {
         $t_days[] = $t_timestamp;
     }
     
-    # Получаем события для всех дней
+    # Get the events for all days
     $t_days_events = get_days_object($t_days, helper_get_current_project(), $f_for_user);
     
-    # Преобразуем формат дат в массиве событий
+    # Convert the date format in the events array
     $t_formatted_days_events = array();
     foreach($t_days_events as $t_timestamp => $t_events) {
         $t_date = date('Y-m-d', $t_timestamp);

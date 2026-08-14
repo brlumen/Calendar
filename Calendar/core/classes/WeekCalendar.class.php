@@ -37,11 +37,28 @@ abstract class WeekCalendar {
         echo '';
     }
 
+    /**
+     * URL of the event creation page used by the time range selection.
+     * NULL disables the selection in the calendar.
+     */
+    protected function add_event_url() {
+        return NULL;
+    }
+
     protected function print_body() {
         $t_css_collapsed = count( $this->day_colums ) == 0 ? 'style="display: none"' : '';
         echo '<div class="widget-main no-padding"' . $t_css_collapsed . '>';
         echo '<div class="table-responsive" style="overflow-y: hidden;">';
-        echo '<table class="calendar-user week">';
+
+        $t_add_event_url  = $this->add_event_url();
+        $t_select_options = '';
+        if( $t_add_event_url !== NULL ) {
+            $t_select_options = ' data-add-event-url="' . string_attribute( $t_add_event_url ) . '"'
+                    . ' data-time-step="' . ColumnForm::$min_segment_time_in_hour . '"'
+                    . ' data-add-event-title="' . string_attribute( plugin_lang_get( 'add_new_event' ) ) . '"';
+        }
+
+        echo '<table class="calendar-user week"' . $t_select_options . '>';
         echo '<tr class="row-day">';
 
         echo (new TimeColumn() )->html();

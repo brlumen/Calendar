@@ -15,15 +15,15 @@
 # If not, see <http://www.gnu.org/licenses/>.
 
 $f_bug_id      = gpc_get_int( 'bug_id', 0 );
-$f_is_fulltime = gpc_get_bool( "full_time" );
+$f_is_fulltime = calendar_full_time_get();
 
-// Получаем предзаполненные данные из URL
+// Read the prefilled data from the URL
 $f_name = gpc_get_string('name', '');
 $f_date = gpc_get_string('date', '');
 $f_time_start = gpc_get_string( 'time_start', null ) === null ? null : (int)gpc_get_string( 'time_start', null );
 $f_time_end = gpc_get_string('time_end', null ) === null ? null : (int)gpc_get_string('time_end', null );
 
-// Форматируем дату в нужный формат
+// Format the date the way the picker expects it
 $t_date_to_display = '';
 if (!empty($f_date)) {
     $t_timestamp = strtotime($f_date);

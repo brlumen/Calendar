@@ -41,6 +41,14 @@ class ViewWeekCalendar extends WeekCalendar {
         echo '</div>';
     }
 
+    protected function add_event_url() {
+        if( !access_compare_level( access_get_project_level(), plugin_config_get( 'report_event_threshold' ) ) ) {
+            return NULL;
+        }
+
+        return plugin_page( 'event_add_page' );
+    }
+
     protected function print_headline() {
 
         echo '<div class="widget-header widget-header-small">';
@@ -66,7 +74,7 @@ class ViewWeekCalendar extends WeekCalendar {
         echo '<div class="btn-toolbar">';
         echo '<form id="select_date_form" method="post" action="' . plugin_page( 'calendar_user_page' ) . '" class="btn-toolbar">';        
         
-        # Кнопка переключения на месячный вид
+        # Switch to the month view button
         echo '<div class="btn-group">';
         $t_first_day_of_week = strtotime($this->year . 'W' . str_pad($this->week, 2, '0', STR_PAD_LEFT));
         $t_url = plugin_page('calendar_user_page') . 
@@ -85,7 +93,7 @@ class ViewWeekCalendar extends WeekCalendar {
         print_small_button($t_url, plugin_lang_get('month_view'));
         echo '</div>';
         
-        # Кнопка переключения диапазона времени
+        # Time range toggle button
         echo '<div class="btn-group">';
         if( !is_bool( $this->date_selected ) ) {
             $t_date_to_display = date( plugin_config_get( 'short_date_format' ), $this->date_selected );
@@ -98,11 +106,11 @@ class ViewWeekCalendar extends WeekCalendar {
             print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=TRUE" . "&date_select=" . $t_date_to_display, "0-24" );
         } else {
             print_hidden_inputs( array( 'full_time' => 'TRUE' ) );
-            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&date_select=" . $t_date_to_display, gmdate( "H", plugin_config_get( 'time_day_start' ) ) . "-" . gmdate( "H", plugin_config_get( 'time_day_finish' ) ) );
+            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=FALSE" . "&date_select=" . $t_date_to_display, gmdate( "H", plugin_config_get( 'time_day_start' ) ) . "-" . gmdate( "H", plugin_config_get( 'time_day_finish' ) ) );
         }
         echo '</div>';
 
-        # Кнопки навигации
+        # Navigation buttons
         echo '<div id="nav-button" class="btn-group pull-right">';
         echo '<div class="btn-group">';
         echo '<input type="text" id="date_select" name="date_select" class="datetimepicker input-sm" ' .

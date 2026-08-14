@@ -4,7 +4,8 @@ class DayColumn extends ColumnForm {
     protected $timestamp          = 1;
     protected $events_area_group  = array();
     protected $is_today;
-    protected $out_of_range_event = 0;
+    protected $event_above_count = 0;
+    protected $event_below_count = 0;
 
     public function __construct( $p_timestamp, $p_events_row ) {
         parent::__construct();
@@ -15,9 +16,11 @@ class DayColumn extends ColumnForm {
 
         foreach( $p_events_row as $t_event_row ) {
             $t_time_ar         = explode( ":", date( "H:i", $t_event_row['date_from'] ) );
-            $t_event_timestamp = ((int)$t_time_ar[0] * 3600) + ((int)$t_time_ar * 60);
-            if( $t_event_timestamp < self::$time_period_list[0] || $t_event_timestamp >= self::$time_period_list[count( self::$time_period_list ) - 1] ) {
-                $this->out_of_range_event++;
+            $t_event_timestamp = ((int)$t_time_ar[0] * 3600) + ((int)$t_time_ar[1] * 60);
+            if( $t_event_timestamp < self::$time_period_list[0] ) {
+                $this->event_above_count++;
+            } elseif( $t_event_timestamp >= self::$time_period_list[count( self::$time_period_list ) - 1] ) {
+                $this->event_below_count++;
             } else {
                 $t_events_row_to_group[] = $t_event_row;
             }
@@ -41,8 +44,11 @@ class DayColumn extends ColumnForm {
         }
 
         $this->title_text = plugin_lang_get( date( "D", $this->timestamp ) ) . ', ' . date( config_get( 'short_date_format' ), $this->timestamp );
-        if( $this->out_of_range_event > 0 ) {
-            $this->last_row_text = "+" . $this->out_of_range_event . " " . plugin_lang_get( 'out_of_range' );
+        if( $this->event_above_count > 0 ) {
+            $this->first_row_text = "+" . $this->event_above_count . " " . plugin_lang_get( 'out_of_range_above' );
+        }
+        if( $this->event_below_count > 0 ) {
+            $this->last_row_text = "+" . $this->event_below_count . " " . plugin_lang_get( 'out_of_range_below' );
         }
 
         $this->is_today = date( "U", strtotime( date( "j.n.Y" ) ) ) == $this->timestamp ? TRUE : FALSE;
@@ -54,11 +60,15 @@ class DayColumn extends ColumnForm {
 //    }
 
     protected function html_column_param() {
-        if( $this->is_today ) {
-            return '<td class="column-this-day-td" style="width: calc(100%/' . self::$total_days_counter . ')">';
-        } else {
-            return '<td class="column-day-td" style="width: calc(100%/' . self::$total_days_counter . ')">';
-        }
+        $t_class = $this->is_today ? 'column-this-day-td' : 'column-day-td';
+
+        return '<td class="' . $t_class . '"'
+                . ' data-date="' . date( 'Y-m-d', $this->timestamp ) . '"'
+                . ' style="width: calc(100%/' . self::$total_days_counter . ')">';
+    }
+
+    protected function html_hour_li_attr( $p_time ) {
+        return ' class="time-slot" data-time="' . (int)$p_time . '"';
     }
 
     protected function html_body() {

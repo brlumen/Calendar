@@ -129,6 +129,8 @@ $s_plugin_Calendar_event_relationships_bugs = 'Связанные задачи';
 $s_plugin_Calendar_date_from = 'Дата начала события';
 $s_plugin_Calendar_date_to = 'Дата окончания события';
 $s_plugin_Calendar_out_of_range = 'события вне диапазона';
+$s_plugin_Calendar_out_of_range_above = 'события выше';
+$s_plugin_Calendar_out_of_range_below = 'события ниже';
 
 $s_plugin_Calendar_view_submitted_event_link = 'Просмотреть созданное событие %1$s';
 
