@@ -14,8 +14,6 @@
 # along with Customer management plugin for MantisBT.  
 # If not, see <http://www.gnu.org/licenses/>.
 
-access_ensure_global_level( plugin_config_get( 'update_event_threshold' ) );
-
 form_security_validate( 'event_insert' );
 
 $f_event_id = gpc_get_int( 'event_id' );
@@ -26,6 +24,8 @@ $f_bug      = gpc_get_int( 'bug_id' );
 bug_ensure_exists( $f_bug );
 
 event_ensure_exists( $f_event_id );
+
+access_ensure_event_level( plugin_config_get( 'update_event_threshold' ), $f_event_id );
 
 $t_event_parent_data = event_get( $f_event_id );
 $t_event_child_data  = clone $t_event_parent_data;

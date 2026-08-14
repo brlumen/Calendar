@@ -68,7 +68,7 @@ function access_has_event_level( $p_access_level, $p_event_id, $p_user_id = null
 		# build a static array holding that threshold for each project
 		static $s_thresholds = array();
 		if( !isset( $s_thresholds[$t_project_id] ) ) {
-			$t_report_event_threshold = plugin_config_get( 'report_event_threshold', null, $p_user_id, $t_project_id );
+			$t_report_event_threshold = plugin_config_get( 'report_event_threshold', null, false, $p_user_id, $t_project_id );
 			if( empty( $t_report_event_threshold ) ) {
 				$s_thresholds[$t_project_id] = NOBODY;
 			} else {

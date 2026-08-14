@@ -15,7 +15,9 @@
 # along with Customer management plugin for MantisBT.  
 # If not, see <http://www.gnu.org/licenses/>.
 
-access_ensure_global_level( plugin_config_get( 'report_event_threshold' ) );
+$f_project_id = gpc_get_int( 'project_id', helper_get_current_project() );
+
+access_ensure_project_level( plugin_config_get( 'report_event_threshold' ), $f_project_id );
 
 form_security_validate( 'event_add' );
 
@@ -33,7 +35,7 @@ $f_selected_freq          = gpc_get_string( 'selected_freq', 'NO_REPEAT' );
 
 $t_event_data = new CalendarEventData();
 
-$t_event_data->project_id = gpc_get_int( 'project_id', helper_get_current_project() );
+$t_event_data->project_id = $f_project_id;
 $t_event_data->name       = gpc_get_string( 'name_event' );
 $t_event_data->activity   = "Y";
 $t_event_data->author_id  = auth_get_current_user_id();

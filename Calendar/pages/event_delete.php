@@ -23,6 +23,8 @@ $f_from_bug_id   = gpc_get_int( 'from_bug_id', 0 );
 
 event_ensure_exists( $f_event_id );
 
+access_ensure_event_level( plugin_config_get( 'update_event_threshold' ), $f_event_id );
+
 if( event_is_recurrences( $f_event_id ) ) {
 
     event_occurrence_ensure_exist( $f_event_id, $f_date_select );

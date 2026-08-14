@@ -17,7 +17,7 @@
 
 auth_reauthenticate();
 
-access_ensure_global_level( plugin_config_get( 'manage_calendar_threshold' ) );
+access_ensure_project_level( plugin_config_get( 'manage_calendar_threshold' ) );
 
 layout_page_header( plugin_lang_get( 'name_plugin_description_page' ) );
 
