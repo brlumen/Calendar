@@ -70,6 +70,11 @@ if( $f_view_type === 'week' ) {
 
     $t_calendar = new ViewWeekCalendar( $f_week, $f_for_user, $f_is_fulltime, $t_days_events, plugin_page( 'view' ), $f_year, $p_date_selected );
 } else {
+    if( !checkdate( $f_month, 1, $f_year ) ) {
+        error_parameters( plugin_lang_get( 'date_event' ) );
+        plugin_error( 'ERROR_RANGE_TIME', ERROR );
+    }
+
     # Get the first day of the month and work out the number of days
     $t_first_date = strtotime(sprintf('%04d-%02d-01', $f_year, $f_month));
     $t_first_weekday = date('w', $t_first_date);
