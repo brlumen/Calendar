@@ -45,6 +45,25 @@ if( $t_event->project_id != $t_current_project ) {
 
 $t_bugs_id = event_get_attached_bugs_id( $f_event_id );
 
+# dates in this form are rendered and re-interpreted in the event's own
+# timezone, so that saving an untouched form keeps the event as is:
+# the stored timezone if any, else the recurrence anchor timezone,
+# else the viewer's
+$t_rrule_string = event_get_field( $f_event_id, 'recurrence_pattern' );
+$t_rule         = array();
+if( !is_blank( $t_rrule_string ) ) {
+    $t_rset   = new \RRule\RSet( $t_rrule_string );
+    $t_rrules = $t_rset->getRRules();
+    $t_rule   = $t_rrules[0]->getRule();
+}
+if( !is_blank( $t_event->timezone ) ) {
+    $t_form_timezone = calendar_timezone_get( $t_event->timezone );
+} elseif( isset( $t_rule['DTSTART'] ) && $t_rule['DTSTART'] instanceof DateTimeInterface ) {
+    $t_form_timezone = $t_rule['DTSTART']->getTimezone();
+} else {
+    $t_form_timezone = new DateTimeZone( date_default_timezone_get() );
+}
+
 layout_page_header();
 
 layout_page_begin();
@@ -87,7 +106,7 @@ layout_page_begin();
                                 <!--#Date-->
 
                                 <?php
-                                $t_date_to_display = date( plugin_config_get( 'short_date_format' ), $t_event->date_from );
+                                $t_date_to_display = ( new DateTime( '@' . $t_event->date_from ) )->setTimezone( $t_form_timezone )->format( plugin_config_get( 'short_date_format' ) );
                                 ?>
                                 <tr>
                                     <th class="category">
@@ -114,7 +133,7 @@ layout_page_begin();
                                         <span class="date-event time-event">
 
                                             <span class="event_time_start-area">
-                                                <select tabindex=3 name="event_time_start" id="event_time_start"><?php print_time_select_option( strtotime( date( "H:i", $t_event->date_from ) . " GMT", 0 ), TRUE ); ?></select>
+                                                <select tabindex=3 name="event_time_start" id="event_time_start"><?php print_time_select_option( strtotime( ( new DateTime( '@' . $t_event->date_from ) )->setTimezone( $t_form_timezone )->format( 'H:i' ) . " GMT", 0 ), TRUE ); ?></select>
                                             </span>
 
                                         </span>
@@ -131,9 +150,25 @@ layout_page_begin();
                                     <td>
                                         <span class="date-event time-event">
                                             <span class="event_time_finish">
-                                                <select tabindex=4 name="event_time_finish" id="event_time_finish"><?php print_time_select_option( strtotime( date( "H:i", $t_event->date_from + $t_event->duration ) . " GMT", 0 ), TRUE ); ?></select>
+                                                <select tabindex=4 name="event_time_finish" id="event_time_finish"><?php print_time_select_option( strtotime( ( new DateTime( '@' . ( $t_event->date_from + $t_event->duration ) ) )->setTimezone( $t_form_timezone )->format( 'H:i' ) . " GMT", 0 ), TRUE ); ?></select>
                                             </span>	
                                         </span>
+                                    </td>
+                                </tr>
+
+                                <!--#event_timezone-->
+
+                                <tr>
+                                    <th class="category">
+                                        <label for="event_timezone"><?php echo plugin_lang_get( 'event_timezone' ) ?></label>
+                                    </th>
+                                    <td>
+                                        <select <?php helper_get_tab_index() ?> name="event_timezone" id="event_timezone">
+                                            <?php
+                                            # the same timezone the dates above are prefilled in
+                                            print_timezone_option_list( $t_form_timezone->getName() );
+                                            ?>
+                                        </select>
                                     </td>
                                 </tr>
 
@@ -145,14 +180,6 @@ layout_page_begin();
                                     </th>
                                     <td>
                                         <?php
-                                        $t_rrule_string    = event_get_field( $t_event->id, 'recurrence_pattern' );
-                                        $t_rule = array();
-                                        if( !is_blank( $t_rrule_string ) ) {
-                                            $t_rset   = new \RRule\RSet( $t_rrule_string );
-                                            $t_rrules = $t_rset->getRRules();
-                                            $t_rule   = $t_rrules[0]->getRule();
-                                        }
-
                                         if( array_key_exists('INTERVAL', $t_rule) ) {
                                             ?>
                                             <input style="width: 50px;" type="number" id="interval_value" name="interval_value" min="1" value="<?php echo $t_rule['INTERVAL'] ?>" step="1"/>
@@ -185,7 +212,7 @@ layout_page_begin();
 
                                         <?php
                                         if( array_key_exists( 'UNTIL', $t_rule ) ) {
-                                            $t_time_until = $t_rule['UNTIL']->format( plugin_config_get( 'short_date_format' ) );
+                                            $t_time_until = ( clone $t_rule['UNTIL'] )->setTimezone( $t_form_timezone )->format( plugin_config_get( 'short_date_format' ) );
                                         } else {
                                             $t_time_until = plugin_lang_get( 'never_ending_repetition' );
                                         }

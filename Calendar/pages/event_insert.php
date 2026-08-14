@@ -44,6 +44,11 @@ if( event_is_recurrences( $f_event_id ) ) {
 
     $t_freq     = $t_rrule_parent_old['FREQ'];
     $t_interval = $t_rrule_parent_old['INTERVAL'];
+    # there is no timezone selector in this flow, so the child series keeps
+    # the parent rule's anchor timezone
+    $t_event_timezone = $t_rrule_parent_old['DTSTART'] instanceof DateTimeInterface
+            ? $t_rrule_parent_old['DTSTART']->getTimezone()
+            : NULL;
 } else {
     $t_range = 'ALL';
 }
@@ -93,8 +98,8 @@ switch( $t_range ) {
                 $t_rset_new = new CalendarPluginRRuleExt\RSetExt();
 
                 $t_rrule = new RRule\RRule( array(
-                                          'DTSTART'  => $t_event_child_data->date_from,
-                                          'UNTIL'    => $t_event_child_data->date_to,
+                                          'DTSTART'  => calendar_rrule_datetime( $t_event_child_data->date_from, $t_event_timezone ),
+                                          'UNTIL'    => calendar_rrule_datetime( $t_event_child_data->date_to, $t_event_timezone ),
                                           'FREQ'     => $t_freq,
                                           'INTERVAL' => $t_interval
                         ) );

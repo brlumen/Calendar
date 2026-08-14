@@ -23,7 +23,8 @@ $f_event_time_finish = gpc_get_int( 'event_time_finish' );
 $f_date              = gpc_get_int( 'date' );
 $f_freq              = gpc_get_string( 'selected_freq', 'NO_REPEAT' );
 $f_interval          = gpc_get_int( 'interval_value' );
-$f_until             = strtotime( gpc_get_string( 'date_ending_repetition', NULL ) );
+$t_event_timezone    = calendar_timezone_get( gpc_get_string( 'event_timezone', '' ) );
+$f_until             = calendar_strtotime_in_timezone( gpc_get_string( 'date_ending_repetition', NULL ), $t_event_timezone );
 $f_bugs              = gpc_get_int_array( 'bugs_add', array( 0 ) );
 
 event_ensure_exists( $f_event_id );
@@ -36,8 +37,9 @@ $t_event_child_data  = clone $t_event_parent_data;
 $t_event_child_data->name            = gpc_get_string( 'name_event' );
 $t_event_child_data->activity        = "Y";
 $t_event_child_data->changed_user_id = auth_get_current_user_id();
-$t_event_child_data->date_from       = strtotime( gpc_get_string( 'date_event' ), NULL ) + $f_event_time_start;
+$t_event_child_data->date_from       = calendar_strtotime_in_timezone( gpc_get_string( 'date_event' ), $t_event_timezone ) + $f_event_time_start;
 $t_event_child_data->duration        = $f_event_time_finish - $f_event_time_start;
+$t_event_child_data->timezone        = $t_event_timezone->getName();
 
 if( event_is_recurrences( $f_event_id ) ) {
 
@@ -85,13 +87,13 @@ switch( $t_range ) {
             case 'WEEKLY':
             case 'MONTHLY':
             case 'YEARLY':
-                $t_event_child_data->date_to = $f_until == NULL ? strtotime( '01-01-2038' ) + $f_event_time_finish : $f_until + $f_event_time_finish;
+                $t_event_child_data->date_to = $f_until == NULL ? calendar_strtotime_in_timezone( '01-01-2038', $t_event_timezone ) + $f_event_time_finish : $f_until + $f_event_time_finish;
 
                 $t_rset_new = new CalendarPluginRRuleExt\RSetExt();
 
                 $t_rrule = new RRule\RRule( array(
-                                          'DTSTART'  => $t_event_child_data->date_from,
-                                          'UNTIL'    => $t_event_child_data->date_to,
+                                          'DTSTART'  => calendar_rrule_datetime( $t_event_child_data->date_from, $t_event_timezone ),
+                                          'UNTIL'    => calendar_rrule_datetime( $t_event_child_data->date_to, $t_event_timezone ),
                                           'FREQ'     => $f_freq,
                                           'INTERVAL' => $f_interval
                         ) );
@@ -102,7 +104,7 @@ switch( $t_range ) {
                 break;
 
             default :
-                $t_event_child_data->date_to = $f_until == NULL ? strtotime( gpc_get_string( 'date_event' ) ) + $f_event_time_finish : $f_until + $f_event_time_finish;
+                $t_event_child_data->date_to = $f_until == NULL ? calendar_strtotime_in_timezone( gpc_get_string( 'date_event' ), $t_event_timezone ) + $f_event_time_finish : $f_until + $f_event_time_finish;
         }
 
         $t_event_child_id = $t_event_child_data->create();
@@ -145,7 +147,7 @@ switch( $t_range ) {
             case 'WEEKLY':
             case 'MONTHLY':
             case 'YEARLY':
-                $t_event_child_data->date_to = $f_until == NULL ? strtotime( '01-01-2038' ) + $f_event_time_finish : $f_until + $f_event_time_finish;
+                $t_event_child_data->date_to = $f_until == NULL ? calendar_strtotime_in_timezone( '01-01-2038', $t_event_timezone ) + $f_event_time_finish : $f_until + $f_event_time_finish;
 
                 $t_rset    = new \RRule\RSet( $t_event_child_data->recurrence_pattern );
                 $t_exdates = $t_rset->getExDates();
@@ -154,8 +156,8 @@ switch( $t_range ) {
 
 
                 $t_rrule = new RRule\RRule( array(
-                                          'DTSTART'  => $t_event_child_data->date_from,
-                                          'UNTIL'    => $t_event_child_data->date_to,
+                                          'DTSTART'  => calendar_rrule_datetime( $t_event_child_data->date_from, $t_event_timezone ),
+                                          'UNTIL'    => calendar_rrule_datetime( $t_event_child_data->date_to, $t_event_timezone ),
                                           'FREQ'     => $f_freq,
                                           'INTERVAL' => $f_interval
                         ) );
@@ -167,7 +169,7 @@ switch( $t_range ) {
 
                 break;
             default :
-                $t_event_child_data->date_to = $f_until == NULL ? strtotime( gpc_get_string( 'date_event' ) ) + $f_event_time_finish : $f_until + $f_event_time_finish;
+                $t_event_child_data->date_to = $f_until == NULL ? calendar_strtotime_in_timezone( gpc_get_string( 'date_event' ), $t_event_timezone ) + $f_event_time_finish : $f_until + $f_event_time_finish;
         }
 
         if( $t_event_child_data != $t_event_parent_data ) {

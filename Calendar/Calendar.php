@@ -130,6 +130,170 @@ function install_recurrence_pattern_set_notnull() { //version 2.4.8 (schema 14)
     return TRUE;
 }
 
+function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
+    $t_table_calendar_events = plugin_table( 'events' );
+
+    if( db_table_exists( $t_table_calendar_events ) && db_is_connected() ) {
+
+        require_once __DIR__ . '/api/vendor/autoload.php';
+        require_once __DIR__ . '/core/classes/RSetExt.class.php';
+
+        # Existing patterns store DTSTART as UTC, so occurrences are frozen at a
+        # fixed UTC time and their local time shifts on DST transitions (issue #104).
+        # Re-anchor DTSTART to the timezone of the event's author — the wall time
+        # the author originally entered — keeping the instant unchanged; fall back
+        # to the instance timezone for unknown authors or invalid timezone names.
+        $t_default_timezone = config_get_global( 'default_timezone' );
+        $t_timezones        = array();
+        $t_events           = array();
+
+        $t_query = "SELECT id, name, author_id, recurrence_pattern FROM " . $t_table_calendar_events . " WHERE recurrence_pattern <> '' ORDER BY id";
+        $arRes   = db_query( $t_query, NULL, -1, -1 );
+
+        foreach( $arRes as $key => $t_event ) {
+
+            $t_timezone_name = $t_default_timezone;
+            $t_author_id     = (int)$t_event['author_id'];
+            if( $t_author_id > 0 && user_exists( $t_author_id ) ) {
+                $t_author_timezone = user_pref_get_pref( $t_author_id, 'timezone' );
+                if( !is_blank( $t_author_timezone ) ) {
+                    $t_timezone_name = $t_author_timezone;
+                }
+            }
+            if( !isset( $t_timezones[$t_timezone_name] ) ) {
+                try {
+                    $t_timezones[$t_timezone_name] = new DateTimeZone( $t_timezone_name );
+                } catch( Exception $e ) {
+                    $t_timezones[$t_timezone_name] = new DateTimeZone( $t_default_timezone );
+                }
+            }
+            $t_event['timezone'] = $t_timezones[$t_timezone_name]->getName();
+            # after the fallback the resolved name may differ from the requested one
+            $t_timezones[$t_event['timezone']] = $t_timezones[$t_timezone_name];
+            $t_events[]          = $t_event;
+        }
+
+        # Show the administrator exactly what will be converted before running it,
+        # and require an explicit "database backup done" checkbox. Modeled on
+        # helper_ensure_confirmed(): the form re-posts the same upgrade request
+        # with _confirmed=1 (the form security token is only purged after
+        # plugin_upgrade() finishes), so on confirm this function is entered
+        # again and falls through. The checkbox is enforced server-side; the CSS
+        # gate on the button is a courtesy (the CSP forbids inline JS but allows
+        # inline styles).
+        if( count( $t_events ) > 0 && php_sapi_name() != 'cli'
+                && !( gpc_get_bool( '_confirmed' ) && gpc_get_bool( 'backup_confirmed' ) && gpc_get_bool( 'timezones_confirmed' ) ) ) {
+
+            layout_page_header();
+            layout_page_begin();
+
+            echo '<div class="col-md-12 col-xs-12">';
+            echo '<div class="space-10"></div>';
+            echo '<div class="alert alert-warning center">';
+            echo '<ul id="recurrence_migration_warnings" class="bigger-110">';
+            echo '<li class="bold"><strong>' . plugin_lang_get( 'recurrence_migration_backup_warning' ) . '</strong></li>';
+            echo '<li>' . plugin_lang_get( 'recurrence_migration_timezones_warning' ) . '</li>';
+            echo '<li>' . sprintf( plugin_lang_get( 'recurrence_migration_confirm_msg' ), count( $t_events ) ) . '</li>';
+            echo '<li>' . plugin_lang_get( 'recurrence_migration_column_msg' ) . '</li>';
+            echo '</ul>';
+
+            echo '<table id="recurrence_migration_table" class="table table-bordered table-condensed"><thead><tr>'
+                    . '<th>ID</th>'
+                    . '<th>' . plugin_lang_get( 'name_event' ) . '</th>'
+                    . '<th>' . lang_get( 'username' ) . '</th>'
+                    . '<th>' . plugin_lang_get( 'recurrence_migration_timezone_col' ) . '</th>'
+                    . '</tr></thead><tbody>';
+            foreach( $t_events as $t_event ) {
+                echo '<tr>'
+                        . '<td>' . (int)$t_event['id'] . '</td>'
+                        . '<td>' . string_display_line( $t_event['name'] ) . '</td>'
+                        . '<td>' . string_display_line( user_get_name( (int)$t_event['author_id'] ) ) . '</td>'
+                        . '<td>' . string_display_line( $t_event['timezone'] ) . '</td>'
+                        . '</tr>';
+            }
+            echo '</tbody></table>';
+            echo '<div class="space-10"></div>';
+
+            # the surrounding alert block centers text, which visually misaligns
+            # the table body against its header — force one alignment for both
+            echo '<style>'
+                    . '#recurrence_migration_warnings { display: inline-block; text-align: left; list-style-position: outside; font-weight: normal; }'
+                    . '#recurrence_migration_warnings li { margin-bottom: 6px; }'
+                    . '#recurrence_migration_warnings li.bold, #recurrence_migration_warnings li.bold strong { font-weight: bold; }'
+                    . '#recurrence_migration_table th, #recurrence_migration_table td { text-align: left; }'
+                    . '#backup_confirmed:not(:checked) ~ input[type="submit"],'
+                    . '#timezones_confirmed:not(:checked) ~ input[type="submit"] { pointer-events: none; opacity: .45; }'
+                    . '</style>';
+
+            echo '<form method="post" class="center" action="">' . "\n";
+            # CSRF protection not required here - user needs to confirm action
+            # before the form is accepted.
+            $t_post = $_POST;
+            $t_get  = $_GET;
+            unset( $t_post['_confirmed'], $t_post['backup_confirmed'], $t_post['timezones_confirmed'],
+                    $t_get['_confirmed'], $t_get['backup_confirmed'], $t_get['timezones_confirmed'] );
+            print_hidden_inputs( $t_post );
+            print_hidden_inputs( $t_get );
+
+            echo '<input type="hidden" name="_confirmed" value="1" />', "\n";
+            echo '<input type="checkbox" id="timezones_confirmed" name="timezones_confirmed" value="1" /> ';
+            echo '<label for="timezones_confirmed" class="bold">' . plugin_lang_get( 'recurrence_migration_timezones_checkbox' ) . '</label>';
+            echo '<br />';
+            echo '<input type="checkbox" id="backup_confirmed" name="backup_confirmed" value="1" /> ';
+            echo '<label for="backup_confirmed" class="bold">' . plugin_lang_get( 'recurrence_migration_backup_checkbox' ) . '</label>';
+            echo '<div class="space-10"></div>';
+            echo '<input type="submit" class="btn btn-primary btn-white btn-round" value="' . plugin_lang_get( 'recurrence_migration_confirm_button' ) . '" />';
+            echo "\n</form>\n";
+
+            echo '<div class="space-10"></div>';
+            echo '</div></div>';
+
+            layout_page_end();
+            exit;
+        }
+
+        foreach( $t_events as $t_event ) {
+
+            $t_timezone = $t_timezones[$t_event['timezone']];
+
+            $t_rset_old = new \RRule\RSet( $t_event['recurrence_pattern'] );
+            $t_rset_new = new CalendarPluginRRuleExt\RSetExt();
+
+            foreach( $t_rset_old->getRRules() as $t_rrule_old ) {
+                $t_rule = $t_rrule_old->getRule();
+                if( $t_rule['DTSTART'] instanceof DateTimeInterface ) {
+                    $t_dtstart = new DateTime( '@' . $t_rule['DTSTART']->getTimestamp() );
+                    $t_rule['DTSTART'] = $t_dtstart->setTimezone( $t_timezone );
+                }
+                $t_rset_new->addRRule( new \RRule\RRule( $t_rule ) );
+            }
+
+            # Re-anchoring moves occurrence instants that lie in the opposite DST
+            # phase from DTSTART, so each EXDATE must be re-matched to the new
+            # rule's occurrence on the same local day, or the exclusion is lost.
+            foreach( $t_rset_old->getExDates() as $t_exdate ) {
+                $t_exdate_local = new DateTime( '@' . $t_exdate->getTimestamp() );
+                $t_exdate_local->setTimezone( $t_timezone );
+                $t_day_start = ( clone $t_exdate_local )->setTime( 0, 0, 0 );
+                $t_day_end   = ( clone $t_exdate_local )->setTime( 23, 59, 59 );
+
+                $t_occurrences = $t_rset_new->getOccurrencesBetween( $t_day_start, $t_day_end, 1 );
+                $t_rset_new->addExDate( count( $t_occurrences ) ? $t_occurrences[0] : $t_exdate );
+            }
+
+            $t_pattern_new = $t_rset_new->rfcString();
+            if( $t_pattern_new != $t_event['recurrence_pattern'] ) {
+                $t_query = "UPDATE $t_table_calendar_events
+                                            SET recurrence_pattern=" . db_param();
+                $t_query .= " WHERE id=" . db_param();
+
+                db_query( $t_query, Array( $t_pattern_new, $t_event['id'] ) );
+            }
+        }
+    }
+    return TRUE;
+}
+
 class CalendarPlugin extends MantisPlugin {
 
     function register() {
@@ -138,7 +302,7 @@ class CalendarPlugin extends MantisPlugin {
         $this->description = plugin_lang_get( 'description' );
         $this->page        = 'config_page';
 
-        $this->version = '2.8.0';
+        $this->version = '2.8.1';
 
         $this->requires = array(
                                   'MantisCore' => '2.26.0',
@@ -286,6 +450,13 @@ class CalendarPlugin extends MantisPlugin {
                                   //version 2.4.8 (schema 15)
                                   array( 'AlterColumnSQL', array( plugin_table( "events" ), "
                                         recurrence_pattern X $t_notnull
+                                " ) ),
+                                  //version 2.8.1 (schema 16) — runs first: its confirmation
+                                  //page must precede any database change of this upgrade
+                                  array( 'UpdateFunction', 'recurrence_pattern_tzid' ),
+                                  //version 2.8.1 (schema 17)
+                                  array( 'AddColumnSQL', array( plugin_table( "events" ), "
+                                        timezone C(64) $t_notnull DEFAULT \" '' \"
                                 " ) ),
         );
     }
