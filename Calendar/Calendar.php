@@ -130,6 +130,82 @@ function install_recurrence_pattern_set_notnull() { //version 2.4.8 (schema 14)
     return TRUE;
 }
 
+function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
+    $t_table_calendar_events = plugin_table( 'events' );
+
+    if( db_table_exists( $t_table_calendar_events ) && db_is_connected() ) {
+
+        require_once __DIR__ . '/api/vendor/autoload.php';
+        require_once __DIR__ . '/core/classes/RSetExt.class.php';
+
+        # Existing patterns store DTSTART as UTC, so occurrences are frozen at a
+        # fixed UTC time and their local time shifts on DST transitions (issue #104).
+        # Re-anchor DTSTART to the timezone of the event's author — the wall time
+        # the author originally entered — keeping the instant unchanged; fall back
+        # to the instance timezone for unknown authors or invalid timezone names.
+        $t_default_timezone = config_get_global( 'default_timezone' );
+        $t_timezones        = array();
+
+        $t_query = "SELECT id, author_id, recurrence_pattern FROM " . $t_table_calendar_events . " WHERE recurrence_pattern <> ''";
+        $arRes   = db_query( $t_query, NULL, -1, -1 );
+
+        foreach( $arRes as $key => $t_event ) {
+
+            $t_timezone_name = $t_default_timezone;
+            $t_author_id     = (int)$t_event['author_id'];
+            if( $t_author_id > 0 && user_exists( $t_author_id ) ) {
+                $t_author_timezone = user_pref_get_pref( $t_author_id, 'timezone' );
+                if( !is_blank( $t_author_timezone ) ) {
+                    $t_timezone_name = $t_author_timezone;
+                }
+            }
+            if( !isset( $t_timezones[$t_timezone_name] ) ) {
+                try {
+                    $t_timezones[$t_timezone_name] = new DateTimeZone( $t_timezone_name );
+                } catch( Exception $e ) {
+                    $t_timezones[$t_timezone_name] = new DateTimeZone( $t_default_timezone );
+                }
+            }
+            $t_timezone = $t_timezones[$t_timezone_name];
+
+            $t_rset_old = new \RRule\RSet( $t_event['recurrence_pattern'] );
+            $t_rset_new = new CalendarPluginRRuleExt\RSetExt();
+
+            foreach( $t_rset_old->getRRules() as $t_rrule_old ) {
+                $t_rule = $t_rrule_old->getRule();
+                if( $t_rule['DTSTART'] instanceof DateTimeInterface ) {
+                    $t_dtstart = new DateTime( '@' . $t_rule['DTSTART']->getTimestamp() );
+                    $t_rule['DTSTART'] = $t_dtstart->setTimezone( $t_timezone );
+                }
+                $t_rset_new->addRRule( new \RRule\RRule( $t_rule ) );
+            }
+
+            # Re-anchoring moves occurrence instants that lie in the opposite DST
+            # phase from DTSTART, so each EXDATE must be re-matched to the new
+            # rule's occurrence on the same local day, or the exclusion is lost.
+            foreach( $t_rset_old->getExDates() as $t_exdate ) {
+                $t_exdate_local = new DateTime( '@' . $t_exdate->getTimestamp() );
+                $t_exdate_local->setTimezone( $t_timezone );
+                $t_day_start = ( clone $t_exdate_local )->setTime( 0, 0, 0 );
+                $t_day_end   = ( clone $t_exdate_local )->setTime( 23, 59, 59 );
+
+                $t_occurrences = $t_rset_new->getOccurrencesBetween( $t_day_start, $t_day_end, 1 );
+                $t_rset_new->addExDate( count( $t_occurrences ) ? $t_occurrences[0] : $t_exdate );
+            }
+
+            $t_pattern_new = $t_rset_new->rfcString();
+            if( $t_pattern_new != $t_event['recurrence_pattern'] ) {
+                $t_query = "UPDATE $t_table_calendar_events
+                                            SET recurrence_pattern=" . db_param();
+                $t_query .= " WHERE id=" . db_param();
+
+                db_query( $t_query, Array( $t_pattern_new, $t_event['id'] ) );
+            }
+        }
+    }
+    return TRUE;
+}
+
 class CalendarPlugin extends MantisPlugin {
 
     function register() {
@@ -138,7 +214,7 @@ class CalendarPlugin extends MantisPlugin {
         $this->description = plugin_lang_get( 'description' );
         $this->page        = 'config_page';
 
-        $this->version = '2.8.0';
+        $this->version = '2.8.1';
 
         $this->requires = array(
                                   'MantisCore' => '2.26.0',
@@ -287,6 +363,8 @@ class CalendarPlugin extends MantisPlugin {
                                   array( 'AlterColumnSQL', array( plugin_table( "events" ), "
                                         recurrence_pattern X $t_notnull
                                 " ) ),
+                                  //version 2.8.1 (schema 16)
+                                  array( 'UpdateFunction', 'recurrence_pattern_tzid' ),
         );
     }
 

@@ -47,8 +47,8 @@ switch( $f_selected_freq ) {
     case 'YEARLY':
         $t_event_data->date_to            = $f_date_ending_repetition == NULL ? strtotime( '01-01-2038' ) + $f_event_time_finish : $f_date_ending_repetition + $f_event_time_finish;
         $t_rrule                          = new RRule\RRule( array(
-                                  'DTSTART'  => $t_event_data->date_from,
-                                  'UNTIL'    => $t_event_data->date_to,
+                                  'DTSTART'  => calendar_rrule_datetime( $t_event_data->date_from ),
+                                  'UNTIL'    => calendar_rrule_datetime( $t_event_data->date_to ),
                                   'FREQ'     => $f_selected_freq,
                                   'INTERVAL' => gpc_get_int( 'interval_value' )
                 ) );

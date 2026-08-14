@@ -1,5 +1,20 @@
 <?php
 
+/**
+ * Convert a Unix timestamp to a DateTime carrying the current timezone,
+ * for use as DTSTART/UNTIL of an RRULE. An integer timestamp would be
+ * treated as UTC by php-rrule, freezing the UTC time of occurrences and
+ * shifting their local time whenever DST starts or ends (issue #104);
+ * a DateTime with a named timezone keeps the local time constant instead.
+ *
+ * @param integer $p_timestamp
+ * @return DateTime
+ */
+function calendar_rrule_datetime( $p_timestamp ) {
+    $t_datetime = new DateTime( '@' . (int)$p_timestamp );
+    return $t_datetime->setTimezone( new DateTimeZone( date_default_timezone_get() ) );
+}
+
 function helper_ensure_event_update_confirmed( $p_message ) {
     if( true == gpc_get_string( '_confirmed', FALSE ) ) {
         return gpc_get_string( '_confirmed' );

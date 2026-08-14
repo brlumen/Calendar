@@ -90,8 +90,8 @@ switch( $t_range ) {
                 $t_rset_new = new CalendarPluginRRuleExt\RSetExt();
 
                 $t_rrule = new RRule\RRule( array(
-                                          'DTSTART'  => $t_event_child_data->date_from,
-                                          'UNTIL'    => $t_event_child_data->date_to,
+                                          'DTSTART'  => calendar_rrule_datetime( $t_event_child_data->date_from ),
+                                          'UNTIL'    => calendar_rrule_datetime( $t_event_child_data->date_to ),
                                           'FREQ'     => $f_freq,
                                           'INTERVAL' => $f_interval
                         ) );
@@ -154,8 +154,8 @@ switch( $t_range ) {
 
 
                 $t_rrule = new RRule\RRule( array(
-                                          'DTSTART'  => $t_event_child_data->date_from,
-                                          'UNTIL'    => $t_event_child_data->date_to,
+                                          'DTSTART'  => calendar_rrule_datetime( $t_event_child_data->date_from ),
+                                          'UNTIL'    => calendar_rrule_datetime( $t_event_child_data->date_to ),
                                           'FREQ'     => $f_freq,
                                           'INTERVAL' => $f_interval
                         ) );
