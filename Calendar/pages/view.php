@@ -199,6 +199,23 @@ if( !is_blank( $t_rrule_string ) ) {
 echo '</td>';
 echo '</tr>';
 
+#timezone: dates above are rendered in the viewer's timezone; a recurring
+#rule may be anchored to a different one
+echo '<tr>';
+echo '<th class="bug-reporter category">', plugin_lang_get( 'event_timezone' ), '</th>';
+echo '<td class="bug-reporter" >';
+echo string_display_line( date_default_timezone_get() );
+if( !is_blank( $t_rrule_string ) && isset( $t_rrules[0] ) ) {
+    $t_dtstart_rule = $t_rrules[0]->getRule()['DTSTART'];
+    if( $t_dtstart_rule instanceof DateTimeInterface
+            && $t_dtstart_rule->getTimezone()->getName() != date_default_timezone_get() ) {
+        echo ' (', sprintf( plugin_lang_get( 'view_event_timezone_recurrence' ),
+                string_display_line( $t_dtstart_rule->getTimezone()->getName() ) ), ')';
+    }
+}
+echo '</td>';
+echo '</tr>';
+
 echo '<tr>';
 echo '<th class="bug-reporter category">', plugin_lang_get( 'name_event' ), '</th>';
 echo '<td class="bug-reporter" >';
