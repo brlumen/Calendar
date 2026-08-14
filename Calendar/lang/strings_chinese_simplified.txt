@@ -111,7 +111,7 @@ $s_plugin_Calendar_update_successful_button = '事件已变更';
 $s_plugin_Calendar_save_button = '保存';
 $s_plugin_Calendar_close_button = '关闭';
 
-$s_plugin_Calendar_week = '本周';
+$s_plugin_Calendar_week = '周';
 $s_plugin_Calendar_day = '天';
 $s_plugin_Calendar_next_period = '前进';
 $s_plugin_Calendar_current_period = '本期';
@@ -129,6 +129,8 @@ $s_plugin_Calendar_event_relationships_bugs = '关联任务';
 $s_plugin_Calendar_date_from = '事件开始时间';
 $s_plugin_Calendar_date_to = '事件结束时间';
 $s_plugin_Calendar_out_of_range = '超出范围的事件';
+$s_plugin_Calendar_out_of_range_above = '个事件在上方';
+$s_plugin_Calendar_out_of_range_below = '个事件在下方';
 
 $s_plugin_Calendar_view_submitted_event_link = '查看已创建事件 %1$s';
 
@@ -151,3 +153,26 @@ $s_plugin_Calendar_recurrence_migration_column_msg = '升级还将在事件表�
 $s_plugin_Calendar_recurrence_migration_timezones_warning = '升级前请确认事件作者个人资料中的时区已是最新（见下表）。重复规则将锚定到每位作者当前的时区：如果时区不正确，事件将按错误的时区重复，之后只能通过重新保存每个事件来修正。';
 $s_plugin_Calendar_recurrence_migration_timezones_checkbox = '用户时区已是最新';
 $s_plugin_Calendar_view_event_timezone_created = '创建时区为 %1$s';
+
+$s_plugin_Calendar_month_view = '月视图';
+$s_plugin_Calendar_more_events = '还有 %d 个事件';
+
+$s_plugin_Calendar_events_for_date = '%s的事件';
+
+$s_plugin_Calendar_week_view = '周视图';
+$s_plugin_Calendar_view_selector = '日历视图';
+
+$s_plugin_Calendar_january = '一月';
+$s_plugin_Calendar_february = '二月';
+$s_plugin_Calendar_march = '三月';
+$s_plugin_Calendar_april = '四月';
+$s_plugin_Calendar_may = '五月';
+$s_plugin_Calendar_june = '六月';
+$s_plugin_Calendar_july = '七月';
+$s_plugin_Calendar_august = '八月';
+$s_plugin_Calendar_september = '九月';
+$s_plugin_Calendar_october = '十月';
+$s_plugin_Calendar_november = '十一月';
+$s_plugin_Calendar_december = '十二月';
+
+$s_plugin_Calendar_month = '月';

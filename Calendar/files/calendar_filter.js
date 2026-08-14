@@ -20,4 +20,8 @@ $(document).ready(function () {
         $(this).parent().submit();
     });
 
+    // Handler for the date selection field
+    $('.datetimepicker').on('dp.change', function(e) {
+        $('#select_date_form').submit();
+    });
 });

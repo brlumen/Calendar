@@ -111,7 +111,7 @@ $s_plugin_Calendar_update_successful_button = 'Evento cambiado';
 $s_plugin_Calendar_save_button = 'Guardar';
 $s_plugin_Calendar_close_button = 'Cerrar';
 
-$s_plugin_Calendar_week = 'Semana actual';
+$s_plugin_Calendar_week = 'Semana';
 $s_plugin_Calendar_day = 'Día';
 $s_plugin_Calendar_next_period = 'Siguiente';
 $s_plugin_Calendar_current_period = 'Período actual';
@@ -129,6 +129,8 @@ $s_plugin_Calendar_event_relationships_bugs = 'Tareas relacionadas';
 $s_plugin_Calendar_date_from = 'Fecha de inicio del evento';
 $s_plugin_Calendar_date_to = 'Fecha de finalización del evento';
 $s_plugin_Calendar_out_of_range = 'eventos fuera de rango';
+$s_plugin_Calendar_out_of_range_above = 'eventos arriba';
+$s_plugin_Calendar_out_of_range_below = 'eventos abajo';
 
 $s_plugin_Calendar_view_submitted_event_link = 'Ver el evento creado %1$s';
 
@@ -151,3 +153,25 @@ $s_plugin_Calendar_recurrence_migration_column_msg = 'La actualización también
 $s_plugin_Calendar_recurrence_migration_timezones_warning = 'Antes de actualizar, asegúrese de que las zonas horarias en los perfiles de los autores de eventos estén al día (vea la tabla siguiente). Las reglas de repetición se anclarán a la zona horaria actual de cada autor: si es incorrecta, los eventos se repetirán según una zona horaria errónea, y después solo podrá corregirse volviendo a guardar cada evento.';
 $s_plugin_Calendar_recurrence_migration_timezones_checkbox = 'Las zonas horarias de los usuarios están al día';
 $s_plugin_Calendar_view_event_timezone_created = 'Creado en la zona horaria %1$s';
+
+$s_plugin_Calendar_month_view = 'Mes';
+$s_plugin_Calendar_more_events = '%d eventos más';
+
+$s_plugin_Calendar_events_for_date = 'Eventos para %s';
+
+$s_plugin_Calendar_january = 'Enero';
+$s_plugin_Calendar_february = 'Febrero';
+$s_plugin_Calendar_march = 'Marzo';
+$s_plugin_Calendar_april = 'Abril';
+$s_plugin_Calendar_may = 'Mayo';
+$s_plugin_Calendar_june = 'Junio';
+$s_plugin_Calendar_july = 'Julio';
+$s_plugin_Calendar_august = 'Agosto';
+$s_plugin_Calendar_september = 'Septiembre';
+$s_plugin_Calendar_october = 'Octubre';
+$s_plugin_Calendar_november = 'Noviembre';
+$s_plugin_Calendar_december = 'Diciembre';
+
+$s_plugin_Calendar_month = 'Mes';
+$s_plugin_Calendar_week_view = 'Semana';
+$s_plugin_Calendar_view_selector = 'Vista del Calendario';

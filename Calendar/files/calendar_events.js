@@ -1,0 +1,229 @@
+document.addEventListener("DOMContentLoaded", function() {
+    // Variable initialization
+    var emptySlots = document.querySelectorAll(".calendar-event-empty.clickable");
+    var dayHeaders = document.querySelectorAll(".calendar-day-header.clickable");
+    var createEventModal = document.getElementById("createEventModal");
+    var eventModal = document.getElementById("eventModal");
+    var selectedDate = null;
+    var activeSlot = null;
+    var activeHeader = null;
+    
+    // Click handling for the "more events" button
+    var moreEventButtons = document.querySelectorAll(".calendar-more-events");
+    moreEventButtons.forEach(function(button) {
+        button.addEventListener("click", function() {
+            var date = this.getAttribute("data-date");
+            var events = JSON.parse(this.getAttribute("data-events"));
+            showDayEvents(date, events);
+        });
+    });
+
+    // Function that shows the events of a day
+    function showDayEvents(date, events) {
+        var modalTitle = document.getElementById("modalTitle");
+        var modalEventList = document.getElementById("modalEventList");
+        var span = document.getElementsByClassName("close")[0];
+        
+        var eventsForDateText = eventModal.getAttribute("data-events-for-date-text");
+        modalTitle.innerHTML = eventsForDateText.replace("%s", date);
+        
+        var eventHtml = "";
+        if(events !== null){
+            events.forEach(function(event) {
+                eventHtml += "<a href='" + event.url + "' class='modal-event'>";
+                eventHtml += "<div class='event-time'>" + event.time + "</div>";
+                eventHtml += "<div class='event-duration'>" + event.duration + "</div>";
+                eventHtml += "<div class='event-name'>" + event.name + "</div>";
+                eventHtml += "<div class='event-project'>" + event.project_name + "</div>";
+                eventHtml += "</a>";
+            });
+        }
+    
+        modalEventList.innerHTML = eventHtml;
+        eventModal.style.display = "block";
+        
+        var createEventForm = document.getElementById("createEventForm");
+        
+        // Attach the handler of the event creation button
+        var createEventBtn = eventModal.querySelector('#create-event-btn');
+        if (createEventBtn) {
+            createEventBtn.date = date;
+            createEventBtn.addEventListener('click', showCreateEventForm);
+        }
+        
+        span.onclick = function() {
+            eventModal.style.display = "none";
+            createEventForm.style.display = "none";
+            createEventBtn.removeEventListener('click', showCreateEventForm);
+        };
+        
+        window.onclick = function(event) {
+            if (event.target == eventModal) {
+                eventModal.style.display = "none";
+                createEventForm.style.display = "none";
+                createEventBtn.removeEventListener('click', showCreateEventForm);
+            }
+        };
+    }
+
+    // Function that shows the event creation form
+    function showCreateEventForm(e) {
+        var createEventForm = document.getElementById("createEventForm");
+        
+        // If the form is already shown, hide it
+        if (createEventForm.style.display === "block") {
+            createEventForm.style.display = "none";
+            return;
+        }
+        
+        selectedDate = e.currentTarget.date;
+        
+        // Clear the form
+        document.getElementById("eventName").value = "";
+        
+        // Show the selected date
+        // The date comes in DD.MM.YYYY format, it is shown as is
+        document.getElementById("selectedDate").textContent = selectedDate;
+        
+        // Set the default time values
+        var timeStart = document.getElementById("eventTimeStart");
+        var timeEnd = document.getElementById("eventTimeEnd");
+        
+        // Find the options for 9:00 and 10:00
+//        for (var i = 0; i < timeStart.options.length; i++) {
+//            if (timeStart.options[i].value === "09:00") {
+//                timeStart.selectedIndex = i;
+//            }
+//            if (timeEnd.options[i].value === "10:00") {
+//                timeEnd.selectedIndex = i;
+//            }
+//        }
+        
+        // Show the event creation form
+        createEventForm.style.display = "block";
+    }
+
+    // Click handling for the event creation button
+    var createEventBtn = document.getElementById("createEventBtn");
+    if (createEventBtn) {
+        createEventBtn.addEventListener("click", function() {
+            var eventName = document.getElementById("eventName").value;
+            var timeStart = document.getElementById("eventTimeStart").value;
+            var timeEnd = document.getElementById("eventTimeEnd").value;
+            
+            if (!eventName) {
+                alert("Пожалуйста, введите название события");
+                return;
+            }
+            
+            if (!timeStart || !timeEnd) {
+                alert("Пожалуйста, укажите время начала и окончания события");
+                return;
+            }
+            
+            // Build the URL with the parameters
+            var url = "plugin.php?page=Calendar/event_add_page" + 
+                     "&name=" + encodeURIComponent(eventName) +
+                     "&date=" + selectedDate +
+                     "&time_start=" + encodeURIComponent(timeStart) +
+                     "&time_end=" + encodeURIComponent(timeEnd);
+            
+            // Go to the event creation page
+            window.location.href = url;
+        });
+    }
+    
+    // Click handling for an empty slot
+    emptySlots.forEach(function(slot) {
+        slot.addEventListener("click", function() {
+            // A click on the already active slot opens the modal window
+            if (activeSlot === this) {
+                var date = this.getAttribute("data-date");
+                var events = JSON.parse(this.getAttribute("data-events"));
+                showDayEvents(date, events);
+//                showCreateEventForm(this.getAttribute("data-date"));
+                activeSlot.classList.remove("active");
+                activeSlot = null;
+            } else {
+                // Drop the highlight from the previously active slot and header
+                if (activeSlot) {
+                    activeSlot.classList.remove("active");
+                }
+                if (activeHeader) {
+                    activeHeader.classList.remove("active");
+                    activeHeader = null;
+                }
+                
+                // Highlight the current slot
+                this.classList.add("active");
+                activeSlot = this;
+            }
+        });
+    });
+    
+    // Click handling for a day header
+    dayHeaders.forEach(function(header) {
+        header.addEventListener("click", function() {
+            // A click on the already active header opens the modal window
+            if (activeHeader === this) {
+                showCreateEventForm(this.getAttribute("data-date"));
+                activeHeader.classList.remove("active");
+                activeHeader = null;
+            } else {
+                // Drop the highlight from the previously active header and slot
+                if (activeHeader) {
+                    activeHeader.classList.remove("active");
+                }
+                if (activeSlot) {
+                    activeSlot.classList.remove("active");
+                    activeSlot = null;
+                }
+                
+                // Highlight the current header
+                this.classList.add("active");
+                activeHeader = this;
+            }
+        });
+    });
+
+    // Click handling for events
+    let activeEvent = null;
+
+    // Handling of the events inside the calendar
+    document.querySelectorAll('.calendar-cell .calendar-event').forEach(event => {
+        event.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Check whether the event is a link (used by the modal window)
+            if (this.tagName === 'A') {
+                window.location.href = this.getAttribute('href');
+                return;
+            }
+            
+            // For the events inside the calendar
+            const link = this.querySelector('a');
+            if (!link) return;
+            
+            const href = link.getAttribute('href');
+            if (activeEvent === this) {
+                // The second click follows the link without dropping the highlight
+                window.location.href = href;
+            } else {
+                // The first click highlights the event
+                if (activeEvent) {
+                    activeEvent.classList.remove('active');
+                }
+                this.classList.add('active');
+                activeEvent = this;
+            }
+        });
+    });
+
+    // Drop the highlight on a click outside of an event
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.calendar-event') && activeEvent) {
+            activeEvent.classList.remove('active');
+            activeEvent = null;
+        }
+    });
+}); 

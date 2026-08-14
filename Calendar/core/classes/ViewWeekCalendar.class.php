@@ -41,13 +41,21 @@ class ViewWeekCalendar extends WeekCalendar {
         echo '</div>';
     }
 
+    protected function add_event_url() {
+        if( !access_compare_level( access_get_project_level(), plugin_config_get( 'report_event_threshold' ) ) ) {
+            return NULL;
+        }
+
+        return plugin_page( 'event_add_page' );
+    }
+
     protected function print_headline() {
 
         echo '<div class="widget-header widget-header-small">';
 
         echo '<h4 class="widget-title lighter">';
-        echo '<i class="ace-icon fa fa-list-alt"></i>';
-        echo plugin_lang_get( 'menu_main_front' ) . " ( GMT " . date( "P" ) . " )";
+        echo '<i class="ace-icon fa fa-calendar"></i>';
+        echo "GMT " . date( "P" );
         echo '</h4>';
 
         if( access_compare_level( access_get_global_level(), plugin_config_get( 'manage_calendar_threshold' ) ) ) {
@@ -65,12 +73,32 @@ class ViewWeekCalendar extends WeekCalendar {
         echo '<div class="widget-toolbox padding-8 clearfix">';      
         echo '<div class="btn-toolbar">';
         echo '<form id="select_date_form" method="post" action="' . plugin_page( 'calendar_user_page' ) . '" class="btn-toolbar">';        
-        echo '<div class="btn-group pull-left">';
         
+        # Switch to the month view button
+        echo '<div class="btn-group">';
+        $t_first_day_of_week = strtotime($this->year . 'W' . str_pad($this->week, 2, '0', STR_PAD_LEFT));
+        $t_url = plugin_page('calendar_user_page') . 
+                '&view=month' . 
+                '&month=' . date('n', $t_first_day_of_week) . 
+                '&year=' . $this->year;
+        if (!is_bool($this->date_selected)) {
+            $t_url .= '&date_select=' . date(plugin_config_get('short_date_format'), $this->date_selected);
+        }
+        if (self::$full_time_is) {
+            $t_url .= '&full_time=TRUE';
+        }
+        if ($this->for_user != auth_get_current_user_id()) {
+            $t_url .= '&for_user=' . $this->for_user;
+        }
+        print_small_button($t_url, plugin_lang_get('month_view'));
+        echo '</div>';
+        
+        # Time range toggle button
+        echo '<div class="btn-group">';
         if( !is_bool( $this->date_selected ) ) {
             $t_date_to_display = date( plugin_config_get( 'short_date_format' ), $this->date_selected );
 	} else {
-            $t_date_to_display = '';
+            $t_date_to_display = date( plugin_config_get( 'short_date_format' ) );
         }
         
         if( self::$full_time_is == FALSE ) {
@@ -78,28 +106,29 @@ class ViewWeekCalendar extends WeekCalendar {
             print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=TRUE" . "&date_select=" . $t_date_to_display, "0-24" );
         } else {
             print_hidden_inputs( array( 'full_time' => 'TRUE' ) );
-            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&date_select=" . $t_date_to_display, gmdate( "H", plugin_config_get( 'time_day_start' ) ) . "-" . gmdate( "H", plugin_config_get( 'time_day_finish' ) ) );
+            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=FALSE" . "&date_select=" . $t_date_to_display, gmdate( "H", plugin_config_get( 'time_day_start' ) ) . "-" . gmdate( "H", plugin_config_get( 'time_day_finish' ) ) );
         }
         echo '</div>';
 
-        echo '<div class="btn-group pull-right">';
-        if( self::$full_time_is == FALSE ) {
-            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . date( "W", timestamp_previous_week_get( $this->week, $this->year ) ) . "&year=" . date( "o", timestamp_previous_week_get( $this->week, $this->year ) ), plugin_lang_get( 'previous_period' ) );
-            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . (int)date( "W" ), plugin_lang_get( 'week' ) );
-            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . date( "W", timestamp_next_week_get( $this->week, $this->year ) ) . "&year=" . date( "o", timestamp_next_week_get( $this->week, $this->year ) ), plugin_lang_get( 'next_period' ) );
-        } else {
-            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . date( "W", timestamp_previous_week_get( $this->week, $this->year ) ) . "&year=" . date( "o", timestamp_previous_week_get( $this->week, $this->year ) ) . "&full_time=TRUE", plugin_lang_get( 'previous_period' ) );
-            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . (int)date( "W" ) . "&full_time=TRUE", plugin_lang_get( 'week' ) );
-            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . date( "W", timestamp_next_week_get( $this->week, $this->year ) ) . "&year=" . date( "o", timestamp_next_week_get( $this->week, $this->year ) ) . "&full_time=TRUE", plugin_lang_get( 'next_period' ) );
-        }
-        echo '</div>';
-        
-        echo '<div class="btn-group pull-right">';
-        echo '<input type="submit" class="btn btn-primary btn-white btn-round btn-sm" value="' . plugin_lang_get( 'goto_date_button' ) . '" />';
+        # Navigation buttons
+        echo '<div id="nav-button" class="btn-group pull-right">';
+        echo '<div class="btn-group">';
         echo '<input type="text" id="date_select" name="date_select" class="datetimepicker input-sm" ' .
                                 'data-picker-locale="' . lang_get_current_datetime_locale() .
                                 '" data-picker-format="' . plugin_config_get( 'datetime_picker_format' ) . '" ' .
                                 'size="10" maxlength="10" autocomplete="off" value="' . $t_date_to_display . '" />';
+        echo '</div>';
+        echo '<div id="nav-button" class="btn-group pull-right">';
+        if( self::$full_time_is == FALSE ) {
+            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . date( "W", timestamp_previous_week_get( $this->week, $this->year ) ) . "&year=" . date( "o", timestamp_previous_week_get( $this->week, $this->year ) ), '<<' );
+            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . (int)date( "W" ), plugin_lang_get('current_period') );
+            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . date( "W", timestamp_next_week_get( $this->week, $this->year ) ) . "&year=" . date( "o", timestamp_next_week_get( $this->week, $this->year ) ), '>>' );
+        } else {
+            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . date( "W", timestamp_previous_week_get( $this->week, $this->year ) ) . "&year=" . date( "o", timestamp_previous_week_get( $this->week, $this->year ) ) . "&full_time=TRUE", '<<' );
+            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . (int)date( "W" ) . "&full_time=TRUE", plugin_lang_get('current_period') );
+            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . date( "W", timestamp_next_week_get( $this->week, $this->year ) ) . "&year=" . date( "o", timestamp_next_week_get( $this->week, $this->year ) ) . "&full_time=TRUE", '>>' );
+        }
+        echo '</div>';
         echo '</div>';
         
         echo '</form>';
@@ -122,16 +151,16 @@ class ViewWeekCalendar extends WeekCalendar {
         }
         echo '</div>';
 
-        echo '<div class="btn-group pull-right">';
+        echo '<div id="nav-button" class="btn-group pull-right">';
 
-        echo '<form id="filter-queries-form" class="form-inline pull-left padding-left-8"  method="get" name="list_queries" action="' . plugin_page( 'calendar_user_page' ) . '">';
+        echo '<form id="filter-queries-form" class="btn-toolbar"  method="get" name="list_queries" action="' . plugin_page( 'calendar_user_page' ) . '">';
         # CSRF protection not required here - form does not result in modifications
         echo '<input type="hidden" name="page" value="Calendar/calendar_user_page" />';
         echo '<input type="hidden" name="week" value="' . $this->week . '" />';
         echo '<input type="hidden" name="year" value="' . $this->year . '" />';
         echo '<input type="hidden" name="full_time" value="' . (int)self::$full_time_is . '" />';
 
-        echo '<label class="inline">' . plugin_lang_get( 'filter_text' ) . '</label>';
+        echo '<label class="inline"></label>';
         echo '<select name="for_user">';
         echo '<option value="' . auth_get_current_user_id() . '">[' . lang_get( 'reset_query' ) . ']</option>';
         if( $this->for_user == 0 ) {

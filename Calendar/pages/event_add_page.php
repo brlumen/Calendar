@@ -15,7 +15,22 @@
 # If not, see <http://www.gnu.org/licenses/>.
 
 $f_bug_id      = gpc_get_int( 'bug_id', 0 );
-$f_is_fulltime = gpc_get_bool( "full_time" );
+$f_is_fulltime = calendar_full_time_get();
+
+// Read the prefilled data from the URL
+$f_name = gpc_get_string('name', '');
+$f_date = gpc_get_string('date', '');
+$f_time_start = gpc_get_string( 'time_start', null ) === null ? null : (int)gpc_get_string( 'time_start', null );
+$f_time_end = gpc_get_string('time_end', null ) === null ? null : (int)gpc_get_string('time_end', null );
+
+// Format the date the way the picker expects it
+$t_date_to_display = '';
+if (!empty($f_date)) {
+    $t_timestamp = strtotime($f_date);
+    if ($t_timestamp !== false) {
+        $t_date_to_display = date( plugin_config_get( 'short_date_format' ), $t_timestamp );
+    }
+}
 
 if( $f_bug_id == 0 ) {
 
@@ -90,15 +105,20 @@ $t_form_encoding   = '';
                                     <span class="required">*</span><label for="name_event"><?php echo plugin_lang_get( 'name_event' ); ?></label>
                                 </th>
                                 <td>
-                                    <input <?php echo helper_get_tab_index() ?> type="text" id="name_event" name="name_event" size="105" maxlength="128" required autofocus/>
+                                    <input <?php echo helper_get_tab_index() ?> 
+                                           type="text" 
+                                           id="name_event" 
+                                           name="name_event" 
+                                           size="105" 
+                                           maxlength="128" 
+                                           required 
+                                           autofocus
+                                           value="<?php echo string_attribute($f_name); ?>"/>
                                 </td>
                             </tr>
 
                             <!--#Date-->
 
-                            <?php
-                            $t_date_to_display = '';
-                            ?>
                             <tr>
                                 <th class="category">
                                     <span class="required">*</span><label for="date_event"><?php echo plugin_lang_get( 'date_event' ) ?></label>
@@ -108,7 +128,7 @@ $t_form_encoding   = '';
                                     echo '<input ' . helper_get_tab_index() . ' type="text" id="date_event" name="date_event" class="datetimepicker input-sm" ' .
                                     'data-picker-locale="' . lang_get_current_datetime_locale() .
                                     '" data-picker-format="' . plugin_config_get( 'datetime_picker_format' ) . '" ' .
-                                    'size="10" maxlength="10" required />'
+                                    'size="10" maxlength="10" required value="' . $t_date_to_display . '" />'
                                     ?>
                                     <i class="fa fa-calendar fa-xlg datetimepicker"></i>
                                 </td>
@@ -122,11 +142,9 @@ $t_form_encoding   = '';
                                 </th>
                                 <td>
                                     <span class="date-event time-event">
-
                                         <span class="event_time_start-area">
-                                            <select tabindex=3 name="event_time_start" id="event_time_start"><?php print_time_select_option( NULL, $f_is_fulltime ); ?></select>
+                                            <select tabindex=3 name="event_time_start" id="event_time_start"><?php print_time_select_option( $f_time_start, $f_is_fulltime ); ?></select>
                                         </span>
-
                                     </span>
                                 </td>
                             </tr>
@@ -141,7 +159,7 @@ $t_form_encoding   = '';
                                 <td>
                                     <span class="date-event time-event">
                                         <span class="event_time_finish">
-                                            <select  <?php helper_get_tab_index() ?> name="event_time_finish" id="event_time_finish"><?php print_time_select_option( NULL, $f_is_fulltime ); ?></select>
+                                            <select <?php helper_get_tab_index() ?> name="event_time_finish" id="event_time_finish"><?php print_time_select_option( $f_time_end, $f_is_fulltime ); ?></select>
                                         </span>	
                                     </span>
                                 </td>
