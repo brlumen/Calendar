@@ -126,214 +126,140 @@ class ViewMonthCalendar {
         echo '</thead>';
     }
 
-    private function get_event_url($p_event, $p_date) {
-        return $this->link_to_view . '&event_id=' . $p_event['id'] . 
+    private function get_event_url($p_event) {
+        return $this->link_to_view . '&event_id=' . $p_event['id'] .
                ( isset( $p_event['recurrence_pattern'] ) && !is_blank( $p_event['recurrence_pattern'] ) ? '&date=' . $p_event['date_from'] : '');
     }
 
     private function print_calendar_body($p_days_in_month, $p_first_day) {
         echo '<tbody>';
-        
+
         $t_day_count = 1;
         $t_cells = 0;
-        $t_slots_per_day = 3;
-        
+        $t_total_cells = ceil(($p_first_day + $p_days_in_month) / 7) * 7;
+
         // Get the dates of the previous month
         $t_prev_month = $this->month == 1 ? 12 : $this->month - 1;
         $t_prev_year = $this->month == 1 ? $this->year - 1 : $this->year;
         $t_days_in_prev_month = date('t', strtotime("$t_prev_year-$t_prev_month-01"));
         $t_start_day_prev_month = $t_days_in_prev_month - $p_first_day + 1;
-        
-        while ($t_day_count <= $p_days_in_month) {
-            if ($t_cells % 7 == 0) {
-                echo '<tr>';
-                // Add the week number cell without a leading zero
-                $t_week_number = date('W', strtotime(sprintf('%04d-%02d-%02d', 
-                    $t_cells < $p_first_day ? $t_prev_year : $this->year,
-                    $t_cells < $p_first_day ? $t_prev_month : $this->month,
-                    $t_cells < $p_first_day ? $t_start_day_prev_month : $t_day_count
-                )));
-                echo '<td class="calendar-week-number">' . intval($t_week_number) . '</td>';
-            }
-            
-            if ($t_cells < $p_first_day) {
-                // Render the days of the previous month
-                $t_date = sprintf('%04d-%02d-%02d', $t_prev_year, $t_prev_month, $t_start_day_prev_month);
-                $t_is_today = strtotime(date('Y-m-d')) == strtotime($t_date);
-                
-                $t_day_events = array();
-                if (isset($this->days_events[$t_date])) {
-                    $t_day_events = $this->days_events[$t_date];
-                    usort($t_day_events, function($a, $b) {
-                        return $a['date_from'] - $b['date_from'];
-                    });
-                }
-                
-                $t_is_full = count($t_day_events) >= $t_slots_per_day;
-                echo '<td class="calendar-cell other-month' . 
-                     ($t_is_today ? ' calendar-today' : '') . 
-                     '" data-date="' . $t_date . '">';
-                echo '<div class="calendar-day-header' . ($t_is_full ? ' clickable' : '') . '" data-date="' . $t_date . '">';
-                echo '<div class="calendar-day-number">' . $t_start_day_prev_month . '</div>';
-                echo '</div>';
-                
-                // Print the events of the previous month
-                for ($i = 0; $i < $t_slots_per_day; $i++) {
-                    if (isset($t_day_events[$i])) {
-                        $t_event = $t_day_events[$i];
-                        $t_event_time = date('H:i', $t_event['date_from']);
-                        $t_event_duration = $t_event['duration'] / 3600;
-                        
-                        echo '<div class="calendar-event">';
-                        echo '<a href="' . $this->get_event_url($t_event, $t_date) . '">';
-                        echo '<span class="event-time">' . $t_event_time . '</span> ';
-                        echo '<span class="event-duration">(' . number_format($t_event_duration, 1) . 'ч)</span> ';
-                        echo string_html_specialchars($t_event['name']);
-                        echo '</a>';
-                        echo '</div>';
-                    } else {
-                        echo '<div class="calendar-event-empty clickable" data-date="' . $t_date . '"></div>';
-                    }
-                }
-                
-                $t_start_day_prev_month++;
-                echo '</td>';
-                $t_cells++;
-                continue;
-            }
-            
-            // Current month
-            $t_date = sprintf('%04d-%02d-%02d', $this->year, $this->month, $t_day_count);
-            $t_is_today = strtotime(date('Y-m-d')) == strtotime($t_date);
-            
-            $t_day_events = array();
-            if (isset($this->days_events[$t_date])) {
-                $t_day_events = $this->days_events[$t_date];
-                usort($t_day_events, function($a, $b) {
-                    return $a['date_from'] - $b['date_from'];
-                });
-            }
-            
-            $t_is_full = count($t_day_events) >= $t_slots_per_day;
-            echo '<td class="calendar-cell' . 
-                 ($t_is_today ? ' calendar-today' : '') . 
-                 '" data-date="' . $t_date . '">';
-            echo '<div class="calendar-day-header' . ($t_is_full ? ' clickable' : '') . '" data-date="' . $t_date . '">';
-            echo '<div class="calendar-day-number">' . $t_day_count . '</div>';
-            echo '</div>';
-            
-            // Print the first events that fit into the cell
-            for ($i = 0; $i < $t_slots_per_day; $i++) {
-                if (isset($t_day_events[$i])) {
-                    $t_event = $t_day_events[$i];
-                    $t_event_time = date('H:i', $t_event['date_from']);
-                    $t_event_duration = $t_event['duration'] / 3600;
-                    
-                    echo '<div class="calendar-event">';
-                    echo '<a href="' . $this->get_event_url($t_event, $t_date) . '">';
-                    echo '<span class="event-time">' . $t_event_time . '</span> ';
-                    echo '<span class="event-duration">(' . number_format($t_event_duration, 1) . 'ч)</span> ';
-                    echo string_html_specialchars($t_event['name']);
-                    echo '</a>';
-                    echo '</div>';
-                } else {
-                    echo '<div class="calendar-event-empty clickable" data-date="' . $t_date . '"></div>';
-                }
-            }
-            
-            // If there are more events, show the indicator for them
-            $t_remaining_events = count($t_day_events) - $t_slots_per_day;
-            if ($t_remaining_events > 0) {
-                // Prepare the data for the modal window
-                $t_modal_events = array();
-                foreach ($t_day_events as $t_event) {
-                    $t_modal_events[] = array(
-                        'time' => date('H:i', $t_event['date_from']),
-                        'duration' => number_format($t_event['duration'] / 3600, 1) . 'ч',
-                        'name' => string_html_specialchars($t_event['name']),
-                        'url' => $this->get_event_url($t_event, $t_date),
-                        'project_name' => string_html_specialchars(project_get_name($t_event['project_id']))
-                    );
-                }
-                
-                echo '<div class="calendar-event calendar-more-events" data-date="' . 
-                     date('d.m.Y', strtotime($t_date)) . '" data-events=\'' . 
-                     json_encode($t_modal_events) . '\'>';
-                echo '<i class="ace-icon fa fa-plus-circle">';
-                echo sprintf(plugin_lang_get('more_events'), $t_remaining_events);
-                echo '</i>';
-                echo '</div>';
-            } else {
-                echo '<div class="calendar-event-empty clickable" data-date="' . $t_date . '"></div>';
-            }
-            
-            echo '</td>';
-            
-            if ($t_cells % 7 == 6) {
-                echo '</tr>';
-            }
-            
-            $t_day_count++;
-            $t_cells++;
-        }
-        
-        // Render the days of the next month
+
+        // Get the dates of the next month
         $t_next_month = $this->month == 12 ? 1 : $this->month + 1;
         $t_next_year = $this->month == 12 ? $this->year + 1 : $this->year;
         $t_next_day = 1;
-        
-        while ($t_cells % 7 != 0) {
-            $t_date = sprintf('%04d-%02d-%02d', $t_next_year, $t_next_month, $t_next_day);
-            $t_is_today = strtotime(date('Y-m-d')) == strtotime($t_date);
-            
-            $t_day_events = array();
-            if (isset($this->days_events[$t_date])) {
-                $t_day_events = $this->days_events[$t_date];
-                usort($t_day_events, function($a, $b) {
-                    return $a['date_from'] - $b['date_from'];
-                });
+
+        while ($t_cells < $t_total_cells) {
+            if ($t_cells < $p_first_day) {
+                // Days of the previous month
+                $t_date = sprintf('%04d-%02d-%02d', $t_prev_year, $t_prev_month, $t_start_day_prev_month);
+                $t_day_number = $t_start_day_prev_month;
+                $t_other_month = true;
+                $t_start_day_prev_month++;
+            } elseif ($t_day_count <= $p_days_in_month) {
+                // Days of the current month
+                $t_date = sprintf('%04d-%02d-%02d', $this->year, $this->month, $t_day_count);
+                $t_day_number = $t_day_count;
+                $t_other_month = false;
+                $t_day_count++;
+            } else {
+                // Days of the next month
+                $t_date = sprintf('%04d-%02d-%02d', $t_next_year, $t_next_month, $t_next_day);
+                $t_day_number = $t_next_day;
+                $t_other_month = true;
+                $t_next_day++;
             }
-            
-            $t_is_full = count($t_day_events) >= $t_slots_per_day;
-            echo '<td class="calendar-cell other-month' . 
-                 ($t_is_today ? ' calendar-today' : '') . 
-                 '" data-date="' . $t_date . '">';
-            echo '<div class="calendar-day-header' . ($t_is_full ? ' clickable' : '') . '" data-date="' . $t_date . '">';
-            echo '<div class="calendar-day-number">' . $t_next_day . '</div>';
-            echo '</div>';
-            
-            // Print the events of the next month
-            for ($i = 0; $i < $t_slots_per_day; $i++) {
-                if (isset($t_day_events[$i])) {
-                    $t_event = $t_day_events[$i];
-                    $t_event_time = date('H:i', $t_event['date_from']);
-                    $t_event_duration = $t_event['duration'] / 3600;
-                    
-                    echo '<div class="calendar-event">';
-                    echo '<a href="' . $this->get_event_url($t_event, $t_date) . '">';
-                    echo '<span class="event-time">' . $t_event_time . '</span> ';
-                    echo '<span class="event-duration">(' . number_format($t_event_duration, 1) . 'ч)</span> ';
-                    echo string_html_specialchars($t_event['name']);
-                    echo '</a>';
-                    echo '</div>';
-                } else {
-                    echo '<div class="calendar-event-empty clickable" data-date="' . $t_date . '"></div>';
-                }
+
+            if ($t_cells % 7 == 0) {
+                echo '<tr>';
+                // Add the week number cell without a leading zero
+                echo '<td class="calendar-week-number">' . intval(date('W', strtotime($t_date))) . '</td>';
             }
-            
-            echo '</td>';
-            $t_next_day++;
+
+            $this->print_day_cell($t_date, $t_day_number, $t_other_month);
+
             $t_cells++;
+            if ($t_cells % 7 == 0) {
+                echo '</tr>';
+            }
         }
-        
+
         echo '</tbody>';
     }
 
-    private function print_empty_slots($p_count) {
-        echo '<div class="calendar-day-number">&nbsp;</div>';
-        for ($i = 0; $i < $p_count + 1; $i++) { // +1 for the slot with the extra information
-            echo '<div class="calendar-event-empty"></div>';
+    private function print_day_cell($p_date, $p_day_number, $p_other_month) {
+        $t_slots_per_day = 3;
+        $t_is_today = strtotime(date('Y-m-d')) == strtotime($p_date);
+
+        $t_day_events = array();
+        if (isset($this->days_events[$p_date])) {
+            $t_day_events = $this->days_events[$p_date];
+            usort($t_day_events, function($a, $b) {
+                return $a['date_from'] - $b['date_from'];
+            });
         }
+
+        // Every day header carries its event list (possibly empty) for the modal window
+        $t_modal_events = array();
+        foreach ($t_day_events as $t_event) {
+            $t_modal_event = array(
+                'time' => date('H:i', $t_event['date_from']),
+                'duration' => number_format($t_event['duration'] / 3600, 1) . 'ч',
+                'name' => string_html_specialchars($t_event['name']),
+                'url' => $this->get_event_url($t_event),
+                'project_name' => string_html_specialchars(project_get_name($t_event['project_id']))
+            );
+            // In the all-users mode show whose event it is
+            if ($this->user_id == ALL_USERS) {
+                $t_member_names = array();
+                foreach (event_get_members($t_event['id']) as $t_member_id) {
+                    $t_member_names[] = user_get_name($t_member_id);
+                }
+                $t_modal_event['user_name'] = string_html_specialchars(implode(', ', $t_member_names));
+            }
+            $t_modal_events[] = $t_modal_event;
+        }
+        $t_events_attr = ' data-events="' . string_attribute(json_encode($t_modal_events)) . '"';
+
+        echo '<td class="calendar-cell' .
+             ($p_other_month ? ' other-month' : '') .
+             ($t_is_today ? ' calendar-today' : '') .
+             '" data-date="' . $p_date . '">';
+        echo '<div class="calendar-day-header clickable" data-date="' . $p_date . '"' . $t_events_attr . '>';
+        echo '<div class="calendar-day-number">' . $p_day_number . '</div>';
+        echo '</div>';
+
+        // Print the first events that fit into the cell
+        for ($i = 0; $i < $t_slots_per_day; $i++) {
+            if (isset($t_day_events[$i])) {
+                $t_event = $t_day_events[$i];
+
+                echo '<div class="calendar-event">';
+                echo '<a href="' . $this->get_event_url($t_event) . '">';
+                echo '<span class="event-time">' . date('H:i', $t_event['date_from']) . '</span> ';
+                echo '<span class="event-duration">(' . number_format($t_event['duration'] / 3600, 1) . 'ч)</span> ';
+                echo string_html_specialchars($t_event['name']);
+                echo '</a>';
+                echo '</div>';
+            } else {
+                echo '<div class="calendar-event-empty clickable" data-date="' . $p_date . '"></div>';
+            }
+        }
+
+        // If there are more events, show the indicator for them
+        $t_remaining_events = count($t_day_events) - $t_slots_per_day;
+        if ($t_remaining_events > 0) {
+            echo '<div class="calendar-event calendar-more-events" data-date="' .
+                 date('d.m.Y', strtotime($p_date)) . '"' . $t_events_attr . '>';
+            echo '<i class="ace-icon fa fa-plus-circle">';
+            echo sprintf(plugin_lang_get('more_events'), $t_remaining_events);
+            echo '</i>';
+            echo '</div>';
+        } else {
+            echo '<div class="calendar-event-empty clickable" data-date="' . $p_date . '"></div>';
+        }
+
+        echo '</td>';
     }
 
     protected function print_menu_top() {

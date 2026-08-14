@@ -349,7 +349,7 @@ a#event_week_expired:hover {
     /* padding: 0; */
     border: 1px solid #888;
     width: 90%;
-    max-width: 500px;
+    max-width: 720px;
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     /* max-height: calc(100vh - 40px); */
@@ -410,6 +410,7 @@ a#event_week_expired:hover {
     border-bottom: 1px solid #dee2e6;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     transition: background-color 0.2s ease;
     text-decoration: none;
     color: inherit;
@@ -427,6 +428,7 @@ a#event_week_expired:hover {
     color: #495057;
     margin-right: 10px;
     min-width: 45px;
+    flex-shrink: 0;
 }
 
 .modal-event .event-duration {
@@ -434,20 +436,33 @@ a#event_week_expired:hover {
     font-size: 12px;
     margin-right: 10px;
     min-width: 45px;
+    flex-shrink: 0;
 }
 
+/* The event name keeps the whole remaining width of the first row */
 .modal-event .event-name {
-    flex-grow: 1;
+    flex: 1 1 auto;
+    min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+/* Meta columns wrap onto their own row instead of squeezing the name */
+.modal-event .event-user,
 .modal-event .event-project {
     color: #6c757d;
     font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    flex: 0 1 auto;
     margin-left: 10px;
-    min-width: 100px;
+}
+
+.modal-event .event-user + .event-project::before {
+    content: "· ";
 }
 
 .modal-event.expired {

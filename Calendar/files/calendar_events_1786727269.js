@@ -18,6 +18,12 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    // Convert an ISO date (YYYY-MM-DD) to the display format DD.MM.YYYY
+    function formatDisplayDate(date) {
+        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+        return m ? m[3] + "." + m[2] + "." + m[1] : date;
+    }
+
     // Function that shows the events of a day
     function showDayEvents(date, events) {
         var modalTitle = document.getElementById("modalTitle");
@@ -34,6 +40,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 eventHtml += "<div class='event-time'>" + event.time + "</div>";
                 eventHtml += "<div class='event-duration'>" + event.duration + "</div>";
                 eventHtml += "<div class='event-name'>" + event.name + "</div>";
+                if (event.user_name) {
+                    eventHtml += "<div class='event-user'>" + event.user_name + "</div>";
+                }
                 eventHtml += "<div class='event-project'>" + event.project_name + "</div>";
                 eventHtml += "</a>";
             });
@@ -140,8 +149,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (activeSlot === this) {
                 var date = this.getAttribute("data-date");
                 var events = JSON.parse(this.getAttribute("data-events"));
-                showDayEvents(date, events);
-//                showCreateEventForm(this.getAttribute("data-date"));
+                showDayEvents(formatDisplayDate(date), events);
                 activeSlot.classList.remove("active");
                 activeSlot = null;
             } else {
@@ -166,7 +174,9 @@ document.addEventListener("DOMContentLoaded", function() {
         header.addEventListener("click", function() {
             // A click on the already active header opens the modal window
             if (activeHeader === this) {
-                showCreateEventForm(this.getAttribute("data-date"));
+                var date = this.getAttribute("data-date");
+                var events = JSON.parse(this.getAttribute("data-events"));
+                showDayEvents(formatDisplayDate(date), events);
                 activeHeader.classList.remove("active");
                 activeHeader = null;
             } else {
