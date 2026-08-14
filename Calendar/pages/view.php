@@ -199,23 +199,21 @@ if( !is_blank( $t_rrule_string ) ) {
 echo '</td>';
 echo '</tr>';
 
-#timezone: dates above are rendered in the viewer's timezone; a recurring
-#rule may be anchored to a different one
+#timezone the event was created in: the stored one, else the anchor of the
+#recurrence rule, else the viewer's (events older than the timezone column)
+$t_event_timezone_name = date_default_timezone_get();
+if( !is_blank( $t_event->timezone ) ) {
+    $t_event_timezone_name = $t_event->timezone;
+} elseif( !is_blank( $t_rrule_string ) && isset( $t_rrules[0] ) ) {
+    $t_dtstart_rule = $t_rrules[0]->getRule()['DTSTART'];
+    if( $t_dtstart_rule instanceof DateTimeInterface ) {
+        $t_event_timezone_name = $t_dtstart_rule->getTimezone()->getName();
+    }
+}
 echo '<tr>';
 echo '<th class="bug-reporter category">', plugin_lang_get( 'event_timezone' ), '</th>';
 echo '<td class="bug-reporter" >';
-echo string_display_line( date_default_timezone_get() );
-if( !is_blank( $t_rrule_string ) && isset( $t_rrules[0] ) ) {
-    $t_dtstart_rule = $t_rrules[0]->getRule()['DTSTART'];
-    if( $t_dtstart_rule instanceof DateTimeInterface
-            && $t_dtstart_rule->getTimezone()->getName() != date_default_timezone_get() ) {
-        echo ' (', sprintf( plugin_lang_get( 'view_event_timezone_recurrence' ),
-                string_display_line( $t_dtstart_rule->getTimezone()->getName() ) ), ')';
-    }
-} elseif( !is_blank( $t_event->timezone ) && $t_event->timezone != date_default_timezone_get() ) {
-    echo ' (', sprintf( plugin_lang_get( 'view_event_timezone_set' ),
-            string_display_line( $t_event->timezone ) ), ')';
-}
+echo sprintf( plugin_lang_get( 'view_event_timezone_created' ), string_display_line( $t_event_timezone_name ) );
 echo '</td>';
 echo '</tr>';
 
