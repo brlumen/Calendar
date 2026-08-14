@@ -141,3 +141,5 @@ $s_plugin_Calendar_ERROR_MIN_MEMBERS = 'У СОБЫТИЯ ДОЛЖЕН БЫТЬ 
 $s_plugin_Calendar_ERROR_EVENT_TIME_PERIOD_NOT_FOUND = 'СОБЫТИЕ #%1$s В УКАЗАННОМ ПЕРИОДЕ НЕ СУЩЕСТВУЕТ.';
 $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_DESCRIPTION = 'Отсутствуют требуемые зависимости в Calendar/api/vendor/';
 $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_STATUS_MESSAGE = 'Если вы загрузили версию для разработки, то выполните composer install для загрузки зависимостей. Иначе загрузите файл Calendar-vX_X_X.zip из https://github.com/mantisbt-plugins/Calendar/releases';
+$s_plugin_Calendar_recurrence_migration_confirm_msg = 'Обновление перепривяжет правила повторения %1$d событий к таймзонам их авторов (исправление перехода на летнее время). Продолжить?';
+$s_plugin_Calendar_recurrence_migration_confirm_button = 'Обновить';

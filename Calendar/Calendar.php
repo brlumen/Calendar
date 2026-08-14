@@ -138,6 +138,17 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
         require_once __DIR__ . '/api/vendor/autoload.php';
         require_once __DIR__ . '/core/classes/RSetExt.class.php';
 
+        # Show the administrator the scope of the conversion before running it.
+        # The confirmation page re-posts the same upgrade request with _confirmed=1
+        # (the form security token is only purged after plugin_upgrade() finishes),
+        # so on confirm this function is entered again and falls through.
+        $t_query = "SELECT COUNT(*) FROM " . $t_table_calendar_events . " WHERE recurrence_pattern <> ''";
+        $t_count = (int)db_result( db_query( $t_query ) );
+        if( $t_count > 0 && php_sapi_name() != 'cli' ) {
+            helper_ensure_confirmed( sprintf( plugin_lang_get( 'recurrence_migration_confirm_msg' ), $t_count ),
+                                     plugin_lang_get( 'recurrence_migration_confirm_button' ) );
+        }
+
         # Existing patterns store DTSTART as UTC, so occurrences are frozen at a
         # fixed UTC time and their local time shifts on DST transitions (issue #104).
         # Re-anchor DTSTART to the timezone of the event's author — the wall time
