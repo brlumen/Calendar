@@ -21,9 +21,9 @@ class ViewMonthCalendar {
 
     public function print_html() {
         $t_days_in_month = date('t', strtotime("$this->year-$this->month-01"));
-        // Получаем день недели (0 = воскресенье, 1 = понедельник, ..., 6 = суббота)
+        // Get the weekday (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
         $t_first_weekday = date('w', strtotime("$this->year-$this->month-01"));
-        // Преобразуем в формат, где понедельник = 0, вторник = 1, ..., воскресенье = 6
+        // Convert to the format where Monday = 0, Tuesday = 1, ..., Sunday = 6
         $t_first_day = ($t_first_weekday == 0) ? 6 : $t_first_weekday - 1;
 
         echo '<div class="col-md-12 col-xs-12">';
@@ -60,7 +60,7 @@ class ViewMonthCalendar {
         echo '</div>';
         echo '</div>';
 
-        // Добавляем модальное окно для просмотра событий
+        // Add the modal window used to view events
         echo '<div id="eventModal" class="modal" style="display: none;"
               data-events-for-date-text="' . plugin_lang_get("events_for_date") . '"
               data-add-event-text="' . plugin_lang_get("add_new_event") . '">
@@ -138,7 +138,7 @@ class ViewMonthCalendar {
         $t_cells = 0;
         $t_slots_per_day = 3;
         
-        // Получаем даты для предыдущего месяца
+        // Get the dates of the previous month
         $t_prev_month = $this->month == 1 ? 12 : $this->month - 1;
         $t_prev_year = $this->month == 1 ? $this->year - 1 : $this->year;
         $t_days_in_prev_month = date('t', strtotime("$t_prev_year-$t_prev_month-01"));
@@ -147,7 +147,7 @@ class ViewMonthCalendar {
         while ($t_day_count <= $p_days_in_month) {
             if ($t_cells % 7 == 0) {
                 echo '<tr>';
-                // Добавляем ячейку с номером недели без ведущего нуля
+                // Add the week number cell without a leading zero
                 $t_week_number = date('W', strtotime(sprintf('%04d-%02d-%02d', 
                     $t_cells < $p_first_day ? $t_prev_year : $this->year,
                     $t_cells < $p_first_day ? $t_prev_month : $this->month,
@@ -157,7 +157,7 @@ class ViewMonthCalendar {
             }
             
             if ($t_cells < $p_first_day) {
-                // Отображаем дни предыдущего месяца
+                // Render the days of the previous month
                 $t_date = sprintf('%04d-%02d-%02d', $t_prev_year, $t_prev_month, $t_start_day_prev_month);
                 $t_is_today = strtotime(date('Y-m-d')) == strtotime($t_date);
                 
@@ -177,7 +177,7 @@ class ViewMonthCalendar {
                 echo '<div class="calendar-day-number">' . $t_start_day_prev_month . '</div>';
                 echo '</div>';
                 
-                // Выводим события для предыдущего месяца
+                // Print the events of the previous month
                 for ($i = 0; $i < $t_slots_per_day; $i++) {
                     if (isset($t_day_events[$i])) {
                         $t_event = $t_day_events[$i];
@@ -202,7 +202,7 @@ class ViewMonthCalendar {
                 continue;
             }
             
-            // Текущий месяц
+            // Current month
             $t_date = sprintf('%04d-%02d-%02d', $this->year, $this->month, $t_day_count);
             $t_is_today = strtotime(date('Y-m-d')) == strtotime($t_date);
             
@@ -222,7 +222,7 @@ class ViewMonthCalendar {
             echo '<div class="calendar-day-number">' . $t_day_count . '</div>';
             echo '</div>';
             
-            // Выводим первые 4 события
+            // Print the first events that fit into the cell
             for ($i = 0; $i < $t_slots_per_day; $i++) {
                 if (isset($t_day_events[$i])) {
                     $t_event = $t_day_events[$i];
@@ -241,10 +241,10 @@ class ViewMonthCalendar {
                 }
             }
             
-            // Если есть дополнительные события, показываем информацию о них
+            // If there are more events, show the indicator for them
             $t_remaining_events = count($t_day_events) - $t_slots_per_day;
             if ($t_remaining_events > 0) {
-                // Подготавливаем данные для модального окна
+                // Prepare the data for the modal window
                 $t_modal_events = array();
                 foreach ($t_day_events as $t_event) {
                     $t_modal_events[] = array(
@@ -277,7 +277,7 @@ class ViewMonthCalendar {
             $t_cells++;
         }
         
-        // Отображаем дни следующего месяца
+        // Render the days of the next month
         $t_next_month = $this->month == 12 ? 1 : $this->month + 1;
         $t_next_year = $this->month == 12 ? $this->year + 1 : $this->year;
         $t_next_day = 1;
@@ -302,7 +302,7 @@ class ViewMonthCalendar {
             echo '<div class="calendar-day-number">' . $t_next_day . '</div>';
             echo '</div>';
             
-            // Выводим события для следующего месяца
+            // Print the events of the next month
             for ($i = 0; $i < $t_slots_per_day; $i++) {
                 if (isset($t_day_events[$i])) {
                     $t_event = $t_day_events[$i];
@@ -331,7 +331,7 @@ class ViewMonthCalendar {
 
     private function print_empty_slots($p_count) {
         echo '<div class="calendar-day-number">&nbsp;</div>';
-        for ($i = 0; $i < $p_count + 1; $i++) { // +1 для слота с дополнительной информацией
+        for ($i = 0; $i < $p_count + 1; $i++) { // +1 for the slot with the extra information
             echo '<div class="calendar-event-empty"></div>';
         }
     }
@@ -340,7 +340,7 @@ class ViewMonthCalendar {
         echo '<div class="widget-toolbox padding-8 clearfix">';      
         echo '<div class="btn-toolbar">';
         
-        # Кнопка переключения на недельный вид
+        # Switch to the week view button
         echo '<div class="btn-group">';
         $t_url = plugin_page('calendar_user_page') . 
                 '&view=week' . 
@@ -356,10 +356,10 @@ class ViewMonthCalendar {
         echo '</div>';
         
 
-        # Блок навигации
+        # Navigation block
         echo '<div id="nav-button" class="btn-group pull-right">';
 
-        # Блок выбора даты
+        # Date selection block
         echo '<form id="select_date_form" method="post" action="' . plugin_page('calendar_user_page') . '" class="form-inline pull-left padding-left-8">';
         echo '<input type="hidden" name="view" value="month">';
         
@@ -379,7 +379,7 @@ class ViewMonthCalendar {
 
         echo '</form>';
         
-        # Кнопки навигации
+        # Navigation buttons
         print_small_button( plugin_page('calendar_user_page') . '&view=month&month=' . ($this->month == 1 ? 12 : $this->month - 1) . '&year=' . ($this->month == 1 ? $this->year - 1 : $this->year), '<<' );
         print_small_button( plugin_page('calendar_user_page') . '&view=month&month=' . date('m') . '&year=' . date('Y'), plugin_lang_get('current_period') );
         print_small_button( plugin_page('calendar_user_page') . '&view=month&month=' . ($this->month == 12 ? 1 : $this->month + 1) . '&year=' . ($this->month == 12 ? $this->year + 1 : $this->year), '>>' );

@@ -178,7 +178,7 @@ function print_column_this_day( $p_day_events, $p_total_number_of_days = 0, $p_f
 //                            . "margin-left: calc(100%/(" . $t_width_divisor_counter . "/" . $t_width_divisor_counter1 . "));\">";
                             . "margin-left: calc(100%/(" . $fopwf . "/" . $t_indent_divisor_counter . "));\">";
                         }
-                    } else {    // иначе как событие в прошлом
+                    } else {    // otherwise render it as an event in the past
                         if( $t_indent_divisor_counter == 0 && $t_width_divisor_counter >= 1 || $t_width_divisor_counter == 0 ) {
                             $t_width_divisor_counter++;
                             echo "<a href=" . plugin_page( 'view' ) .

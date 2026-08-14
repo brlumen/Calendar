@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Инициализация переменных
+    // Variable initialization
     var emptySlots = document.querySelectorAll(".calendar-event-empty.clickable");
     var dayHeaders = document.querySelectorAll(".calendar-day-header.clickable");
     var createEventModal = document.getElementById("createEventModal");
@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var activeSlot = null;
     var activeHeader = null;
     
-    // Обработка клика по кнопке "больше событий"
+    // Click handling for the "more events" button
     var moreEventButtons = document.querySelectorAll(".calendar-more-events");
     moreEventButtons.forEach(function(button) {
         button.addEventListener("click", function() {
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Функция для показа событий дня
+    // Function that shows the events of a day
     function showDayEvents(date, events) {
         var modalTitle = document.getElementById("modalTitle");
         var modalEventList = document.getElementById("modalEventList");
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         var createEventForm = document.getElementById("createEventForm");
         
-        // Добавляем обработчик для кнопки создания события
+        // Attach the handler of the event creation button
         var createEventBtn = eventModal.querySelector('#create-event-btn');
         if (createEventBtn) {
             createEventBtn.date = date;
@@ -66,11 +66,11 @@ document.addEventListener("DOMContentLoaded", function() {
         };
     }
 
-    // Функция для показа формы создания события
+    // Function that shows the event creation form
     function showCreateEventForm(e) {
         var createEventForm = document.getElementById("createEventForm");
         
-        // Если форма уже отображается, скрываем её
+        // If the form is already shown, hide it
         if (createEventForm.style.display === "block") {
             createEventForm.style.display = "none";
             return;
@@ -78,18 +78,18 @@ document.addEventListener("DOMContentLoaded", function() {
         
         selectedDate = e.currentTarget.date;
         
-        // Очищаем форму
+        // Clear the form
         document.getElementById("eventName").value = "";
         
-        // Отображаем выбранную дату
-        // Дата приходит в формате DD.MM.YYYY, просто отображаем её как есть
+        // Show the selected date
+        // The date comes in DD.MM.YYYY format, it is shown as is
         document.getElementById("selectedDate").textContent = selectedDate;
         
-        // Устанавливаем значения времени по умолчанию
+        // Set the default time values
         var timeStart = document.getElementById("eventTimeStart");
         var timeEnd = document.getElementById("eventTimeEnd");
         
-        // Находим опцию для 9:00 и 10:00
+        // Find the options for 9:00 and 10:00
 //        for (var i = 0; i < timeStart.options.length; i++) {
 //            if (timeStart.options[i].value === "09:00") {
 //                timeStart.selectedIndex = i;
@@ -99,11 +99,11 @@ document.addEventListener("DOMContentLoaded", function() {
 //            }
 //        }
         
-        // Показываем форму создания события
+        // Show the event creation form
         createEventForm.style.display = "block";
     }
 
-    // Обработка клика по кнопке создания события
+    // Click handling for the event creation button
     var createEventBtn = document.getElementById("createEventBtn");
     if (createEventBtn) {
         createEventBtn.addEventListener("click", function() {
@@ -121,22 +121,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
             
-            // Формируем URL с параметрами
+            // Build the URL with the parameters
             var url = "plugin.php?page=Calendar/event_add_page" + 
                      "&name=" + encodeURIComponent(eventName) +
                      "&date=" + selectedDate +
                      "&time_start=" + encodeURIComponent(timeStart) +
                      "&time_end=" + encodeURIComponent(timeEnd);
             
-            // Переходим на страницу создания события
+            // Go to the event creation page
             window.location.href = url;
         });
     }
     
-    // Обработка клика по пустому слоту
+    // Click handling for an empty slot
     emptySlots.forEach(function(slot) {
         slot.addEventListener("click", function() {
-            // Если кликнули по уже активному слоту - показываем модальное окно
+            // A click on the already active slot opens the modal window
             if (activeSlot === this) {
                 var date = this.getAttribute("data-date");
                 var events = JSON.parse(this.getAttribute("data-events"));
@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 activeSlot.classList.remove("active");
                 activeSlot = null;
             } else {
-                // Убираем выделение с предыдущего активного слота и заголовка
+                // Drop the highlight from the previously active slot and header
                 if (activeSlot) {
                     activeSlot.classList.remove("active");
                 }
@@ -154,23 +154,23 @@ document.addEventListener("DOMContentLoaded", function() {
                     activeHeader = null;
                 }
                 
-                // Выделяем текущий слот
+                // Highlight the current slot
                 this.classList.add("active");
                 activeSlot = this;
             }
         });
     });
     
-    // Обработка клика по заголовку дня
+    // Click handling for a day header
     dayHeaders.forEach(function(header) {
         header.addEventListener("click", function() {
-            // Если кликнули по уже активному заголовку - показываем модальное окно
+            // A click on the already active header opens the modal window
             if (activeHeader === this) {
                 showCreateEventForm(this.getAttribute("data-date"));
                 activeHeader.classList.remove("active");
                 activeHeader = null;
             } else {
-                // Убираем выделение с предыдущего активного заголовка и слота
+                // Drop the highlight from the previously active header and slot
                 if (activeHeader) {
                     activeHeader.classList.remove("active");
                 }
@@ -179,37 +179,37 @@ document.addEventListener("DOMContentLoaded", function() {
                     activeSlot = null;
                 }
                 
-                // Выделяем текущий заголовок
+                // Highlight the current header
                 this.classList.add("active");
                 activeHeader = this;
             }
         });
     });
 
-    // Обработка кликов по событиям
+    // Click handling for events
     let activeEvent = null;
 
-    // Обработка событий в календаре
+    // Handling of the events inside the calendar
     document.querySelectorAll('.calendar-cell .calendar-event').forEach(event => {
         event.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Проверяем, является ли событие ссылкой (для модального окна)
+            // Check whether the event is a link (used by the modal window)
             if (this.tagName === 'A') {
                 window.location.href = this.getAttribute('href');
                 return;
             }
             
-            // Для событий в календаре
+            // For the events inside the calendar
             const link = this.querySelector('a');
             if (!link) return;
             
             const href = link.getAttribute('href');
             if (activeEvent === this) {
-                // Второй клик - переходим по ссылке без снятия выделения
+                // The second click follows the link without dropping the highlight
                 window.location.href = href;
             } else {
-                // Первый клик - выделяем событие
+                // The first click highlights the event
                 if (activeEvent) {
                     activeEvent.classList.remove('active');
                 }
@@ -219,7 +219,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Снимаем выделение при клике вне события
+    // Drop the highlight on a click outside of an event
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.calendar-event') && activeEvent) {
             activeEvent.classList.remove('active');

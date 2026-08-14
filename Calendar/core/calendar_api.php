@@ -3,9 +3,9 @@
 # Calendar for MantisBT is free software
 
 /**
- * Получает все события для указанной даты
- * @param string $p_date Дата в формате YYYY-MM-DD
- * @return array Массив событий
+ * Get all events for the given date
+ * @param string $p_date Date in YYYY-MM-DD format
+ * @return array Array of events
  */
 function calendar_get_events_for_date($p_date) {
     $t_events_table = plugin_table('events');
