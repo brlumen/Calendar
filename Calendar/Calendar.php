@@ -190,12 +190,12 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
             echo '<div class="col-md-12 col-xs-12">';
             echo '<div class="space-10"></div>';
             echo '<div class="alert alert-warning center">';
-            echo '<p class="bigger-110"><strong>' . plugin_lang_get( 'recurrence_migration_backup_warning' ) . '</strong></p>';
-            echo '<p class="bigger-110">' . plugin_lang_get( 'recurrence_migration_timezones_warning' ) . '</p>';
-            echo '<p class="bigger-110">';
-            echo "\n" . sprintf( plugin_lang_get( 'recurrence_migration_confirm_msg' ), count( $t_events ) ) . "\n";
-            echo '</p>';
-            echo '<p class="bigger-110">' . plugin_lang_get( 'recurrence_migration_column_msg' ) . '</p>';
+            echo '<ul id="recurrence_migration_warnings" class="bigger-110">';
+            echo '<li class="bold"><strong>' . plugin_lang_get( 'recurrence_migration_backup_warning' ) . '</strong></li>';
+            echo '<li>' . plugin_lang_get( 'recurrence_migration_timezones_warning' ) . '</li>';
+            echo '<li>' . sprintf( plugin_lang_get( 'recurrence_migration_confirm_msg' ), count( $t_events ) ) . '</li>';
+            echo '<li>' . plugin_lang_get( 'recurrence_migration_column_msg' ) . '</li>';
+            echo '</ul>';
 
             echo '<table id="recurrence_migration_table" class="table table-bordered table-condensed"><thead><tr>'
                     . '<th>ID</th>'
@@ -217,6 +217,9 @@ function install_recurrence_pattern_tzid() { //version 2.8.1 (schema 16)
             # the surrounding alert block centers text, which visually misaligns
             # the table body against its header — force one alignment for both
             echo '<style>'
+                    . '#recurrence_migration_warnings { display: inline-block; text-align: left; list-style-position: outside; font-weight: normal; }'
+                    . '#recurrence_migration_warnings li { margin-bottom: 6px; }'
+                    . '#recurrence_migration_warnings li.bold, #recurrence_migration_warnings li.bold strong { font-weight: bold; }'
                     . '#recurrence_migration_table th, #recurrence_migration_table td { text-align: left; }'
                     . '#backup_confirmed:not(:checked) ~ input[type="submit"],'
                     . '#timezones_confirmed:not(:checked) ~ input[type="submit"] { pointer-events: none; opacity: .45; }'
