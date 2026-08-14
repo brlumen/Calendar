@@ -147,6 +147,19 @@ $t_form_encoding   = '';
                                 </td>
                             </tr>
 
+                            <!--#event_timezone-->
+
+                            <tr>
+                                <th class="category">
+                                    <label for="event_timezone"><?php echo plugin_lang_get( 'event_timezone' ) ?></label>
+                                </th>
+                                <td>
+                                    <select <?php helper_get_tab_index() ?> name="event_timezone" id="event_timezone">
+                                        <?php print_timezone_option_list( date_default_timezone_get() ); ?>
+                                    </select>
+                                </td>
+                            </tr>
+
                             <!--#owner_is_members-->
 
                             <tr>

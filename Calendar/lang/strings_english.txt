@@ -146,3 +146,4 @@ $s_plugin_Calendar_recurrence_migration_confirm_button = 'Upgrade';
 $s_plugin_Calendar_recurrence_migration_timezone_col = 'Timezone';
 $s_plugin_Calendar_recurrence_migration_backup_warning = 'Back up the database before upgrading!';
 $s_plugin_Calendar_recurrence_migration_backup_checkbox = 'I have backed up the database';
+$s_plugin_Calendar_event_timezone = 'Timezone';

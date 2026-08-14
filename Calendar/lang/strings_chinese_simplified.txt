@@ -146,3 +146,4 @@ $s_plugin_Calendar_recurrence_migration_confirm_button = '升级';
 $s_plugin_Calendar_recurrence_migration_timezone_col = '时区';
 $s_plugin_Calendar_recurrence_migration_backup_warning = '升级前请务必备份数据库！';
 $s_plugin_Calendar_recurrence_migration_backup_checkbox = '我已备份数据库';
+$s_plugin_Calendar_event_timezone = '时区';

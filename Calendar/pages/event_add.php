@@ -28,7 +28,8 @@ if($f_from_bug != 0) {
 
 $f_event_time_start       = gpc_get_int( 'event_time_start' );
 $f_event_time_finish      = gpc_get_int( 'event_time_finish' );
-$f_date_ending_repetition = strtotime( gpc_get_string( 'date_ending_repetition', NULL ) );
+$t_event_timezone         = calendar_timezone_get( gpc_get_string( 'event_timezone', '' ) );
+$f_date_ending_repetition = calendar_strtotime_in_timezone( gpc_get_string( 'date_ending_repetition', NULL ), $t_event_timezone );
 $f_selected_freq          = gpc_get_string( 'selected_freq', 'NO_REPEAT' );
 
 $t_event_data = new CalendarEventData();
@@ -37,7 +38,7 @@ $t_event_data->project_id = gpc_get_int( 'project_id', helper_get_current_projec
 $t_event_data->name       = gpc_get_string( 'name_event' );
 $t_event_data->activity   = "Y";
 $t_event_data->author_id  = auth_get_current_user_id();
-$t_event_data->date_from  = strtotime( gpc_get_string( 'date_event' ) ) + $f_event_time_start;
+$t_event_data->date_from  = calendar_strtotime_in_timezone( gpc_get_string( 'date_event' ), $t_event_timezone ) + $f_event_time_start;
 $t_event_data->duration   = $f_event_time_finish - $f_event_time_start;
 
 switch( $f_selected_freq ) {
@@ -45,10 +46,10 @@ switch( $f_selected_freq ) {
     case 'WEEKLY':
     case 'MONTHLY':
     case 'YEARLY':
-        $t_event_data->date_to            = $f_date_ending_repetition == NULL ? strtotime( '01-01-2038' ) + $f_event_time_finish : $f_date_ending_repetition + $f_event_time_finish;
+        $t_event_data->date_to            = $f_date_ending_repetition == NULL ? calendar_strtotime_in_timezone( '01-01-2038', $t_event_timezone ) + $f_event_time_finish : $f_date_ending_repetition + $f_event_time_finish;
         $t_rrule                          = new RRule\RRule( array(
-                                  'DTSTART'  => calendar_rrule_datetime( $t_event_data->date_from ),
-                                  'UNTIL'    => calendar_rrule_datetime( $t_event_data->date_to ),
+                                  'DTSTART'  => calendar_rrule_datetime( $t_event_data->date_from, $t_event_timezone ),
+                                  'UNTIL'    => calendar_rrule_datetime( $t_event_data->date_to, $t_event_timezone ),
                                   'FREQ'     => $f_selected_freq,
                                   'INTERVAL' => gpc_get_int( 'interval_value' )
                 ) );
@@ -56,7 +57,7 @@ switch( $f_selected_freq ) {
 
         break;
     default :
-        $t_event_data->date_to = $f_date_ending_repetition == NULL ? strtotime( gpc_get_string( 'date_event' ) ) + $f_event_time_finish : $f_date_ending_repetition + $f_event_time_finish;
+        $t_event_data->date_to = $f_date_ending_repetition == NULL ? calendar_strtotime_in_timezone( gpc_get_string( 'date_event' ), $t_event_timezone ) + $f_event_time_finish : $f_date_ending_repetition + $f_event_time_finish;
 }
 
 $t_event_id = $t_event_data->create();
