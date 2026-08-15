@@ -58,7 +58,7 @@ class ViewWeekCalendar extends WeekCalendar {
         echo "GMT " . date( "P" );
         echo '</h4>';
 
-        if( access_compare_level( access_get_global_level(), plugin_config_get( 'manage_calendar_threshold' ) ) ) {
+        if( access_has_project_level( plugin_config_get( 'manage_calendar_threshold' ) ) ) {
             echo '<div class="widget-toolbar no-border">';
             echo '<div class="widget-menu">';
             print_small_button( plugin_page( 'user_config_page' ), plugin_lang_get( 'config_title' ) );
