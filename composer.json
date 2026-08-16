@@ -8,7 +8,7 @@
         }
     ],
     "require": {
-        "google/apiclient": "* 2.14.0",
+        "google/apiclient": "^2.14",
         "rlanvin/php-rrule": "v3.0.0"
     },
     "replace": {
@@ -24,6 +24,9 @@
         ]
     },
     "config": {
-        "vendor-dir": "Calendar/api/vendor"
+        "vendor-dir": "Calendar/api/vendor",
+        "platform": {
+            "php": "7.4.0"
+        }
     }
 }
