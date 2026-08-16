@@ -22,7 +22,7 @@ function install_date_from_date_to() { //version 0.9 (schema 3)
         $t_events_id = array();
 
         $t_query = "SELECT id FROM " . $p_table_calendar_events;
-        $arRes   = db_query( $t_query, NULL, -1, -1 );
+        $arRes   = db_query( $t_query, array(), -1, -1 );
 
         foreach( $arRes as $key => $t_event_id ) {
 
@@ -59,7 +59,7 @@ function install_turn_user_owner_to_user_member() { //version 2.2.0 (schema 7)
         $t_events_id = array();
 
         $t_query = "SELECT id, author_id FROM " . $p_table_calendar_events;
-        $arRes   = db_query( $t_query, NULL, -1, -1 );
+        $arRes   = db_query( $t_query, array(), -1, -1 );
 
         foreach( $arRes as $key => $t_event_id ) {
 
@@ -81,7 +81,7 @@ function install_calculate_duration() { //version 2.4.0 (schema 12)
     if( db_table_exists( $t_table_calendar_events ) && db_is_connected() ) {
 
         $t_query = "SELECT id, date_from, date_to FROM " . $t_table_calendar_events;
-        $arRes   = db_query( $t_query, NULL, -1, -1 );
+        $arRes   = db_query( $t_query, array(), -1, -1 );
 
         foreach( $arRes as $key => $t_event ) {
 
@@ -110,7 +110,7 @@ function install_recurrence_pattern_set_notnull() { //version 2.4.8 (schema 14)
     if( db_table_exists( $t_table_calendar_events ) && db_is_connected() ) {
 
         $t_query = "SELECT id, recurrence_pattern FROM " . $t_table_calendar_events;
-        $arRes   = db_query( $t_query, NULL, -1, -1 );
+        $arRes   = db_query( $t_query, array(), -1, -1 );
 
         foreach( $arRes as $key => $t_event ) {
 
@@ -148,7 +148,7 @@ function install_recurrence_pattern_tzid() { //version 3.0.0 (schema 16)
         $t_events           = array();
 
         $t_query = "SELECT id, name, author_id, recurrence_pattern FROM " . $t_table_calendar_events . " WHERE recurrence_pattern <> '' ORDER BY id";
-        $arRes   = db_query( $t_query, NULL, -1, -1 );
+        $arRes   = db_query( $t_query, array(), -1, -1 );
 
         foreach( $arRes as $key => $t_event ) {
 
