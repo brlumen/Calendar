@@ -13,7 +13,8 @@
     },
     "replace": {
         "guzzlehttp/guzzle": "*",
-        "guzzlehttp/psr7": "*"
+        "guzzlehttp/psr7": "*",
+        "psr/http-message": "*"
     },
     "scripts": {
         "pre-autoload-dump": "Google\\Task\\Composer::cleanup"
