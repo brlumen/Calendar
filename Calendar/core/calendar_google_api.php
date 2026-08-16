@@ -57,7 +57,7 @@ function getClient( $p_user_id = NULL, $p_state = NULL ) {
     }
 
     if( $p_state == NULL ) {
-        $p_state = $_REQUEST['page'];
+        $p_state = gpc_get_string( 'page', '' );
     }
 
     $t_oauth = plugin_config_get( 'oauth_key', NULL, FALSE, $t_user_id );
@@ -73,7 +73,14 @@ function getClient( $p_user_id = NULL, $p_state = NULL ) {
         $client->setApprovalPrompt( 'force' );
         $client->setIncludeGrantedScopes( true );
         $client->setState( json_encode( $p_state ) );
-        $client->refreshToken( $t_oauth["refresh_token"] );
+
+        # The sync stays enabled after the stored grant is gone (revoked by the user,
+        # or cleared below by an earlier failure), so the token may be missing here.
+        # Fall through to the consent flow instead of dereferencing a missing key.
+        if( !isset( $t_oauth['refresh_token'] ) ) {
+            throw new Exception( 'the stored OAuth grant has no refresh token' );
+        }
+        $client->refreshToken( $t_oauth['refresh_token'] );
 
         if( $client->isAccessTokenExpired() ) {
             $client->fetchAccessTokenWithRefreshToken( $client->getRefreshToken() );
