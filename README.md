@@ -10,8 +10,41 @@ Screenshots
 -----------
 
 ![alt text](doc/main_view_with_filter_list.png)
+
+<!-- SCREENSHOT PLACEHOLDER (3.0.0): month view.
+     Calendar page with ?view=month, a month with events on several days,
+     including a day that shows the "+N more" indicator.
+     Save as doc/month_view.png and uncomment the line below.
+![alt text](doc/month_view.png)
+-->
+
+<!-- SCREENSHOT PLACEHOLDER (3.0.0): day modal of the month view.
+     The modal opened from a day header, listing the events of that day.
+     Save as doc/month_view_day_modal.png and uncomment the line below.
+![alt text](doc/month_view_day_modal.png)
+-->
+
+<!-- SCREENSHOT PLACEHOLDER (3.0.0): time range selection in the week view.
+     A day column with a period selected by dragging, showing the chosen range.
+     Save as doc/week_view_time_range_selection.png and uncomment the line below.
+![alt text](doc/week_view_time_range_selection.png)
+-->
+
 ![alt text](doc/view_event_layers_in_bug_view.png)
 ![alt text](doc/add_event_view.png)
+
+<!-- SCREENSHOT PLACEHOLDER (3.0.0): time zone selector on the event form.
+     The event create or edit page with the time zone select expanded.
+     Save as doc/add_event_timezone_select.png and uncomment the line below.
+![alt text](doc/add_event_timezone_select.png)
+-->
+
+<!-- SCREENSHOT PLACEHOLDER (3.0.0): event view page of a recurring event.
+     The view page showing the recurrence row and the "Created in timezone" row.
+     Save as doc/view_event_with_timezone.png and uncomment the line below.
+![alt text](doc/view_event_with_timezone.png)
+-->
+
 ![alt text](doc/plugin_config_view.png)
 ![alt text](doc/workflow_thresholds_page.png)
 
@@ -63,6 +96,13 @@ keep their local time across DST transitions (issue #104). Before upgrading:
 
 The upgrade shows a confirmation page listing the affected events and requires
 both points to be explicitly confirmed before any database change is made.
+
+<!-- SCREENSHOT PLACEHOLDER (3.0.0): migration confirmation page.
+     Manage -> Manage Plugins -> Upgrade for the Calendar plugin, showing the
+     warnings, the table of affected events and the two mandatory checkboxes.
+     Save as doc/upgrade_confirmation_page.png and uncomment the line below.
+![alt text](doc/upgrade_confirmation_page.png)
+-->
 
 
 How to enabled Google Calendar Sync (for Calendar version >= 2.3.0 )
