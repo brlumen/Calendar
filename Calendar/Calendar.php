@@ -516,6 +516,7 @@ class CalendarPlugin extends MantisPlugin {
     function init() {
         require_once 'api/vendor/autoload.php';
         require_once 'core/classes/RSetExt.class.php';
+        require_once 'core/classes/EventCreateRequest.class.php';
         require_once 'core/calendar_event_data_api.php';
         require_once 'core/calendar_date_api.php';
         require_once 'core/calendar_access_api.php';
@@ -526,6 +527,7 @@ class CalendarPlugin extends MantisPlugin {
         require_once 'core/calendar_form_api.php';
         require_once 'core/calendar_google_api.php';
         require_once 'core/calendar_menu_api.php';
+        require_once 'core/calendar_public_api.php';
         require_once 'core/classes/WeekCalendar.class.php';
         require_once 'core/classes/ViewWeekCalendar.class.php';
         require_once 'core/classes/ViewIssue.class.php';
@@ -548,6 +550,19 @@ class CalendarPlugin extends MantisPlugin {
                                   'ERROR_RANGE_TIME'                  => plugin_lang_get( 'ERROR_RANGE_TIME' ),
                                   'ERROR_MIN_MEMBERS'                 => plugin_lang_get( 'ERROR_MIN_MEMBERS' ),
                                   'ERROR_EVENT_TIME_PERIOD_NOT_FOUND' => plugin_lang_get( 'ERROR_EVENT_TIME_PERIOD_NOT_FOUND' ),
+        );
+    }
+
+    /**
+     * Events raised by the plugin, so that other plugins can react to
+     * calendar changes without depending on the Calendar code itself.
+     * Each handler receives the event identifier as its only parameter.
+     */
+    function events() {
+        return array(
+                                  'EVENT_CALENDAR_EVENT_CREATED' => EVENT_TYPE_EXECUTE,
+                                  'EVENT_CALENDAR_EVENT_UPDATED' => EVENT_TYPE_EXECUTE,
+                                  'EVENT_CALENDAR_EVENT_DELETED' => EVENT_TYPE_EXECUTE,
         );
     }
 

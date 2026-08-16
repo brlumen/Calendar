@@ -154,6 +154,8 @@ class CalendarEventData {
 //                    history_log_event_direct( $this->id, 'status', $t_original_status, $t_status );
 //                    history_log_event_direct( $this->id, 'handler_id', 0, $this->handler_id );
 
+        event_signal( 'EVENT_CALENDAR_EVENT_CREATED', array( $this->id ) );
+
         return $this->id;
     }
 
@@ -202,6 +204,8 @@ class CalendarEventData {
         # Update the last update date
         event_update_date( $t_event_id );
 
+        event_signal( 'EVENT_CALENDAR_EVENT_UPDATED', array( $t_event_id ) );
+
         return true;
     }
 
@@ -213,6 +217,9 @@ class CalendarEventData {
      * @access public
      */
     function delete() {
+
+        # keep the identifier, subscribers are notified after the row is gone
+        $t_event_id = $this->id;
 
         $t_calendar_event_table = plugin_table( 'events' );
 
@@ -228,6 +235,8 @@ class CalendarEventData {
 
         # Update the last update date
         event_update_date( $this->id );
+
+        event_signal( 'EVENT_CALENDAR_EVENT_DELETED', array( $t_event_id ) );
 
         return true;
     }
