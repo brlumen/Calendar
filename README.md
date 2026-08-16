@@ -23,11 +23,14 @@ Features
 - Visual display of events in bugs view page.
 - One-way synchronization with Google Calendar (v. >= 2.3.0)
 - Support for different time zones.
-- Recurring events(v. >= 2.4.0-dev).
+- Recurring events (v. >= 2.4.0).
+- Month view (v. >= 3.0.0).
+- Creating an event by selecting a time range in the week view — drag with the mouse or use two taps on a touch screen (v. >= 3.0.0).
+- Per-event time zone: an event remembers the time zone it was scheduled in, and recurring events keep their local time across DST transitions (v. >= 3.0.0).
 
 Supported Versions
 ------------------
-- MantisBT 2.14 to 2.25.x - supported in release up to 2.6.x
+- MantisBT 2.14 to 2.25.x - supported in release up to 2.6.x (fixes only)
 - MantisBT 2.26.0 and higher - supported in release 2.7.0 and higher
 
 Download
@@ -45,6 +48,21 @@ How to install
 4. Go to Manage -> Manage Plugins.
 5. Find Calendar in the list.
 6. Click Install.
+
+
+Upgrading to 3.0.0
+------------------
+Version 3.0.0 changes how recurring events are stored: recurrence rules are
+re-anchored from UTC to the time zone of the event's author, so occurrences
+keep their local time across DST transitions (issue #104). Before upgrading:
+
+1. Back up the MantisBT database — the conversion cannot be undone.
+2. Make sure the time zone in each user's profile is correct: the migration
+   anchors existing recurrence rules to the author's current profile time zone,
+   and a wrong time zone can only be fixed afterwards by re-saving the event.
+
+The upgrade shows a confirmation page listing the affected events and requires
+both points to be explicitly confirmed before any database change is made.
 
 
 How to enabled Google Calendar Sync (for Calendar version >= 2.3.0 )
