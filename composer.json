@@ -9,7 +9,7 @@
     ],
     "require": {
         "google/apiclient": "* 2.14.0",
-        "rlanvin/php-rrule": "v1.6.1"
+        "rlanvin/php-rrule": "v3.0.0"
     },
     "replace": {
         "guzzlehttp/guzzle": "*",
