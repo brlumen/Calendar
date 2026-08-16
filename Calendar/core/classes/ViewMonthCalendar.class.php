@@ -76,7 +76,9 @@ class ViewMonthCalendar {
                             <i class="ace-icon fa fa-plus"></i> ' . plugin_lang_get("add_new_event") . '
                         </button>
                     </div>
-                    <div id="createEventForm" style="display: none;">
+                    <div id="createEventForm" style="display: none;"
+                         data-msg-no-name="' . string_attribute( plugin_lang_get( "month_view_enter_event_name" ) ) . '"
+                         data-msg-no-time="' . string_attribute( plugin_lang_get( "month_view_enter_event_time" ) ) . '">
                         <hr>
                         <div class="form-group">
                             <label>' . plugin_lang_get("date_event") . ': <span id="selectedDate" class="form-control-static"></span></label>
@@ -204,7 +206,7 @@ class ViewMonthCalendar {
         foreach ($t_day_events as $t_event) {
             $t_modal_event = array(
                 'time' => date('H:i', $t_event['date_from']),
-                'duration' => number_format($t_event['duration'] / 3600, 1) . 'ч',
+                'duration' => number_format($t_event['duration'] / 3600, 1) . plugin_lang_get('hours_short'),
                 'name' => string_html_specialchars($t_event['name']),
                 'url' => $this->get_event_url($t_event),
                 'project_name' => string_html_specialchars(project_get_name($t_event['project_id']))
@@ -237,7 +239,7 @@ class ViewMonthCalendar {
                 echo '<div class="calendar-event">';
                 echo '<a href="' . $this->get_event_url($t_event) . '">';
                 echo '<span class="event-time">' . date('H:i', $t_event['date_from']) . '</span> ';
-                echo '<span class="event-duration">(' . number_format($t_event['duration'] / 3600, 1) . 'ч)</span> ';
+                echo '<span class="event-duration">(' . number_format($t_event['duration'] / 3600, 1) . plugin_lang_get('hours_short') . ')</span> ';
                 echo string_html_specialchars($t_event['name']);
                 echo '</a>';
                 echo '</div>';

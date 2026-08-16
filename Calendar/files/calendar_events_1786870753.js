@@ -116,17 +116,18 @@ document.addEventListener("DOMContentLoaded", function() {
     var createEventBtn = document.getElementById("createEventBtn");
     if (createEventBtn) {
         createEventBtn.addEventListener("click", function() {
+            var form = document.getElementById("createEventForm");
             var eventName = document.getElementById("eventName").value;
             var timeStart = document.getElementById("eventTimeStart").value;
             var timeEnd = document.getElementById("eventTimeEnd").value;
-            
+
             if (!eventName) {
-                alert("Пожалуйста, введите название события");
+                alert(form.dataset.msgNoName);
                 return;
             }
-            
+
             if (!timeStart || !timeEnd) {
-                alert("Пожалуйста, укажите время начала и окончания события");
+                alert(form.dataset.msgNoTime);
                 return;
             }
             

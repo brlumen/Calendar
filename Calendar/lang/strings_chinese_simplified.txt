@@ -156,6 +156,9 @@ $s_plugin_Calendar_view_event_timezone_created = '创建时区为 %1$s';
 
 $s_plugin_Calendar_month_view = '月视图';
 $s_plugin_Calendar_more_events = '还有 %d 个事件';
+$s_plugin_Calendar_hours_short = '小时';
+$s_plugin_Calendar_month_view_enter_event_name = '请输入事件名称';
+$s_plugin_Calendar_month_view_enter_event_time = '请指定事件的开始和结束时间';
 
 $s_plugin_Calendar_events_for_date = '%s的事件';
 

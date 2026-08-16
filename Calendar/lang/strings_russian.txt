@@ -157,6 +157,9 @@ $s_plugin_Calendar_view_event_timezone_created = 'Создано в поясе %
 $s_plugin_Calendar_month_view = 'Месяц';
 
 $s_plugin_Calendar_more_events = 'Ещё %d событий';
+$s_plugin_Calendar_hours_short = 'ч';
+$s_plugin_Calendar_month_view_enter_event_name = 'Пожалуйста, введите название события';
+$s_plugin_Calendar_month_view_enter_event_time = 'Пожалуйста, укажите время начала и окончания события';
 
 $s_plugin_Calendar_events_for_date = 'События на %s';
 
