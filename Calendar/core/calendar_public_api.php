@@ -34,10 +34,20 @@
 /**
  * Create a calendar event on behalf of the user named by the request.
  *
- * The request is validated first, then the referenced project, user, members
- * and issue are checked for existence. Access is checked against the
- * 'report_event_threshold' level of the target project for
- * $p_request->user_id, not for the logged in user.
+ * The request is validated first, then everything it refers to is checked,
+ * so that a caller may hand over raw input without knowing the rules of the
+ * calendar. The call guarantees that:
+ * - the project, the author, every member and the issue exist;
+ * - the author passes the 'report_event_threshold' level of the project;
+ * - the author is allowed to see the issue the event is attached to, so that
+ *   attaching an issue can never disclose one;
+ * - every member reaches the project at the 'view_event_threshold' level and
+ *   none of them is the anonymous account;
+ * - the author passes 'member_add_others_event_threshold' as soon as the
+ *   member list names somebody other than the author.
+ * All of these run before the event row is written, so a rejected request
+ * leaves no orphan event behind. Access is always checked for
+ * $p_request->user_id, never for the logged in user.
  *
  * @param \CalendarPluginApi\EventCreateRequest $p_request Event description.
  * @return int Identifier of the created event.
@@ -56,8 +66,10 @@ function calendar_api_event_create( \CalendarPluginApi\EventCreateRequest $p_req
         project_ensure_exists( $t_project_id );
         user_ensure_exists( $t_user_id );
 
-        if( $p_request->bug_id !== null ) {
-            bug_ensure_exists( $p_request->bug_id );
+        $t_bug_id = $p_request->bug_id;
+
+        if( $t_bug_id !== null ) {
+            bug_ensure_exists( $t_bug_id );
         }
 
         # the access level is read per user and per project, so that project
@@ -68,13 +80,56 @@ function calendar_api_event_create( \CalendarPluginApi\EventCreateRequest $p_req
             access_denied();
         }
 
+        # the issue selector of the event form is filled by filter_get_bug_rows(),
+        # i.e. it only offers issues the user may read - attaching an issue must
+        # not become a way around that, so the author has to pass the issue's own
+        # view threshold, read in the project the issue lives in
+        if( $t_bug_id !== null ) {
+            $t_bug_project_id     = bug_get_field( $t_bug_id, 'project_id' );
+            $t_view_bug_threshold = config_get( 'view_bug_threshold', NULL, $t_user_id, $t_bug_project_id );
+
+            if( !access_has_bug_level( $t_view_bug_threshold, $t_bug_id, $t_user_id ) ) {
+                access_denied();
+            }
+        }
+
         # an empty member list means the author attends their own event
         $t_members = $p_request->members;
         if( count( $t_members ) == 0 ) {
             $t_members = array( $t_user_id );
         }
+
+        # the member selector of the event form is filled from
+        # project_get_all_user_rows(), so only users who can reach the project of
+        # the event are eligible; an ineligible member is a malformed request
+        # rather than a permission problem of the author, hence the field error
+        $t_adds_other_members = FALSE;
+
         foreach( $t_members as $t_member_id ) {
-            user_ensure_exists( (int)$t_member_id );
+            $c_member_id = (int)$t_member_id;
+
+            user_ensure_exists( $c_member_id );
+
+            $t_member_threshold = plugin_config_get( 'view_event_threshold', NULL, FALSE, $c_member_id, $t_project_id );
+
+            if( user_is_anonymous( $c_member_id )
+                    || !access_has_project_level( $t_member_threshold, $t_project_id, $c_member_id ) ) {
+                error_parameters( 'members' );
+                trigger_error( ERROR_INVALID_FIELD_VALUE, ERROR );
+            }
+
+            if( $c_member_id != $t_user_id ) {
+                $t_adds_other_members = TRUE;
+            }
+        }
+
+        # signing somebody else up for an event is a separate permission
+        if( $t_adds_other_members ) {
+            $t_add_others_threshold = plugin_config_get( 'member_add_others_event_threshold', NULL, FALSE, $t_user_id, $t_project_id );
+
+            if( !access_has_project_level( $t_add_others_threshold, $t_project_id, $t_user_id ) ) {
+                access_denied();
+            }
         }
 
         $t_recurrence_pattern = trim( $p_request->recurrence_pattern );
@@ -108,8 +163,8 @@ function calendar_api_event_create( \CalendarPluginApi\EventCreateRequest $p_req
         # create() validates the data and raises the plugin errors itself
         $t_event_id = $t_event_data->create();
 
-        if( $p_request->bug_id !== null ) {
-            event_attach_issue( $t_event_id, array( $p_request->bug_id ) );
+        if( $t_bug_id !== null ) {
+            event_attach_issue( $t_event_id, array( $t_bug_id ) );
         }
 
         foreach( $t_members as $t_member_id ) {
@@ -122,6 +177,70 @@ function calendar_api_event_create( \CalendarPluginApi\EventCreateRequest $p_req
         # so that subscribers see the events of the pages/ layer as well
 
         return $t_event_id;
+    } finally {
+        plugin_pop_current();
+    }
+}
+
+/**
+ * Users the given user may sign up as members of an event in the given project.
+ *
+ * This is the read-only counterpart of the member rules enforced by
+ * calendar_api_event_create(): feeding any subset of the returned ids into
+ * EventCreateRequest::$members is guaranteed to pass them. It exists so that a
+ * caller can offer a member picker without reimplementing the rules, and it
+ * never raises an error - an unknown project, an unknown user or a user with
+ * no access at all simply yields an empty array.
+ *
+ * The result is a plain list of user ids, the author included when eligible.
+ * A user who may not add others gets back only themselves, which is exactly
+ * the member list they are allowed to create an event with.
+ *
+ * @param int $p_project_id Project the event would belong to.
+ * @param int $p_user_id    User the event would be created on behalf of.
+ * @return array List of user identifiers, may be empty.
+ * @access public
+ */
+function calendar_api_candidate_members( int $p_project_id, int $p_user_id ) : array {
+
+    plugin_push_current( 'Calendar' );
+
+    try {
+        if( !project_exists( $p_project_id ) || !user_exists( $p_user_id ) ) {
+            return array();
+        }
+
+        $t_self_threshold = plugin_config_get( 'view_event_threshold', NULL, FALSE, $p_user_id, $p_project_id );
+        $t_self_eligible  = !user_is_anonymous( $p_user_id )
+                && access_has_project_level( $t_self_threshold, $p_project_id, $p_user_id );
+
+        $t_add_others_threshold = plugin_config_get( 'member_add_others_event_threshold', NULL, FALSE, $p_user_id, $p_project_id );
+
+        if( !access_has_project_level( $t_add_others_threshold, $p_project_id, $p_user_id ) ) {
+            return $t_self_eligible ? array( $p_user_id ) : array();
+        }
+
+        # same source as the member selector of the event creation form
+        $t_project_users = project_get_all_user_rows( $p_project_id );
+        $t_candidates    = array();
+
+        foreach( $t_project_users as $t_project_user ) {
+            $c_candidate_id = (int)$t_project_user['id'];
+
+            if( user_is_anonymous( $c_candidate_id ) ) {
+                continue;
+            }
+
+            $t_candidate_threshold = plugin_config_get( 'view_event_threshold', NULL, FALSE, $c_candidate_id, $p_project_id );
+
+            if( !access_has_project_level( $t_candidate_threshold, $p_project_id, $c_candidate_id ) ) {
+                continue;
+            }
+
+            $t_candidates[] = $c_candidate_id;
+        }
+
+        return $t_candidates;
     } finally {
         plugin_pop_current();
     }
