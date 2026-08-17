@@ -146,13 +146,22 @@ class CalendarEventData {
                                   $this->timezone ) );
 
         $this->id = db_insert_id( $t_event_table );
-//
-//                    # log new bug
-//                    history_log_event_special( $this->id, NEW_BUG );
-//
-//                    # log changes, if any (compare happens in history_log_event_direct)
-//                    history_log_event_direct( $this->id, 'status', $t_original_status, $t_status );
-//                    history_log_event_direct( $this->id, 'handler_id', 0, $this->handler_id );
+
+        # log the creation; the public API has no session user, so the user the
+        # event is created for is used instead
+        $t_history_user_id = null;
+        if( $this->changed_user_id > 0 ) {
+            $t_history_user_id = $this->changed_user_id;
+        } elseif( $this->author_id > 0 ) {
+            $t_history_user_id = $this->author_id;
+        }
+
+        event_history_log( $this->id, CALENDAR_HISTORY_EVENT_CREATED, '', '', '', $t_history_user_id );
+
+        # an event with a parent is a single occurrence split off a series
+        if( $this->parent_id != 0 ) {
+            event_history_log( $this->id, CALENDAR_HISTORY_CREATED_FROM_SERIES, '', $this->parent_id, '', $t_history_user_id );
+        }
 
         event_signal( 'EVENT_CALENDAR_EVENT_CREATED', array( $this->id ) );
 
@@ -171,7 +180,9 @@ class CalendarEventData {
 
         $t_event_id = $this->id;
 
-//		$t_old_data = event_get( $this->id );
+        # read the stored row before it is overwritten, the history is built by
+        # comparing it against the properties of this object
+        $t_old_row = event_get_row( $this->id );
 
         $t_calendar_event_table = plugin_table( 'events' );
 
@@ -201,6 +212,20 @@ class CalendarEventData {
 
         event_clear_cache( $this->id );
 
+        $t_new_row = array(
+                                  'id'                 => $this->id,
+                                  'name'               => $this->name,
+                                  'activity'           => $this->activity,
+                                  'date_from'          => $this->date_from,
+                                  'date_to'            => $this->date_to,
+                                  'duration'           => $this->duration,
+                                  'recurrence_pattern' => $this->recurrence_pattern,
+                                  'timezone'           => $this->timezone,
+                                  'parent_id'          => $this->parent_id,
+        );
+
+        event_history_log_diff( $t_old_row, $t_new_row, $this->changed_user_id > 0 ? $this->changed_user_id : null );
+
         # Update the last update date
         event_update_date( $t_event_id );
 
@@ -222,6 +247,9 @@ class CalendarEventData {
         $t_event_id = $this->id;
 
         $t_calendar_event_table = plugin_table( 'events' );
+
+        # the history is only kept for events that can still be viewed
+        event_history_delete( $t_event_id );
 
         $query = "DELETE FROM $t_calendar_event_table";
 
@@ -465,12 +493,13 @@ function event_is_user_reporter( $p_event_id, $p_user_id ) {
 
 /**
  * enable monitoring of this event for the user
- * @param integer $p_event_id  Integer representing event identifier.
- * @param integer $p_user_id Integer representing user identifier.
+ * @param integer      $p_event_id       Integer representing event identifier.
+ * @param integer      $p_user_id        Integer representing user identifier.
+ * @param integer|null $p_acting_user_id User the history is logged for, defaults to the logged in one.
  * @return boolean true if successful, false if unsuccessful
  * @access public
  */
-function event_member_add( $p_event_id, $p_user_id ) {
+function event_member_add( $p_event_id, $p_user_id, $p_acting_user_id = null ) {
     $c_event_id = (int)$p_event_id;
     $c_user_id  = (int)$p_user_id;
 
@@ -491,7 +520,8 @@ function event_member_add( $p_event_id, $p_user_id ) {
     db_query( $t_query, array( $c_user_id, $c_event_id ) );
 
     # log new monitoring action
-//	history_log_event_special( $c_event_id, BUG_MONITOR, $c_user_id );
+    event_history_log( $c_event_id, CALENDAR_HISTORY_MEMBER_ADDED, '', $c_user_id, '', $p_acting_user_id );
+
     # updated the last_updated date
     event_update_date( $p_event_id );
 
@@ -524,8 +554,12 @@ function event_member_delete( $p_event_id, $p_user_id = NULL ) {
 
     db_query( $t_query, $t_db_query_params );
 
-    # log new un-monitor action
-//	history_log_event_special( $p_bug_id, BUG_UNMONITOR, (int)$p_user_id );
+    # log new un-monitor action; a missing user means every member is dropped,
+    # which only happens when the event itself is being deleted
+    if( $p_user_id !== null && event_exists( $p_event_id ) ) {
+        event_history_log( $p_event_id, CALENDAR_HISTORY_MEMBER_REMOVED, '', (int)$p_user_id );
+    }
+
     # updated the last_updated date
 //    event_update_date( $p_event_id );
 
@@ -628,6 +662,11 @@ function event_detach_issue( $p_event_id, $p_bugs_id ) {
                 $t_bug_id, plugin_lang_get( "event" ), "", plugin_lang_get( "event_hystory_bug_detach" ) . ": " . event_get_field( $p_event_id, 'name' )
         );
         bug_update_date( $t_bug_id );
+
+        # the event may already be gone when its relationships are cleaned up
+        if( event_exists( $p_event_id ) ) {
+            event_history_log( $p_event_id, CALENDAR_HISTORY_BUG_DETACHED, '', $t_bug_id );
+        }
     }
 
     return TRUE;
@@ -647,6 +686,8 @@ function event_attach_issue( $p_event_id, array $p_bugs_id ) {
             continue;
         }
         db_query( $query, Array( $p_event_id, $t_bug_id ) );
+
+        event_history_log( $p_event_id, CALENDAR_HISTORY_BUG_ATTACHED, '', $t_bug_id );
 
         plugin_history_log(
                 $t_bug_id, plugin_lang_get( "event" ), "", plugin_lang_get( "event_hystory_create" ) . ": " . event_get_field( $p_event_id, 'name' )

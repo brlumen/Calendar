@@ -373,4 +373,72 @@ if( access_has_event_level( plugin_config_get( 'show_member_list_threshold' ), $
 
 
 <?php
+//show event history
+if( access_has_event_level( plugin_config_get( 'view_event_history_threshold' ), $f_event_id ) ) {
+
+    $t_collapse_block = is_collapsed( 'event_history' );
+    $t_block_css      = $t_collapse_block ? 'collapsed' : '';
+    $t_block_icon     = $t_collapse_block ? 'fa-chevron-down' : 'fa-chevron-up';
+    ?>
+    <div class="col-md-12 col-xs-12">
+        <div class="space-10"></div>
+
+        <div id="event_history" class="widget-box widget-color-blue2 <?php echo $t_block_css ?>">
+            <div class="widget-header widget-header-small">
+                <h4 class="widget-title lighter">
+                    <i class="ace-icon fa fa-history"></i>
+                    <?php echo plugin_lang_get( 'event_history' ) ?>
+                </h4>
+                <div class="widget-toolbar">
+                    <a data-action="collapse" href="#">
+                        <i class="1 ace-icon fa <?php echo $t_block_icon ?> bigger-125"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main no-padding">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="category"><?php echo lang_get( 'date_modified' ) ?></th>
+                                    <th class="category"><?php echo lang_get( 'username' ) ?></th>
+                                    <th class="category"><?php echo plugin_lang_get( 'event_history_field' ) ?></th>
+                                    <th class="category"><?php echo plugin_lang_get( 'event_history_old_value' ) ?></th>
+                                    <th class="category"><?php echo plugin_lang_get( 'event_history_new_value' ) ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $t_history_rows = event_history_get_events( $f_event_id );
+                                foreach( $t_history_rows as $t_history_row ) {
+                                    $t_history_item = event_history_localize_row( $t_history_row );
+
+                                    echo '<tr>';
+                                    echo '<td class="small-caption">' . string_display_line( $t_history_item['date'] ) . '</td>';
+                                    echo '<td class="small-caption">';
+                                    if( $t_history_item['user_id'] > 0 ) {
+                                        print_user( $t_history_item['user_id'] );
+                                    } else {
+                                        echo '-';
+                                    }
+                                    echo '</td>';
+                                    echo '<td class="small-caption">' . string_display_line( $t_history_item['note'] ) . '</td>';
+                                    echo '<td class="small-caption">' . string_display_line( $t_history_item['old_value'] ) . '</td>';
+                                    echo '<td class="small-caption">' . string_display_line( $t_history_item['new_value'] ) . '</td>';
+                                    echo '</tr>';
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+} # show event history
+?>
+
+<?php
 layout_page_end();

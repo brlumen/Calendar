@@ -458,6 +458,22 @@ class CalendarPlugin extends MantisPlugin {
                                   array( 'AddColumnSQL', array( plugin_table( "events" ), "
                                         timezone C(64) $t_notnull DEFAULT \" '' \"
                                 " ) ),
+                                  //version 3.0.0 (schema 18)
+                                  array( "CreateTableSQL", array( plugin_table( "event_history" ), "
+                                        id I $t_notnull AUTOINCREMENT PRIMARY,
+                                        event_id I UNSIGNED $t_notnull DEFAULT '0',
+                                        user_id I UNSIGNED $t_notnull DEFAULT '0',
+                                        field_name C(64) $t_notnull DEFAULT \" '' \",
+                                        old_value X,
+                                        new_value X,
+                                        type I $t_notnull DEFAULT '0',
+                                        date_modified I UNSIGNED $t_notnull DEFAULT '1'
+                                " ,
+                                      $t_table_options ) ),
+                                  //version 3.0.0 (schema 19)
+                                  array( 'CreateIndexSQL', array( 'idx_event_history_event_id', plugin_table( "event_history" ), "
+                                      event_id
+                                      " ) ),
         );
     }
 
@@ -501,6 +517,7 @@ class CalendarPlugin extends MantisPlugin {
                                   'view_event_threshold'                                => REPORTER,
                                   'report_event_threshold'                              => DEVELOPER,
                                   'update_event_threshold'                              => DEVELOPER,
+                                  'view_event_history_threshold'                        => DEVELOPER, //The history exposes the members of the event, so it is not lower than show_member_list_threshold by default.
                                   //Member event access rights. 
                                   'show_member_list_threshold'                          => REPORTER,
                                   'member_event_threshold'                              => DEVELOPER, //The level of access necessary to become a member of the event.
@@ -518,6 +535,7 @@ class CalendarPlugin extends MantisPlugin {
         require_once 'core/classes/RSetExt.class.php';
         require_once 'core/classes/EventCreateRequest.class.php';
         require_once 'core/calendar_event_data_api.php';
+        require_once 'core/calendar_history_api.php';
         require_once 'core/calendar_date_api.php';
         require_once 'core/calendar_access_api.php';
         require_once 'core/calendar_print_api.php';

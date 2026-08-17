@@ -50,6 +50,10 @@ switch( $t_range ) {
         $t_rset_current->addExDate( $f_date_select );
         $t_event_data->recurrence_pattern = $t_rset_current->rfcString();
 
+        # the excluded occurrence is what the user asked to delete, the change
+        # of the recurrence rule is only how it is stored
+        event_history_log( $t_event_data->id, CALENDAR_HISTORY_OCCURRENCE_DELETED, '', $f_date_select );
+
         $t_event_data->update();
         event_google_update( $t_event_data );
         break;

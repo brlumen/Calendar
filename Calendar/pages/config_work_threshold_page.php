@@ -220,6 +220,7 @@ get_section_begin_mcwt( plugin_lang_get( 'all_event' ) );
 get_capability_row( plugin_lang_get( 'config_view_event_threshold' ), 'view_event_threshold' );
 get_capability_row( plugin_lang_get( 'config_report_event_threshold' ), 'report_event_threshold' );
 get_capability_row( plugin_lang_get( 'config_update_event_threshold' ), 'update_event_threshold' );
+get_capability_row( plugin_lang_get( 'config_view_event_history_threshold' ), 'view_event_history_threshold' );
 get_capability_row( plugin_lang_get( 'config_show_member_list_threshold' ), 'show_member_list_threshold' );
 get_capability_row( plugin_lang_get( 'config_member_event_threshold' ), 'member_event_threshold' );
 get_capability_row( plugin_lang_get( 'config_member_add_others_event_threshold' ), 'member_add_others_event_threshold' );

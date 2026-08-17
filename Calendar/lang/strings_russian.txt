@@ -85,6 +85,24 @@ $s_plugin_Calendar_filter_text = 'Фильтровать по:';
 
 $s_plugin_Calendar_event_hystory_bug_detach = 'Удалено из события';
 $s_plugin_Calendar_event_hystory_create = 'Добавлено в событие';
+
+$s_plugin_Calendar_event_history = 'История события';
+$s_plugin_Calendar_config_view_event_history_threshold = 'Просмотр истории события';
+$s_plugin_Calendar_event_history_field = 'Поле';
+$s_plugin_Calendar_event_history_old_value = 'Старое значение';
+$s_plugin_Calendar_event_history_new_value = 'Новое значение';
+$s_plugin_Calendar_event_history_created = 'Событие создано';
+$s_plugin_Calendar_event_history_created_from_series = 'Создано из повторяющегося события %1$s';
+$s_plugin_Calendar_event_history_occurrence_deleted = 'Удалено вхождение серии';
+$s_plugin_Calendar_event_history_member_added = 'Участник добавлен';
+$s_plugin_Calendar_event_history_member_removed = 'Участник удалён';
+$s_plugin_Calendar_event_history_bug_attached = 'Задача привязана';
+$s_plugin_Calendar_event_history_bug_detached = 'Задача отвязана';
+$s_plugin_Calendar_event_duration = 'Длительность';
+$s_plugin_Calendar_event_recurrence = 'Правило повторения';
+$s_plugin_Calendar_event_activity = 'Активность';
+$s_plugin_Calendar_event_parent = 'Родительское событие';
+
 $s_plugin_Calendar_add_new_event = 'Добавить новое событие';
 $s_plugin_Calendar_enter_report_details_title  = 'Введите данные события';
 $s_plugin_Calendar_insert_event = 'Добавить в событие';

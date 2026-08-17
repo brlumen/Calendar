@@ -81,6 +81,7 @@ function set_capability_row( $p_threshold, $p_all_projects_only = false ) {
 set_capability_row( 'view_event_threshold' );
 set_capability_row( 'report_event_threshold' );
 set_capability_row( 'update_event_threshold' );
+set_capability_row( 'view_event_history_threshold' );
 set_capability_row( 'show_member_list_threshold' );
 set_capability_row( 'member_event_threshold' );
 set_capability_row( 'member_add_others_event_threshold' );

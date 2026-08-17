@@ -113,7 +113,7 @@ function calendar_api_event_create( \CalendarPluginApi\EventCreateRequest $p_req
         }
 
         foreach( $t_members as $t_member_id ) {
-            event_member_add( $t_event_id, (int)$t_member_id );
+            event_member_add( $t_event_id, (int)$t_member_id, $t_user_id );
         }
 
         event_google_add( $t_event_id, $t_event_data->author_id, $t_members );

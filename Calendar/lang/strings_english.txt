@@ -85,6 +85,24 @@ $s_plugin_Calendar_filter_text = 'Filter by:';
 
 $s_plugin_Calendar_event_hystory_bug_detach = 'Removed from event';
 $s_plugin_Calendar_event_hystory_create = 'Added to the event';
+
+$s_plugin_Calendar_event_history = 'Event History';
+$s_plugin_Calendar_config_view_event_history_threshold = 'View event history';
+$s_plugin_Calendar_event_history_field = 'Field';
+$s_plugin_Calendar_event_history_old_value = 'Old Value';
+$s_plugin_Calendar_event_history_new_value = 'New Value';
+$s_plugin_Calendar_event_history_created = 'Event created';
+$s_plugin_Calendar_event_history_created_from_series = 'Created from recurring event %1$s';
+$s_plugin_Calendar_event_history_occurrence_deleted = 'Occurrence deleted';
+$s_plugin_Calendar_event_history_member_added = 'Member added';
+$s_plugin_Calendar_event_history_member_removed = 'Member removed';
+$s_plugin_Calendar_event_history_bug_attached = 'Issue attached';
+$s_plugin_Calendar_event_history_bug_detached = 'Issue detached';
+$s_plugin_Calendar_event_duration = 'Duration';
+$s_plugin_Calendar_event_recurrence = 'Recurrence rule';
+$s_plugin_Calendar_event_activity = 'Activity';
+$s_plugin_Calendar_event_parent = 'Parent event';
+
 $s_plugin_Calendar_add_new_event = 'Add new event';
 $s_plugin_Calendar_enter_report_details_title = 'Enter Event Data';
 $s_plugin_Calendar_insert_event = 'Add to an event';

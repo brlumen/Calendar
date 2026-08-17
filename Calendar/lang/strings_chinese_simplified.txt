@@ -85,6 +85,24 @@ $s_plugin_Calendar_filter_text = '筛选方式:';
 
 $s_plugin_Calendar_event_hystory_bug_detach = '从事件中删除';
 $s_plugin_Calendar_event_hystory_create = '加入此事件中';
+
+$s_plugin_Calendar_event_history = '事件历史';
+$s_plugin_Calendar_config_view_event_history_threshold = '查看事件历史';
+$s_plugin_Calendar_event_history_field = '字段';
+$s_plugin_Calendar_event_history_old_value = '旧值';
+$s_plugin_Calendar_event_history_new_value = '新值';
+$s_plugin_Calendar_event_history_created = '事件已创建';
+$s_plugin_Calendar_event_history_created_from_series = '从重复事件 %1$s 创建';
+$s_plugin_Calendar_event_history_occurrence_deleted = '已删除一次重复';
+$s_plugin_Calendar_event_history_member_added = '成员已添加';
+$s_plugin_Calendar_event_history_member_removed = '成员已移除';
+$s_plugin_Calendar_event_history_bug_attached = '任务已关联';
+$s_plugin_Calendar_event_history_bug_detached = '任务已取消关联';
+$s_plugin_Calendar_event_duration = '持续时间';
+$s_plugin_Calendar_event_recurrence = '重复规则';
+$s_plugin_Calendar_event_activity = '活动';
+$s_plugin_Calendar_event_parent = '父事件';
+
 $s_plugin_Calendar_add_new_event = '添加新事件';
 $s_plugin_Calendar_enter_report_details_title = '填写事件资料';
 $s_plugin_Calendar_insert_event = '添加到活动';
