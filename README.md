@@ -60,6 +60,7 @@ Features
 - Month view (v. >= 3.0.0).
 - Creating an event by selecting a time range in the week view — drag with the mouse or use two taps on a touch screen (v. >= 3.0.0).
 - Per-event time zone: an event remembers the time zone it was scheduled in, and recurring events keep their local time across DST transitions (v. >= 3.0.0).
+- Public API for other plugins: create events from your own plugin and subscribe to calendar changes (v. >= 3.0.0).
 
 Supported Versions
 ------------------
@@ -118,6 +119,52 @@ How to enabled Google Calendar Sync (for Calendar version >= 2.3.0 )
 
 Detailed instructions are provided in the project wiki.
 https://github.com/mantisbt-plugins/Calendar/wiki#how-to-enabled-google-calendar-sync
+
+Public API for other plugins (for Calendar version >= 3.0.0)
+------------------------------------------------------------
+
+Other MantisBT plugins can create calendar events without declaring a hard
+dependency on Calendar. The contract is the request class
+`\CalendarPluginApi\EventCreateRequest`: checking that it exists at runtime is
+enough to know whether Calendar is installed and loaded.
+
+```php
+if( class_exists( 'CalendarPluginApi\\EventCreateRequest' ) ) {
+    $t_request = new \CalendarPluginApi\EventCreateRequest();
+
+    $t_request->project_id = $t_project_id;   // required
+    $t_request->name       = 'Sprint review'; // required
+    $t_request->user_id    = $t_user_id;      // required, the event author
+    $t_request->date_from  = $t_from;         // required, Unix timestamp
+    $t_request->date_to    = $t_to;           // required, Unix timestamp
+
+    $t_request->bug_id             = $t_bug_id;         // optional, attach an issue
+    $t_request->members            = array( 15, 22 );   // optional, defaults to the author
+    $t_request->recurrence_pattern = 'RRULE:...';       // optional, RFC 5545
+    $t_request->timezone           = 'Europe/Moscow';   // optional
+
+    $t_event_id = calendar_api_event_create( $t_request );
+}
+```
+
+The facade owns all of the calendar rules, so the caller may hand over raw
+input: it verifies that everything referenced exists, that the author passes
+`report_event_threshold` and may view the attached issue, and that every
+member is eligible for the project — all before the event is written, so a
+rejected request never leaves a partial event behind. Wrong types fail with a
+`TypeError` at the assignment, missing required fields and ineligible values
+raise the usual MantisBT errors.
+
+`calendar_api_candidate_members( $p_project_id, $p_user_id )` returns the user
+ids the given user may sign up as members — use it to build a member picker;
+any subset of the returned list is guaranteed to be accepted.
+
+Calendar also declares three events other plugins can hook, each receiving the
+event id as its only parameter:
+
+- `EVENT_CALENDAR_EVENT_CREATED`
+- `EVENT_CALENDAR_EVENT_UPDATED`
+- `EVENT_CALENDAR_EVENT_DELETED`
 
 Donate
 --------------
