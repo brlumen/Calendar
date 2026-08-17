@@ -162,9 +162,41 @@ any subset of the returned list is guaranteed to be accepted.
 Calendar also declares three events other plugins can hook, each receiving the
 event id as its only parameter:
 
-- `EVENT_CALENDAR_EVENT_CREATED`
-- `EVENT_CALENDAR_EVENT_UPDATED`
-- `EVENT_CALENDAR_EVENT_DELETED`
+- `EVENT_CALENDAR_EVENT_CREATED` (`EVENT_TYPE_EXECUTE`)
+- `EVENT_CALENDAR_EVENT_UPDATED` (`EVENT_TYPE_EXECUTE`)
+- `EVENT_CALENDAR_EVENT_DELETED` (`EVENT_TYPE_EXECUTE`)
+
+### Subscribing without a hard dependency
+
+MantisBT initializes plugins one at a time, so when your plugin's `hooks()`
+runs, Calendar may not be initialized yet: its classes do not exist and its
+events are not declared. Hooking an undeclared event is silently dropped.
+Two reliable patterns:
+
+1. Pre-declare the event in your `hooks()`. All plugins are *registered*
+   before any of them is initialized, so `plugin_is_registered( 'Calendar' )`
+   is dependable there. Declare the event with the exact type listed above —
+   `event_declare()` is a no-op for an already declared event, and the first
+   declaration wins the type used by every later signal:
+
+   ```php
+   function hooks() {
+       $t_hooks = array( /* your other hooks */ );
+       if( plugin_is_registered( 'Calendar' ) ) {
+           event_declare( 'EVENT_CALENDAR_EVENT_CREATED', EVENT_TYPE_EXECUTE );
+           $t_hooks['EVENT_CALENDAR_EVENT_CREATED'] = 'on_calendar_event';
+       }
+       return $t_hooks;
+   }
+   ```
+
+2. Or subscribe late: hook the core `EVENT_PLUGIN_INIT` event, which is
+   signalled after every plugin has been initialized, and call `event_hook()`
+   from its handler — at that point `class_exists` is reliable and the
+   Calendar events are declared.
+
+Do not use `$this->uses` for this: a soft dependency keeps your plugin
+uninitialized while Calendar is registered but waiting for a schema upgrade.
 
 Donate
 --------------
