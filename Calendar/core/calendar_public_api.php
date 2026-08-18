@@ -44,18 +44,40 @@
  * - every member reaches the project at the 'view_event_threshold' level and
  *   none of them is the anonymous account;
  * - the author passes 'member_add_others_event_threshold' as soon as the
- *   member list names somebody other than the author.
+ *   member list names somebody other than the author;
+ * - the reminder offsets respect the limits of the event form (see
+ *   \CalendarPluginApi\EventCreateRequest::$reminders for the semantics).
  * All of these run before the event row is written, so a rejected request
  * leaves no orphan event behind. Access is always checked for
  * $p_request->user_id, never for the logged in user.
  *
+ * Every rejection is thrown as \Mantis\Exceptions\ClientException whose code
+ * is the MantisBT error constant, never reported through trigger_error(): a
+ * programmatic caller has no error page to fall back to, so the usual
+ * APPLICATION ERROR halt would tear its request down. Callers catching
+ * MantisException are covered.
+ *
  * @param \CalendarPluginApi\EventCreateRequest $p_request Event description.
  * @return int Identifier of the created event.
+ * @throws \Mantis\Exceptions\ClientException When the request is rejected.
  * @access public
  */
 function calendar_api_event_create( \CalendarPluginApi\EventCreateRequest $p_request ) : int {
 
     plugin_push_current( 'Calendar' );
+
+    # trigger_error() would render the error page and halt, which is the right
+    # behavior for pages/ but not for an API consumer - convert every ERROR
+    # raised below (own checks, core ensure-functions, access_denied()) into
+    # an exception the caller can catch
+    set_error_handler( function( $p_severity, $p_message ) {
+        # MantisBT passes the error code as the message of trigger_error():
+        # numeric for core errors, "plugin_Calendar_<NAME>" for plugin ones.
+        # error_string() resolves both; the numeric exception code degrades
+        # to ERROR_GENERIC for the string form.
+        $t_code = is_numeric( $p_message ) ? (int)$p_message : ERROR_GENERIC;
+        throw new \Mantis\Exceptions\ClientException( error_string( $p_message ), $t_code );
+    }, E_USER_ERROR );
 
     try {
         $p_request->validate();
@@ -142,6 +164,17 @@ function calendar_api_event_create( \CalendarPluginApi\EventCreateRequest $p_req
             }
         }
 
+        # normalized before the event row is written, so that a rejected
+        # reminder list leaves no orphan event behind; NULL keeps the event
+        # without explicit reminders (personal defaults of the recipients),
+        # an empty list becomes the switched-off marker
+        $t_reminder_offsets = null;
+        if( $p_request->reminders !== null ) {
+            $t_reminder_offsets = count( $p_request->reminders ) == 0
+                    ? array( CALENDAR_REMINDER_DISABLED )
+                    : calendar_reminder_offsets_normalize( $p_request->reminders );
+        }
+
         # an unknown or missing name falls back to the instance timezone, the
         # same way the event creation form behaves
         $t_timezone = calendar_timezone_get( $p_request->timezone );
@@ -171,13 +204,18 @@ function calendar_api_event_create( \CalendarPluginApi\EventCreateRequest $p_req
             event_member_add( $t_event_id, (int)$t_member_id, $t_user_id );
         }
 
+        if( $t_reminder_offsets !== null ) {
+            event_reminder_set_all( $t_event_id, $t_reminder_offsets, $t_user_id );
+        }
+
         event_google_add( $t_event_id, $t_event_data->author_id, $t_members );
 
-        # EVENT_CALENDAR_EVENT_CREATED is signalled by CalendarEventData::create(),
-        # so that subscribers see the events of the pages/ layer as well
+        # the event is fully assembled now - announce it to the subscribers
+        event_signal_created( $t_event_id );
 
         return $t_event_id;
     } finally {
+        restore_error_handler();
         plugin_pop_current();
     }
 }

@@ -43,6 +43,7 @@ switch( $t_range ) {
         if( $t_rset_current->count() == 1 ) {
             $t_event_data->delete();
             event_member_delete( $t_event_data->id );
+            event_reminder_delete_all( $t_event_data->id );
             event_detach_issue( $t_event_data->id, $t_bugs_attached );
             event_google_delete( $t_event_data );
             break;
@@ -63,6 +64,7 @@ switch( $t_range ) {
         if( $t_event_data->date_from == $f_date_select ) {
             $t_event_data->delete();
             event_member_delete( $t_event_data->id );
+            event_reminder_delete_all( $t_event_data->id );
             event_detach_issue( $t_event_data->id, $t_bugs_attached );
             event_google_delete( $t_event_data );
             break;
@@ -89,6 +91,7 @@ switch( $t_range ) {
         if( $t_rset_new->count() == 0 ) {
             $t_event_data->delete();
             event_member_delete( $t_event_data->id );
+            event_reminder_delete_all( $t_event_data->id );
             event_detach_issue( $t_event_data->id, $t_bugs_attached );
             event_google_delete( $t_event_data );
             break;
@@ -108,6 +111,8 @@ switch( $t_range ) {
         helper_ensure_confirmed( plugin_lang_get( 'delete_event_sure_msg' ), plugin_lang_get( 'delete_event_button' ) );
 
         event_member_delete( $t_event_data->id );
+
+        event_reminder_delete_all( $t_event_data->id );
 
         event_detach_issue( $t_event_data->id, $t_bugs_attached );
 

@@ -163,7 +163,11 @@ class CalendarEventData {
             event_history_log( $this->id, CALENDAR_HISTORY_CREATED_FROM_SERIES, '', $this->parent_id, '', $t_history_user_id );
         }
 
-        event_signal( 'EVENT_CALENDAR_EVENT_CREATED', array( $this->id ) );
+        # EVENT_CALENDAR_EVENT_CREATED is deliberately NOT signalled here:
+        # members, issue links and reminders are written by the caller after
+        # this method returns, and a subscriber that looks the event up on the
+        # signal must see it complete. Every creation flow calls
+        # event_signal_created() once the event is fully assembled.
 
         return $this->id;
     }
@@ -276,6 +280,22 @@ class CalendarEventData {
 }
 
 $g_cache_calendar_event = array();
+
+/**
+ * Announce a newly created event to the subscribers of
+ * EVENT_CALENDAR_EVENT_CREATED.
+ *
+ * Called by every creation flow as its last step, after the members, the
+ * issue links and the reminders of the event are written - never from
+ * CalendarEventData::create() itself, whose caller is still assembling the
+ * event. A subscriber may therefore rely on reading the complete event by id.
+ * @param integer $p_event_id Integer representing event identifier.
+ * @return void
+ * @access public
+ */
+function event_signal_created( $p_event_id ) {
+    event_signal( 'EVENT_CALENDAR_EVENT_CREATED', array( (int)$p_event_id ) );
+}
 
 /**
  * Check if a event exists. If it doesn't then trigger an error

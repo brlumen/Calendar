@@ -41,6 +41,19 @@ define( 'CALENDAR_HISTORY_MEMBER_REMOVED', 5 );
 define( 'CALENDAR_HISTORY_BUG_ATTACHED', 6 );
 # an issue was detached from the event, old_value = bug id
 define( 'CALENDAR_HISTORY_BUG_DETACHED', 7 );
+# a reminder was added to the event, old_value = offset in seconds
+define( 'CALENDAR_HISTORY_REMINDER_ADDED', 8 );
+# a reminder was removed from the event, old_value = offset in seconds
+define( 'CALENDAR_HISTORY_REMINDER_REMOVED', 9 );
+
+# a reminder was sent to one recipient, old_value = offset in seconds,
+# user_id = the recipient. Written for events that occur once.
+define( 'CALENDAR_HISTORY_REMINDER_SENT', 10 );
+
+# a reminder of a recurring event was sent, old_value = offset in seconds,
+# new_value = number of recipients. One record per occurrence and offset
+# instead of one per recipient, which would swamp the history of a series.
+define( 'CALENDAR_HISTORY_REMINDER_SENT_MANY', 11 );
 
 /**
  * Fields of the event row that are tracked by the change log
@@ -251,6 +264,26 @@ function event_history_localize_row( array $p_row ) {
         case CALENDAR_HISTORY_BUG_DETACHED:
             $t_localized['note']      = plugin_lang_get( 'event_history_bug_detached' );
             $t_localized['old_value'] = bug_format_id( (int)$p_row['old_value'] );
+            break;
+
+        case CALENDAR_HISTORY_REMINDER_ADDED:
+            $t_localized['note']      = plugin_lang_get( 'event_history_reminder_added' );
+            $t_localized['new_value'] = calendar_reminder_format_offset( (int)$p_row['old_value'] );
+            break;
+
+        case CALENDAR_HISTORY_REMINDER_REMOVED:
+            $t_localized['note']      = plugin_lang_get( 'event_history_reminder_removed' );
+            $t_localized['old_value'] = calendar_reminder_format_offset( (int)$p_row['old_value'] );
+            break;
+
+        case CALENDAR_HISTORY_REMINDER_SENT:
+            $t_localized['note']      = plugin_lang_get( 'event_history_reminder_sent' );
+            $t_localized['new_value'] = calendar_reminder_format_offset( (int)$p_row['old_value'] );
+            break;
+
+        case CALENDAR_HISTORY_REMINDER_SENT_MANY:
+            $t_localized['note']      = sprintf( plugin_lang_get( 'event_history_reminder_sent_many' ), (int)$p_row['new_value'] );
+            $t_localized['new_value'] = calendar_reminder_format_offset( (int)$p_row['old_value'] );
             break;
     }
 

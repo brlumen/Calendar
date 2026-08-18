@@ -23,6 +23,8 @@ $f_days_week_cheked = gpc_get_string_array( 'days_week' );
 $f_time_start  = gpc_get_int( 'time_day_start' );
 $f_time_finish = gpc_get_int( 'time_day_finish' );
 
+$f_reminders_feature_enabled = gpc_get_bool( 'reminders_feature_enabled' ) ? ON : OFF;
+
 $f_file = gpc_get_file( 'ufile' );
 
 
@@ -50,6 +52,10 @@ if( plugin_config_get( 'time_day_start' ) != $f_time_start ) {
 
 if( plugin_config_get( 'time_day_finish' ) != $f_time_finish ) {
     plugin_config_set( 'time_day_finish', $f_time_finish );
+}
+
+if( plugin_config_get( 'reminders_feature_enabled' ) != $f_reminders_feature_enabled ) {
+    plugin_config_set( 'reminders_feature_enabled', $f_reminders_feature_enabled );
 }
 
 if( !is_blank( $f_file['tmp_name'] ) ) {

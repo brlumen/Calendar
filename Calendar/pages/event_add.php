@@ -34,6 +34,10 @@ $t_event_timezone         = calendar_timezone_get( gpc_get_string( 'event_timezo
 $f_date_ending_repetition = calendar_strtotime_in_timezone( gpc_get_string( 'date_ending_repetition', NULL ), $t_event_timezone );
 $f_selected_freq          = gpc_get_string( 'selected_freq', 'NO_REPEAT' );
 
+if( calendar_reminder_feature_enabled() ) {
+    $t_reminder_offsets = calendar_reminder_offsets_from_event_form();
+}
+
 $t_event_data = new CalendarEventData();
 
 $t_event_data->project_id = $f_project_id;
@@ -80,7 +84,14 @@ foreach( $f_member_user_list as $t_member ) {
     event_member_add( $t_event_id, $t_member );
 }
 
+if( calendar_reminder_feature_enabled() ) {
+    event_reminder_set_all( $t_event_id, $t_reminder_offsets );
+}
+
 event_google_add( $t_event_id, $t_event_data->author_id, $f_member_user_list );
+
+# the event is fully assembled now - announce it to the subscribers
+event_signal_created( $t_event_id );
 
 form_security_purge( 'event_add' );
 

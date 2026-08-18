@@ -27,6 +27,12 @@ $t_event_timezone    = calendar_timezone_get( gpc_get_string( 'event_timezone', 
 $f_until             = calendar_strtotime_in_timezone( gpc_get_string( 'date_ending_repetition', NULL ), $t_event_timezone );
 $f_bugs              = gpc_get_int_array( 'bugs_add', array( 0 ) );
 
+# the rows survive the confirmation page of a recurring event, because
+# print_hidden_inputs() re-posts arrays as they were submitted
+if( calendar_reminder_feature_enabled() ) {
+    $t_reminder_offsets = calendar_reminder_offsets_from_event_form();
+}
+
 event_ensure_exists( $f_event_id );
 
 access_ensure_event_level( plugin_config_get( 'update_event_threshold' ), $f_event_id );
@@ -72,7 +78,17 @@ switch( $t_range ) {
         foreach( $t_event_members_current as $t_event_member ) {
             event_member_add( $t_event_child_id, $t_event_member );
         }
+
+        # like the members, the reminders are copied to the split off event
+        # instead of being inherited from the series at run time
+        if( calendar_reminder_feature_enabled() ) {
+            event_reminder_set_all( $t_event_child_id, $t_reminder_offsets );
+        }
+
         event_google_add( $t_event_child_id, $t_event_child_data->author_id, $t_event_members_current );
+
+        # the split off event is fully assembled now
+        event_signal_created( $t_event_child_id );
 
         break;
 
@@ -116,7 +132,14 @@ switch( $t_range ) {
             event_member_add( $t_event_child_id, $t_event_member );
         }
 
+        if( calendar_reminder_feature_enabled() ) {
+            event_reminder_set_all( $t_event_child_id, $t_reminder_offsets );
+        }
+
         event_google_add( $t_event_child_id, $t_event_child_data->author_id, $t_event_members_current );
+
+        # the split off event is fully assembled now
+        event_signal_created( $t_event_child_id );
 
         $t_rset_parent_old           = new \RRule\RSet( $t_event_parent_data->recurrence_pattern );
         $t_rrules_parent_old         = $t_rset_parent_old->getRRules();
@@ -177,6 +200,11 @@ switch( $t_range ) {
         }
 
         $t_event_child_id = $t_event_child_data->id;
+
+        # diff aware: an unchanged set of reminders leaves no history behind
+        if( calendar_reminder_feature_enabled() ) {
+            event_reminder_set_all( $t_event_child_data->id, $t_reminder_offsets );
+        }
 
         sort( $f_bugs );
 

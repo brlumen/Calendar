@@ -80,6 +80,9 @@ switch( $t_range ) {
         }
         event_google_add( $t_event_child_id, $t_event_child_data->author_id, $t_event_members_current );
 
+        # the split off event is fully assembled now
+        event_signal_created( $t_event_child_id );
+
         break;
 
     case 'THISANDFUTURE':
@@ -126,6 +129,9 @@ switch( $t_range ) {
         }
 
         event_google_add( $t_event_child_id, $t_event_child_data->author_id, $t_event_members_current );
+
+        # the split off event is fully assembled now
+        event_signal_created( $t_event_child_id );
 
         $t_rrule_parent_old['UNTIL'] = strtotime( date( 'Y-m-d', $t_event_child_data->date_from ) );
         $t_rrule_parent_new          = new RRule\RRule( $t_rrule_parent_old );

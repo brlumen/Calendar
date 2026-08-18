@@ -106,6 +106,22 @@ class EventCreateRequest {
     public string $timezone = '';
 
     /**
+     * Reminders of the event, offsets in seconds before the start of an
+     * occurrence, mirroring the three states of the event form:
+     * - NULL (the default): the event defines no reminders of its own, every
+     *   recipient is reminded by their personal default reminders;
+     * - a list of offsets, each at least 60: these reminders apply to every
+     *   recipient, personal defaults are ignored;
+     * - an empty array: reminders are switched off for this event entirely.
+     * The offsets are validated against the same limits as the event form
+     * (maximum offset, maximum count). Stored regardless of the reminder
+     * feature switch; delivery only happens while the feature is on.
+     *
+     * @var int[]|null
+     */
+    public ?array $reminders = null;
+
+    /**
      * Check that the request can be used to create an event, and trigger a
      * MantisBT error if it cannot.
      *
@@ -147,6 +163,17 @@ class EventCreateRequest {
             if( !is_numeric( $t_member_id ) || (int)$t_member_id <= 0 ) {
                 \error_parameters( 'members' );
                 \trigger_error( \ERROR_INVALID_FIELD_VALUE, \ERROR );
+            }
+        }
+
+        # only the shape is checked here; the limits live in the plugin
+        # config and are enforced by calendar_reminder_offsets_normalize()
+        if( $this->reminders !== null ) {
+            foreach( $this->reminders as $t_offset ) {
+                if( !is_numeric( $t_offset ) || (int)$t_offset < 60 ) {
+                    \error_parameters( 'reminders' );
+                    \trigger_error( \ERROR_INVALID_FIELD_VALUE, \ERROR );
+                }
             }
         }
     }

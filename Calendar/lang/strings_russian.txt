@@ -98,6 +98,10 @@ $s_plugin_Calendar_event_history_member_added = 'Участник добавле
 $s_plugin_Calendar_event_history_member_removed = 'Участник удалён';
 $s_plugin_Calendar_event_history_bug_attached = 'Задача привязана';
 $s_plugin_Calendar_event_history_bug_detached = 'Задача отвязана';
+$s_plugin_Calendar_event_history_reminder_added = 'Напоминание добавлено';
+$s_plugin_Calendar_event_history_reminder_removed = 'Напоминание удалено';
+$s_plugin_Calendar_event_history_reminder_sent = 'Напоминание отправлено';
+$s_plugin_Calendar_event_history_reminder_sent_many = 'Напоминание отправлено %1$d получателям';
 $s_plugin_Calendar_event_duration = 'Длительность';
 $s_plugin_Calendar_event_recurrence = 'Правило повторения';
 $s_plugin_Calendar_event_activity = 'Активность';
@@ -159,6 +163,7 @@ $s_plugin_Calendar_ERROR_EVENT_NOT_FOUND = 'Событие %1$d не найде�
 $s_plugin_Calendar_ERROR_RANGE_TIME = 'ВРЕМЯ НАЧАЛА/ОКОНЧАНИЯ РАБОЧЕГО ДИАПАЗОНА ЗАДАНО НЕ ВЕРНО.';
 $s_plugin_Calendar_ERROR_MIN_MEMBERS = 'У СОБЫТИЯ ДОЛЖЕН БЫТЬ ХОТЯ БЫ ОДИН УЧАСТНИК';
 $s_plugin_Calendar_ERROR_EVENT_TIME_PERIOD_NOT_FOUND = 'СОБЫТИЕ #%1$s В УКАЗАННОМ ПЕРИОДЕ НЕ СУЩЕСТВУЕТ.';
+$s_plugin_Calendar_ERROR_REMINDER_INVALID = 'НАПОМИНАНИЯ ЗАДАНЫ НЕ ВЕРНО.';
 $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_DESCRIPTION = 'Отсутствуют требуемые зависимости в Calendar/api/vendor/';
 $s_plugin_Calendar_ERROR_PLUGIN_DEPENDENCY_INSTALL_STATUS_MESSAGE = 'Если вы загрузили версию для разработки, то выполните composer install для загрузки зависимостей. Иначе загрузите файл Calendar-vX_X_X.zip из https://github.com/mantisbt-plugins/Calendar/releases';
 $s_plugin_Calendar_recurrence_migration_confirm_msg = 'Обновление перепривяжет правила повторения %1$d событий к таймзонам их авторов (исправление перехода на летнее время).';
@@ -197,3 +202,33 @@ $s_plugin_Calendar_december = 'Декабрь';
 $s_plugin_Calendar_month = 'Месяц';
 $s_plugin_Calendar_week_view = 'Неделя';
 $s_plugin_Calendar_view_selector = 'Вид календаря';
+
+$s_plugin_Calendar_config_reminders_feature_enabled = 'Напоминать о предстоящих событиях';
+$s_plugin_Calendar_reminder_warning_cron_never = 'Крон ядра (scripts/cronjob.php) ни разу не запускался: напоминания обрабатываются только при открытии страниц MantisBT, поэтому их оперативность зависит от активности пользователей. Настройте регулярный запуск %1$s каждые 5–15 минут, см. %2$s.';
+$s_plugin_Calendar_reminder_warning_cron_stale = 'Крон ядра (scripts/cronjob.php) не запускался с %1$s: сейчас напоминания обрабатываются только при открытии страниц. Проверьте регулярный запуск %2$s, см. %3$s.';
+$s_plugin_Calendar_reminder_cron_ok = 'Крон ядра работает, последний запуск %1$s.';
+$s_plugin_Calendar_reminder_cron_doc_link = 'документацию MantisBT о EVENT_CRONJOB';
+$s_plugin_Calendar_reminder_notice_send_emails_cron = 'Включена отправка почты через крон, поэтому письма с напоминаниями доставляет ещё и scripts/send_emails.php.';
+
+$s_plugin_Calendar_reminders_title = 'Напоминания';
+$s_plugin_Calendar_reminders_account_tab = 'Календарь событий';
+$s_plugin_Calendar_reminder_add_row = 'Добавить напоминание';
+$s_plugin_Calendar_reminder_remove_row = 'Удалить напоминание';
+$s_plugin_Calendar_reminder_unit_minutes = 'минут до начала';
+$s_plugin_Calendar_reminder_unit_hours = 'часов до начала';
+$s_plugin_Calendar_reminder_unit_days = 'дней до начала';
+$s_plugin_Calendar_reminder_offset_minutes = '%1$d мин';
+$s_plugin_Calendar_reminder_offset_hours = '%1$d ч';
+$s_plugin_Calendar_reminder_offset_days = '%1$d дн';
+$s_plugin_Calendar_reminder_disable_label = 'Не напоминать об этом событии';
+$s_plugin_Calendar_reminder_offset_disabled = 'без напоминаний';
+$s_plugin_Calendar_reminder_hint_defaults = 'Если у события нет своих напоминаний, используются напоминания по умолчанию каждого участника.';
+$s_plugin_Calendar_reminders_pref_enabled = 'Получать напоминания о событиях';
+$s_plugin_Calendar_reminders_pref_default = 'Напоминания по умолчанию';
+$s_plugin_Calendar_reminders_pref_hint = 'Эти напоминания используются для событий, у которых нет своих собственных.';
+$s_plugin_Calendar_reminder_email_subject = 'Напоминание: %1$s';
+$s_plugin_Calendar_reminder_email_body = 'Событие: %1$s
+Проект: %2$s
+Начало: %3$s (через %4$s)
+
+%5$s';

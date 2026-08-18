@@ -231,6 +231,33 @@ layout_page_begin();
                             </table>
                         </div>
 
+                        <?php if( calendar_reminder_feature_enabled() ) { ?>
+                            <?php #reminders_update   ?>
+                            <div class="col-md-12 col-xs-12">
+                                <div class="space-10"></div>
+
+                                <div id="reminders_update" class="widget-box widget-color-blue2">
+                                    <div class="widget-header widget-header-small">
+                                        <h4 class="widget-title lighter">
+                                            <i class="ace-icon fa fa-bell-o"></i>
+                                            <?php echo plugin_lang_get( 'reminders_title' ) ?>
+                                        </h4>
+                                        <div class="widget-toolbar">
+                                            <a data-action="collapse" href="#">
+                                                <i class="1 ace-icon fa fa-chevron-up bigger-125"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div class="widget-body">
+                                        <div class="widget-main">
+                                            <?php print_event_reminder_rows( event_reminder_get_offsets( $f_event_id ), TRUE, TRUE ) ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } ?>
+
 
                         <?php
                         $t_per_page   = null;

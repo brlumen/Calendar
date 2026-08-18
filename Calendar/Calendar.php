@@ -474,6 +474,17 @@ class CalendarPlugin extends MantisPlugin {
                                   array( 'CreateIndexSQL', array( 'idx_event_history_event_id', plugin_table( "event_history" ), "
                                       event_id
                                       " ) ),
+                                  //version 3.0.0 (schema 20)
+                                  array( "CreateTableSQL", array( plugin_table( "event_reminder" ), "
+                                        id I $t_notnull AUTOINCREMENT PRIMARY,
+                                        event_id I UNSIGNED $t_notnull DEFAULT '0',
+                                        time_offset I UNSIGNED $t_notnull DEFAULT '0'
+                                " ,
+                                      $t_table_options ) ),
+                                  //version 3.0.0 (schema 21)
+                                  array( 'CreateIndexSQL', array( 'idx_event_reminder_event_id', plugin_table( "event_reminder" ), "
+                                      event_id
+                                      " ) ),
         );
     }
 
@@ -523,6 +534,16 @@ class CalendarPlugin extends MantisPlugin {
                                   'member_event_threshold'                              => DEVELOPER, //The level of access necessary to become a member of the event.
                                   'member_add_others_event_threshold'                   => DEVELOPER,
                                   'member_delete_others_event_threshold'                => DEVELOPER, //Access level needed to delete other users from the list of users member a event.
+                                  //Reminders about upcoming events.
+                                  'reminders_feature_enabled'                           => OFF, //Master switch of the whole feature, changed by the administrator only.
+                                  'reminders_enabled'                                   => ON, //Per user opt-out.
+                                  'reminders_default'                                   => array( 900 ), //Per user default offsets in seconds, used by events without their own reminders.
+                                  'reminder_max_per_event'                              => 5,
+                                  'reminder_max_offset'                                 => 2678400, //31 days; the same value is the look ahead of the dispatcher.
+                                  'reminder_max_lateness'                               => 21600, //6 hours; caps the window after a long downtime.
+                                  'reminder_web_trigger_interval'                       => 300,
+                                  'reminder_last_run'                                   => 0, //Watermark of the dispatcher.
+                                  'reminder_last_cron_run'                              => 0, //Last run through EVENT_CRONJOB, shown as a diagnostic on the configuration page.
                                   //Google settings
                                   'oauth_key'                                           => array(),
                                   'google_calendar_sync_id'                             => '',
@@ -536,6 +557,7 @@ class CalendarPlugin extends MantisPlugin {
         require_once 'core/classes/EventCreateRequest.class.php';
         require_once 'core/calendar_event_data_api.php';
         require_once 'core/calendar_history_api.php';
+        require_once 'core/calendar_reminder_api.php';
         require_once 'core/calendar_date_api.php';
         require_once 'core/calendar_access_api.php';
         require_once 'core/calendar_print_api.php';
@@ -568,19 +590,35 @@ class CalendarPlugin extends MantisPlugin {
                                   'ERROR_RANGE_TIME'                  => plugin_lang_get( 'ERROR_RANGE_TIME' ),
                                   'ERROR_MIN_MEMBERS'                 => plugin_lang_get( 'ERROR_MIN_MEMBERS' ),
                                   'ERROR_EVENT_TIME_PERIOD_NOT_FOUND' => plugin_lang_get( 'ERROR_EVENT_TIME_PERIOD_NOT_FOUND' ),
+                                  'ERROR_REMINDER_INVALID'            => plugin_lang_get( 'ERROR_REMINDER_INVALID' ),
         );
     }
 
     /**
      * Events raised by the plugin, so that other plugins can react to
      * calendar changes without depending on the Calendar code itself.
-     * Each handler receives the event identifier as its only parameter.
+     *
+     * EVENT_CALENDAR_EVENT_CREATED, EVENT_CALENDAR_EVENT_UPDATED and
+     * EVENT_CALENDAR_EVENT_DELETED pass the event identifier as their only
+     * parameter. EVENT_CALENDAR_EVENT_CREATED is signalled only after the
+     * event is fully assembled - its members, issue links and reminders are
+     * already written - so a subscriber may look the event up by id and see
+     * it complete (see event_signal_created()).
+     *
+     * EVENT_CALENDAR_EVENT_REMINDER is signalled once per due reminder, that is
+     * once per triple of occurrence, recipient and offset, and its parameters
+     * are array( $p_event_id, $p_occurrence_timestamp, $p_user_id,
+     * $p_offset_seconds ). It is raised for every allowed recipient even when
+     * no mail is sent (empty address, notifications switched off globally), so
+     * a subscriber can deliver the reminder through its own channel; a user who
+     * opted out of reminders gets neither the mail nor the signal.
      */
     function events() {
         return array(
-                                  'EVENT_CALENDAR_EVENT_CREATED' => EVENT_TYPE_EXECUTE,
-                                  'EVENT_CALENDAR_EVENT_UPDATED' => EVENT_TYPE_EXECUTE,
-                                  'EVENT_CALENDAR_EVENT_DELETED' => EVENT_TYPE_EXECUTE,
+                                  'EVENT_CALENDAR_EVENT_CREATED'  => EVENT_TYPE_EXECUTE,
+                                  'EVENT_CALENDAR_EVENT_UPDATED'  => EVENT_TYPE_EXECUTE,
+                                  'EVENT_CALENDAR_EVENT_DELETED'  => EVENT_TYPE_EXECUTE,
+                                  'EVENT_CALENDAR_EVENT_REMINDER' => EVENT_TYPE_EXECUTE,
         );
     }
 
@@ -591,7 +629,61 @@ class CalendarPlugin extends MantisPlugin {
                                   'EVENT_VIEW_BUG_DETAILS' => 'html_print_calendar',
                                   'EVENT_FILTER_COLUMNS'    => 'column_add_in_view_all_bug_page',
                                   'EVENT_DISPLAY_TEXT'      => 'column_title_formating',
+                                  'EVENT_CRONJOB'           => 'process_reminders_cron',
+                                  'EVENT_CORE_READY'        => 'process_reminders_web',
+                                  'EVENT_MENU_ACCOUNT'      => 'menu_account',
         );
+    }
+
+    /**
+     * Add the personal reminder settings as a tab of the account section.
+     * They live there rather than on the plugin's own settings page, because
+     * every user who can be a member of an event must be able to reach them,
+     * while the plugin page is behind manage_calendar_threshold.
+     * @return array of hyperlinks
+     */
+    function menu_account() {
+
+        if( !calendar_reminder_feature_enabled() ) {
+            return array();
+        }
+
+        return array( '<a href="' . plugin_page( 'reminders_page' ) . '">' . plugin_lang_get( 'reminders_account_tab' ) . '</a>' );
+    }
+
+    /**
+     * Run the reminder dispatcher from the core cron job (scripts/cronjob.php)
+     * @return void
+     */
+    function process_reminders_cron() {
+
+        if( !calendar_reminder_feature_enabled() ) {
+            return;
+        }
+
+        # the marker proves to the administrator that the core cron job is
+        # really scheduled, so it is written even when nothing is due
+        plugin_config_set( 'reminder_last_cron_run', time() );
+
+        calendar_reminder_process();
+    }
+
+    /**
+     * Fallback dispatcher for installations that do not run the core cron job.
+     * Throttled, silent and free of output, so that page loads stay unaffected.
+     * @return void
+     */
+    function process_reminders_web() {
+
+        if( !calendar_reminder_feature_enabled() ) {
+            return;
+        }
+
+        if( time() - (int)plugin_config_get( 'reminder_last_run' ) < (int)plugin_config_get( 'reminder_web_trigger_interval' ) ) {
+            return;
+        }
+
+        calendar_reminder_process();
     }
 
     function resources() {
@@ -601,6 +693,7 @@ class CalendarPlugin extends MantisPlugin {
 //                . '<script type="text/javascript" src="' . plugin_file( 'calendar_event_create.js' ) . '"></script>'
                 . '<script type="text/javascript" src="' . plugin_file( 'calendar_events_1786870753.js' ) . '"></script>'
                 . '<script type="text/javascript" src="' . plugin_file( 'calendar_week_select_1786707597.js' ) . '"></script>'
+                . '<script type="text/javascript" src="' . plugin_file( 'calendar_reminders_1786961174.js' ) . '"></script>'
                 . '<script type="text/javascript" src="' . plugin_file( 'date_time_picker.js' ) . '"></script>';
     }
 

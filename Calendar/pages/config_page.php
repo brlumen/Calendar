@@ -95,6 +95,51 @@ $t_name_days_week = plugin_config_get( 'arWeekdaysName' );
                                     </td>
                                 </tr>
 
+                                <tr>
+                                    <td class="category" width="50%">
+                                        <?php echo plugin_lang_get( 'config_reminders_feature_enabled' ) ?>
+
+                                    </td>
+
+                                    <td colspan="3" width="50%">
+                                        <?php
+                                        $t_reminders_feature_enabled = plugin_config_get( 'reminders_feature_enabled' ) == ON;
+
+                                        echo '<label><input type="checkbox" name="reminders_feature_enabled" value="1"'
+                                                . ( $t_reminders_feature_enabled ? ' checked="checked"' : '' ) . '></input></label>';
+
+                                        # how timely a reminder is depends entirely on the core cron job,
+                                        # so its state is reported right where the feature is switched on
+                                        if( $t_reminders_feature_enabled ) {
+
+                                            $t_reminder_last_cron_run = (int)plugin_config_get( 'reminder_last_cron_run' );
+
+                                            # the command of this very installation is spelled out next to the
+                                            # documentation link, so that scheduling it needs no path guessing
+                                            $t_reminder_cron_command = '<code>php ' . string_display_line( config_get_global( 'absolute_path' ) ) . 'scripts/cronjob.php</code>';
+                                            $t_reminder_cron_doc     = '<a href="https://mantisbt.org/docs/master/en-US/Developers_Guide/html-desktop/#dev.eventref.cronjob" target="_blank" rel="noopener">'
+                                                    . plugin_lang_get( 'reminder_cron_doc_link' ) . '</a>';
+
+                                            if( $t_reminder_last_cron_run == 0 ) {
+                                                echo '<div class="alert alert-warning">' . sprintf( plugin_lang_get( 'reminder_warning_cron_never' ), $t_reminder_cron_command, $t_reminder_cron_doc ) . '</div>';
+                                            } else {
+                                                $t_reminder_last_cron_run_text = date( config_get( 'normal_date_format' ), $t_reminder_last_cron_run );
+
+                                                if( time() - $t_reminder_last_cron_run > 3600 ) {
+                                                    echo '<div class="alert alert-warning">' . sprintf( plugin_lang_get( 'reminder_warning_cron_stale' ), $t_reminder_last_cron_run_text, $t_reminder_cron_command, $t_reminder_cron_doc ) . '</div>';
+                                                } else {
+                                                    echo '<div class="alert alert-success">' . sprintf( plugin_lang_get( 'reminder_cron_ok' ), $t_reminder_last_cron_run_text ) . '</div>';
+                                                }
+                                            }
+
+                                            if( config_get( 'email_send_using_cronjob' ) == ON ) {
+                                                echo '<div class="alert alert-info">' . plugin_lang_get( 'reminder_notice_send_emails_cron' ) . '</div>';
+                                            }
+                                        }
+                                        ?>
+                                    </td>
+                                </tr>
+
                                 <?php
                                 $t_google_client_id = json_decode( plugin_config_get( 'google_client_secret' ), TRUE );
                                 if( $t_google_client_id['web']['client_id'] ) {
