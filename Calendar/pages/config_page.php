@@ -142,7 +142,7 @@ $t_name_days_week = plugin_config_get( 'arWeekdaysName' );
 
                                 <?php
                                 $t_google_client_id = json_decode( plugin_config_get( 'google_client_secret' ), TRUE );
-                                if( $t_google_client_id['web']['client_id'] ) {
+                                if( is_array( $t_google_client_id ) && !empty( $t_google_client_id['web']['client_id'] ) ) {
                                     ?>
 
                                     <tr>
