@@ -138,10 +138,10 @@ if( class_exists( 'CalendarPluginApi\\EventCreateRequest' ) ) {
     $t_request->date_from  = $t_from;         // required, Unix timestamp
     $t_request->date_to    = $t_to;           // required, Unix timestamp
 
-    $t_request->bug_id             = $t_bug_id;         // optional, attach an issue
-    $t_request->members            = array( 15, 22 );   // optional, defaults to the author
-    $t_request->recurrence_pattern = 'RRULE:...';       // optional, RFC 5545
-    $t_request->timezone           = 'Europe/Moscow';   // optional
+    $t_request->bug_ids            = array( $t_bug_id ); // optional, attach issues
+    $t_request->members            = array( 15, 22 );    // optional, defaults to the author
+    $t_request->recurrence_pattern = 'RRULE:...';        // optional, RFC 5545
+    $t_request->timezone           = 'Europe/Moscow';    // optional
 
     $t_event_id = calendar_api_event_create( $t_request );
 }
@@ -149,7 +149,7 @@ if( class_exists( 'CalendarPluginApi\\EventCreateRequest' ) ) {
 
 The facade owns all of the calendar rules, so the caller may hand over raw
 input: it verifies that everything referenced exists, that the author passes
-`report_event_threshold` and may view the attached issue, and that every
+`report_event_threshold` and may view every attached issue, and that every
 member is eligible for the project — all before the event is written, so a
 rejected request never leaves a partial event behind. Wrong types fail with a
 `TypeError` at the assignment, missing required fields and ineligible values
@@ -158,6 +158,11 @@ raise the usual MantisBT errors.
 `calendar_api_candidate_members( $p_project_id, $p_user_id )` returns the user
 ids the given user may sign up as members — use it to build a member picker;
 any subset of the returned list is guaranteed to be accepted.
+
+`calendar_api_candidate_issues( $p_project_id, $p_user_id, $p_page, $p_per_page )`
+returns the issues the given user may attach the event to, page by page, from
+the same source as the issue selector of the event form — use it to build an
+issue picker; any subset of the returned ids is guaranteed to be accepted.
 
 Calendar also declares three events other plugins can hook, each receiving the
 event id as its only parameter:

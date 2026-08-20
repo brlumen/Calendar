@@ -73,12 +73,13 @@ class EventCreateRequest {
     public int $date_to;
 
     /**
-     * Identifier of an issue to attach the event to, NULL for a standalone
-     * event. When given it must be an existing issue.
+     * Identifiers of the issues to attach the event to. An empty array means
+     * a standalone event; every id must be an existing issue the user of the
+     * request is allowed to view.
      *
-     * @var int|null
+     * @var int[]
      */
-    public ?int $bug_id = null;
+    public array $bug_ids = array();
 
     /**
      * Identifiers of the event members. An empty array means "the author
@@ -154,9 +155,11 @@ class EventCreateRequest {
             }
         }
 
-        if( $this->bug_id !== null && $this->bug_id <= 0 ) {
-            \error_parameters( 'bug_id' );
-            \trigger_error( \ERROR_INVALID_FIELD_VALUE, \ERROR );
+        foreach( $this->bug_ids as $t_bug_id ) {
+            if( !is_numeric( $t_bug_id ) || (int)$t_bug_id <= 0 ) {
+                \error_parameters( 'bug_ids' );
+                \trigger_error( \ERROR_INVALID_FIELD_VALUE, \ERROR );
+            }
         }
 
         foreach( $this->members as $t_member_id ) {
