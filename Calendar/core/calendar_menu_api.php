@@ -25,8 +25,11 @@ function calendar_print_manage_config_menu( $p_page = '' ) {
 	$t_pages['config_page.php'] = array( 'url'   => plugin_page( 'config_page' ),
 	                                     'label' => 'config_title' );
 
-	$t_pages['config_work_threshold_page.php'] = array( 'url'   => plugin_page( 'config_work_threshold_page' ), 
+	$t_pages['config_work_threshold_page.php'] = array( 'url'   => plugin_page( 'config_work_threshold_page' ),
 	                                                    'label' => 'manage_threshold_config' );
+
+	$t_pages['notify_config_page.php'] = array( 'url'   => plugin_page( 'notify_config_page' ),
+	                                            'label' => 'notify_config_title' );
 
 	echo '<div class="space-10"></div>' . "\n";
 	echo '<div class="center">' . "\n";

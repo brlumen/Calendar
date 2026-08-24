@@ -215,6 +215,10 @@ function calendar_api_event_create( \CalendarPluginApi\EventCreateRequest $p_req
         # the event is fully assembled now - announce it to the subscribers
         event_signal_created( $t_event_id );
 
+        # the user the event is created on behalf of is the one who acts here,
+        # so they are the one recipient the mail is not sent to
+        calendar_notify_event_created( $t_event_id, $t_user_id );
+
         return $t_event_id;
     } finally {
         restore_error_handler();
@@ -354,6 +358,74 @@ function calendar_api_candidate_issues( int $p_project_id, int $p_user_id, int $
 
         return $t_candidates;
     } finally {
+        plugin_pop_current();
+    }
+}
+
+/**
+ * Users the calendar would notify about the given action on the given event.
+ *
+ * The read-only counterpart of the mails the calendar sends itself: a
+ * subscriber of EVENT_CALENDAR_EVENT_CREATED, EVENT_CALENDAR_EVENT_UPDATED or
+ * EVENT_CALENDAR_EVENT_DELETED can deliver the news through its own channel -
+ * a messenger, a chat room - to exactly the circle the administrator has
+ * defined in the notification matrix, instead of inventing a second, diverging
+ * audience for the same event.
+ *
+ * The answer is the outcome of the whole chain the mails go through:
+ * - the notification matrix is read for the project of the event, so a project
+ *   with its own matrix is honoured;
+ * - the personal notify_event_* settings of every candidate apply, as does the
+ *   view_event_threshold of the event, which drops users who have meanwhile
+ *   lost access to it;
+ * - EVENT_CALENDAR_NOTIFY_USER_INCLUDE and EVENT_CALENDAR_NOTIFY_USER_EXCLUDE
+ *   are raised on this path too, so a plugin that widens or narrows the circle
+ *   of the mails narrows it here as well.
+ *
+ * $p_actor_id is the user whose action is being announced. Left out, no actor
+ * rule is applied and the answer is the full circle; passed, the matrix
+ * decides whether they hear about their own action, the way the mails behave.
+ *
+ * The master switch 'notifications_feature_enabled' is deliberately not
+ * consulted: it turns off the mails of the calendar, not the question who
+ * would be concerned, and a caller with its own channel has every reason to
+ * ask while the mails are off. The core draws the same line - its
+ * email_collect_recipients() does not look at 'enable_email_notification'.
+ *
+ * @param int      $p_event_id Event the notification would be about.
+ * @param string   $p_action   One of the actions of the notification matrix,
+ *                             see calendar_notify_actions().
+ * @param int|null $p_actor_id User whose action is announced, or null for no
+ *                             actor rule at all.
+ * @return array List of user identifiers, may be empty.
+ * @throws \Mantis\Exceptions\ClientException When the event or the action is unknown.
+ * @access public
+ */
+function calendar_api_event_notify_recipients( int $p_event_id, string $p_action, ?int $p_actor_id = null ) : array {
+
+    plugin_push_current( 'Calendar' );
+
+    # the same reason as in calendar_api_event_create(): an API consumer has no
+    # error page to fall back to, so every ERROR becomes a catchable exception
+    set_error_handler( function( $p_severity, $p_message ) {
+        $t_code = is_numeric( $p_message ) ? (int)$p_message : ERROR_GENERIC;
+        throw new \Mantis\Exceptions\ClientException( error_string( $p_message ), $t_code );
+    }, E_USER_ERROR );
+
+    try {
+        event_ensure_exists( $p_event_id );
+
+        # the public contract knows the rows of the matrix only; the internal
+        # variants of an action - a cancelled occurrence, a change of the
+        # composition seen by the others - are an affair of the calendar itself
+        if( !in_array( $p_action, calendar_notify_actions(), true ) ) {
+            error_parameters( 'action' );
+            trigger_error( ERROR_INVALID_FIELD_VALUE, ERROR );
+        }
+
+        return calendar_notify_recipients( calendar_notify_event_fields( $p_event_id ), $p_action, $p_actor_id );
+    } finally {
+        restore_error_handler();
         plugin_pop_current();
     }
 }

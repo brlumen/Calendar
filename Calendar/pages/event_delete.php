@@ -36,11 +36,19 @@ if( event_is_recurrences( $f_event_id ) ) {
 $t_event_data    = event_get( $f_event_id );
 $t_bugs_attached = event_get_attached_bugs_id( $t_event_data->id );
 
+$t_actor_id = auth_get_current_user_id();
+
 switch( $t_range ) {
 
     case 'THIS':
         $t_rset_current = new CalendarPluginRRuleExt\RSetExt( $t_event_data->recurrence_pattern );
         if( $t_rset_current->count() == 1 ) {
+
+            # the only occurrence left goes with the event itself, so this is
+            # a full deletion as far as the recipients are concerned; the mail
+            # is sent while the members and the name can still be read
+            calendar_notify_event_deleted( $t_event_data, $t_actor_id );
+
             $t_event_data->delete();
             event_member_delete( $t_event_data->id );
             event_reminder_delete_all( $t_event_data->id );
@@ -48,6 +56,8 @@ switch( $t_range ) {
             event_google_delete( $t_event_data );
             break;
         }
+        calendar_notify_event_deleted( $t_event_data, $t_actor_id, $f_date_select );
+
         $t_rset_current->addExDate( $f_date_select );
         $t_event_data->recurrence_pattern = $t_rset_current->rfcString();
 
@@ -62,6 +72,10 @@ switch( $t_range ) {
     case 'THISANDFUTURE':
 
         if( $t_event_data->date_from == $f_date_select ) {
+
+            # cutting a series off at its very start leaves nothing behind
+            calendar_notify_event_deleted( $t_event_data, $t_actor_id );
+
             $t_event_data->delete();
             event_member_delete( $t_event_data->id );
             event_reminder_delete_all( $t_event_data->id );
@@ -89,6 +103,10 @@ switch( $t_range ) {
         }
 
         if( $t_rset_new->count() == 0 ) {
+
+            # nothing is left of the series once the tail is cut off
+            calendar_notify_event_deleted( $t_event_data, $t_actor_id );
+
             $t_event_data->delete();
             event_member_delete( $t_event_data->id );
             event_reminder_delete_all( $t_event_data->id );
@@ -96,6 +114,8 @@ switch( $t_range ) {
             event_google_delete( $t_event_data );
             break;
         }
+
+        calendar_notify_event_deleted( $t_event_data, $t_actor_id, null, $f_date_select );
 
         $t_event_data->recurrence_pattern = $t_rset_new->rfcString();
         $t_event_data->update();
@@ -110,6 +130,13 @@ switch( $t_range ) {
     default:
         helper_ensure_confirmed( plugin_lang_get( 'delete_event_sure_msg' ), plugin_lang_get( 'delete_event_button' ) );
 
+        # the members are about to be dropped, so the mail goes out first
+        calendar_notify_event_deleted( $t_event_data, $t_actor_id );
+
+        # delete() raises the deletion signal, so it goes first: a subscriber
+        # must still find the members, like in the other branches
+        $t_event_data->delete();
+
         event_member_delete( $t_event_data->id );
 
         event_reminder_delete_all( $t_event_data->id );
@@ -117,8 +144,6 @@ switch( $t_range ) {
         event_detach_issue( $t_event_data->id, $t_bugs_attached );
 
         event_google_delete( $t_event_data );
-        
-        $t_event_data->delete();
 }
 
 form_security_purge( 'event_delete' );

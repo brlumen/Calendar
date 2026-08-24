@@ -544,6 +544,20 @@ class CalendarPlugin extends MantisPlugin {
                                   'reminder_web_trigger_interval'                       => 300,
                                   'reminder_last_run'                                   => 0, //Watermark of the dispatcher.
                                   'reminder_last_cron_run'                              => 0, //Last run through EVENT_CRONJOB, shown as a diagnostic on the configuration page.
+                                  //Mail notifications about the changes of events.
+                                  'notifications_feature_enabled'                       => OFF, //Master switch of the whole feature, changed by the administrator only.
+                                  'notify_event_created'                                => ON, //Per user opt-out, also gates the mail about being added to an event.
+                                  'notify_event_updated'                                => ON, //Per user opt-out.
+                                  'notify_event_deleted'                                => ON, //Per user opt-out, also gates the mail about being removed from an event.
+                                  //Who is mailed about which action, set by the administrator globally or per project.
+                                  //The defaults spell out the behaviour the feature had before the matrix existed.
+                                  'notify_flags'                                        => array(
+                                                                                            'created'        => array( 'author' => ON, 'members' => ON, 'actor' => OFF ),
+                                                                                            'updated'        => array( 'author' => ON, 'members' => ON, 'actor' => OFF ),
+                                                                                            'deleted'        => array( 'author' => ON, 'members' => ON, 'actor' => OFF ),
+                                                                                            'member_added'   => array( 'author' => OFF, 'members' => OFF, 'actor' => OFF ),
+                                                                                            'member_removed' => array( 'author' => OFF, 'members' => OFF, 'actor' => OFF )
+                                                                                            ),
                                   //Google settings
                                   'oauth_key'                                           => array(),
                                   'google_calendar_sync_id'                             => '',
@@ -558,6 +572,7 @@ class CalendarPlugin extends MantisPlugin {
         require_once 'core/calendar_event_data_api.php';
         require_once 'core/calendar_history_api.php';
         require_once 'core/calendar_reminder_api.php';
+        require_once 'core/calendar_notify_api.php';
         require_once 'core/calendar_date_api.php';
         require_once 'core/calendar_access_api.php';
         require_once 'core/calendar_print_api.php';
@@ -603,7 +618,10 @@ class CalendarPlugin extends MantisPlugin {
      * parameter. EVENT_CALENDAR_EVENT_CREATED is signalled only after the
      * event is fully assembled - its members, issue links and reminders are
      * already written - so a subscriber may look the event up by id and see
-     * it complete (see event_signal_created()).
+     * it complete (see event_signal_created()). EVENT_CALENDAR_EVENT_DELETED
+     * is signalled before anything is removed, the way the core raises
+     * EVENT_BUG_DELETED: the handler still finds the event and its members,
+     * so calendar_api_event_notify_recipients() works there as well.
      *
      * EVENT_CALENDAR_EVENT_REMINDER is signalled once per due reminder, that is
      * once per triple of occurrence, recipient and offset, and its parameters
@@ -612,13 +630,41 @@ class CalendarPlugin extends MantisPlugin {
      * no mail is sent (empty address, notifications switched off globally), so
      * a subscriber can deliver the reminder through its own channel; a user who
      * opted out of reminders gets neither the mail nor the signal.
+     *
+     * EVENT_CALENDAR_NOTIFY_USER_INCLUDE and EVENT_CALENDAR_NOTIFY_USER_EXCLUDE
+     * let a subscriber take part in the choice of the recipients of a
+     * notification, the way EVENT_NOTIFY_USER_INCLUDE and
+     * EVENT_NOTIFY_USER_EXCLUDE of the core do for the mails about an issue.
+     *
+     * EVENT_CALENDAR_NOTIFY_USER_INCLUDE( $p_event_id, $p_action ) is signalled
+     * once per notification, after the author and the members named by the
+     * notification matrix have been collected and before anything is filtered
+     * out. It expects an array of user identifiers back, and anything else is
+     * ignored. An added user is a candidate like any other: the actor rule of
+     * the matrix, the personal notify_event_* settings and the
+     * view_event_threshold of the event are applied to them as well, so the
+     * signal widens the circle without handing anybody a way past the checks.
+     *
+     * EVENT_CALENDAR_NOTIFY_USER_EXCLUDE( $p_event_id, $p_action, $p_user_id )
+     * is signalled for every candidate that survived all of those checks. Any
+     * truthy answer of any subscriber drops the candidate, and no answer at all
+     * keeps them.
+     *
+     * Both are handed the raw action rather than the row of the matrix it maps
+     * to, that is one of 'created', 'updated', 'deleted',
+     * 'occurrence_cancelled', 'from_date_cancelled', 'member_added',
+     * 'member_removed', 'member_added_others' and 'member_removed_others'. They
+     * are raised on every path that computes recipients, the public
+     * calendar_api_event_notify_recipients() included.
      */
     function events() {
         return array(
-                                  'EVENT_CALENDAR_EVENT_CREATED'  => EVENT_TYPE_EXECUTE,
-                                  'EVENT_CALENDAR_EVENT_UPDATED'  => EVENT_TYPE_EXECUTE,
-                                  'EVENT_CALENDAR_EVENT_DELETED'  => EVENT_TYPE_EXECUTE,
-                                  'EVENT_CALENDAR_EVENT_REMINDER' => EVENT_TYPE_EXECUTE,
+                                  'EVENT_CALENDAR_EVENT_CREATED'       => EVENT_TYPE_EXECUTE,
+                                  'EVENT_CALENDAR_EVENT_UPDATED'       => EVENT_TYPE_EXECUTE,
+                                  'EVENT_CALENDAR_EVENT_DELETED'       => EVENT_TYPE_EXECUTE,
+                                  'EVENT_CALENDAR_EVENT_REMINDER'      => EVENT_TYPE_EXECUTE,
+                                  'EVENT_CALENDAR_NOTIFY_USER_INCLUDE' => EVENT_TYPE_DEFAULT,
+                                  'EVENT_CALENDAR_NOTIFY_USER_EXCLUDE' => EVENT_TYPE_DEFAULT,
         );
     }
 
@@ -636,15 +682,17 @@ class CalendarPlugin extends MantisPlugin {
     }
 
     /**
-     * Add the personal reminder settings as a tab of the account section.
-     * They live there rather than on the plugin's own settings page, because
-     * every user who can be a member of an event must be able to reach them,
-     * while the plugin page is behind manage_calendar_threshold.
+     * Add the personal reminder and notification settings as a tab of the
+     * account section. They live there rather than on the plugin's own
+     * settings page, because every user who can be a member of an event must
+     * be able to reach them, while the plugin page is behind
+     * manage_calendar_threshold. The tab appears as soon as one of the two
+     * features is switched on, the page itself shows the blocks that apply.
      * @return array of hyperlinks
      */
     function menu_account() {
 
-        if( !calendar_reminder_feature_enabled() ) {
+        if( !calendar_reminder_feature_enabled() && !calendar_notify_feature_enabled() ) {
             return array();
         }
 

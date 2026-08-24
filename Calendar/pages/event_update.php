@@ -90,6 +90,10 @@ switch( $t_range ) {
         # the split off event is fully assembled now
         event_signal_created( $t_event_child_id );
 
+        # splitting an occurrence off is how the change is stored, what the
+        # user did is a change of the event - hence the mail about a change
+        calendar_notify_event_updated( $t_event_child_id, auth_get_current_user_id() );
+
         break;
 
     case 'THISANDFUTURE':
@@ -140,6 +144,10 @@ switch( $t_range ) {
 
         # the split off event is fully assembled now
         event_signal_created( $t_event_child_id );
+
+        # splitting an occurrence off is how the change is stored, what the
+        # user did is a change of the event - hence the mail about a change
+        calendar_notify_event_updated( $t_event_child_id, auth_get_current_user_id() );
 
         $t_rset_parent_old           = new \RRule\RSet( $t_event_parent_data->recurrence_pattern );
         $t_rrules_parent_old         = $t_rset_parent_old->getRRules();
@@ -217,6 +225,9 @@ switch( $t_range ) {
         }
         if( $t_event_child_data != $t_event_parent_data || $f_bugs != $t_current_bugs ) {
             event_google_update( $t_event_child_data );
+
+            # a form that was submitted without touching anything is not news
+            calendar_notify_event_updated( $t_event_child_data->id, auth_get_current_user_id() );
         }
 }
 

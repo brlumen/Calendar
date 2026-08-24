@@ -117,7 +117,7 @@ $t_name_days_week = plugin_config_get( 'arWeekdaysName' );
                                             # the command of this very installation is spelled out next to the
                                             # documentation link, so that scheduling it needs no path guessing
                                             $t_reminder_cron_command = '<code>php ' . string_display_line( config_get_global( 'absolute_path' ) ) . 'scripts/cronjob.php</code>';
-                                            $t_reminder_cron_doc     = '<a href="https://mantisbt.org/docs/master/en-US/Developers_Guide/html-desktop/#dev.eventref.cronjob" target="_blank" rel="noopener">'
+                                            $t_reminder_cron_doc     = '<a href="https://mantisbt.org/docs/master/en-US/Admin_Guide/html-desktop/#admin.config.email" target="_blank" rel="noopener">'
                                                     . plugin_lang_get( 'reminder_cron_doc_link' ) . '</a>';
 
                                             if( $t_reminder_last_cron_run == 0 ) {
@@ -136,6 +136,26 @@ $t_name_days_week = plugin_config_get( 'arWeekdaysName' );
                                                 echo '<div class="alert alert-info">' . plugin_lang_get( 'reminder_notice_send_emails_cron' ) . '</div>';
                                             }
                                         }
+                                        ?>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="category" width="50%">
+                                        <?php echo plugin_lang_get( 'config_notifications_feature_enabled' ) ?>
+
+                                    </td>
+
+                                    <td colspan="3" width="50%">
+                                        <?php
+                                        echo '<label><input type="checkbox" name="notifications_feature_enabled" value="1"'
+                                                . ( plugin_config_get( 'notifications_feature_enabled' ) == ON ? ' checked="checked"' : '' ) . '></input></label>';
+
+                                        # who is mailed about what is a matrix of its own, and it can be
+                                        # filled in before the feature is switched on
+                                        echo '<div class="space-4"></div>';
+                                        echo '<a href="' . plugin_page( 'notify_config_page' ) . '">'
+                                                . plugin_lang_get( 'notify_config_link' ) . '</a>';
                                         ?>
                                     </td>
                                 </tr>

@@ -207,7 +207,7 @@ $s_plugin_Calendar_config_reminders_feature_enabled = 'Remind about upcoming eve
 $s_plugin_Calendar_reminder_warning_cron_never = 'The core cron job (scripts/cronjob.php) has never run: reminders are only processed when someone opens a MantisBT page, so how timely they are depends on the activity of the users. Schedule %1$s to run every 5 to 15 minutes; see %2$s.';
 $s_plugin_Calendar_reminder_warning_cron_stale = 'The core cron job (scripts/cronjob.php) has not run since %1$s: reminders are currently processed on page loads only. Check the schedule of %2$s; see %3$s.';
 $s_plugin_Calendar_reminder_cron_ok = 'The core cron job is running, last run %1$s.';
-$s_plugin_Calendar_reminder_cron_doc_link = 'the MantisBT documentation on EVENT_CRONJOB';
+$s_plugin_Calendar_reminder_cron_doc_link = 'the MantisBT administration guide, section $g_email_send_using_cronjob';
 $s_plugin_Calendar_reminder_notice_send_emails_cron = 'Sending mail through a cron job is switched on, so the reminder mail is delivered by scripts/send_emails.php as well.';
 
 $s_plugin_Calendar_reminders_title = 'Reminders';
@@ -232,3 +232,99 @@ Project: %2$s
 Starts: %3$s (in %4$s)
 
 %5$s';
+
+$s_plugin_Calendar_config_notifications_feature_enabled = '通知事件的变更';
+
+$s_plugin_Calendar_notifications_title = '通知';
+$s_plugin_Calendar_notify_pref_created = '接收关于新事件的邮件';
+$s_plugin_Calendar_notify_pref_updated = '接收关于事件变更的邮件';
+$s_plugin_Calendar_notify_pref_deleted = '接收关于事件取消的邮件';
+$s_plugin_Calendar_notify_pref_hint = '仅发送您参与的事件的邮件。您本人所做的变更不会向您发送邮件。';
+
+$s_plugin_Calendar_notify_created_email_subject = '新事件: %1$s';
+$s_plugin_Calendar_notify_created_email_body = '您参与了一个新事件。
+
+事件: %1$s
+项目: %2$s
+开始时间: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_updated_email_subject = '事件已变更: %1$s';
+$s_plugin_Calendar_notify_updated_email_body = '您参与的事件已变更。
+
+事件: %1$s
+项目: %2$s
+开始时间: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_deleted_email_subject = '事件已取消: %1$s';
+$s_plugin_Calendar_notify_deleted_email_body = '您参与的事件已被删除。
+
+事件: %1$s
+项目: %2$s
+原开始时间: %3$s';
+$s_plugin_Calendar_notify_occurrence_cancelled_email_subject = '重复项已取消: %1$s';
+$s_plugin_Calendar_notify_occurrence_cancelled_email_body = '您参与的事件的一次重复已取消，系列中的其余重复不变。
+
+事件: %1$s
+项目: %2$s
+已取消的重复: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_from_date_cancelled_email_subject = '多个重复项已取消: %1$s';
+$s_plugin_Calendar_notify_from_date_cancelled_email_body = '您参与的事件自指定日期起已取消，此前的重复不变。
+
+事件: %1$s
+项目: %2$s
+取消起始日期: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_member_added_email_subject = '已加入事件: %1$s';
+$s_plugin_Calendar_notify_member_added_email_body = '您已被加入一个事件。
+
+事件: %1$s
+项目: %2$s
+开始时间: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_member_removed_email_subject = '已从事件中移除: %1$s';
+$s_plugin_Calendar_notify_member_removed_email_body = '您已从一个事件中被移除。
+
+事件: %1$s
+项目: %2$s
+开始时间: %3$s';
+
+$s_plugin_Calendar_notify_config_title = '通知接收人';
+$s_plugin_Calendar_notify_config_link = '设置每种操作通知哪些人';
+$s_plugin_Calendar_notify_config_feature_disabled = '事件变更通知已关闭，目前不会发送任何邮件。您仍可在此选择接收人，一旦启用该功能即刻生效。';
+$s_plugin_Calendar_notify_config_hint = '本表之上还会应用接收人的个人设置以及查看事件所需的访问级别：已关闭邮件或无权查看该事件的用户不会收到邮件。';
+$s_plugin_Calendar_notify_config_action_column = '对事件的操作';
+$s_plugin_Calendar_notify_config_recipients_column = '邮件接收人';
+$s_plugin_Calendar_notify_config_row_created = '事件已创建';
+$s_plugin_Calendar_notify_config_row_updated = '事件已变更';
+$s_plugin_Calendar_notify_config_row_deleted = '事件已取消';
+$s_plugin_Calendar_notify_config_row_member_added = '事件中加入了参与者';
+$s_plugin_Calendar_notify_config_row_member_removed = '事件中移除了参与者';
+$s_plugin_Calendar_notify_config_target_author = '事件创建者';
+$s_plugin_Calendar_notify_config_target_members = '事件参与者';
+$s_plugin_Calendar_notify_config_target_actor = '执行操作的用户';
+$s_plugin_Calendar_notify_config_save_button = '保存';
+$s_plugin_Calendar_notify_config_revert_to_global = '恢复为全局设置';
+$s_plugin_Calendar_notify_config_revert_to_default = '恢复为默认设置';
+
+$s_plugin_Calendar_notify_member_added_others_email_subject = '已加入参与者: %1$s';
+$s_plugin_Calendar_notify_member_added_others_email_body = '%5$s 已被加入您参与的事件。
+
+事件: %1$s
+项目: %2$s
+开始时间: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_member_removed_others_email_subject = '已移除参与者: %1$s';
+$s_plugin_Calendar_notify_member_removed_others_email_body = '%5$s 已不再参与您参与的事件。
+
+事件: %1$s
+项目: %2$s
+开始时间: %3$s
+
+%4$s';

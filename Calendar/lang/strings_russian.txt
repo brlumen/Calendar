@@ -207,7 +207,7 @@ $s_plugin_Calendar_config_reminders_feature_enabled = 'Напоминать о �
 $s_plugin_Calendar_reminder_warning_cron_never = 'Крон ядра (scripts/cronjob.php) ни разу не запускался: напоминания обрабатываются только при открытии страниц MantisBT, поэтому их оперативность зависит от активности пользователей. Настройте регулярный запуск %1$s каждые 5–15 минут, см. %2$s.';
 $s_plugin_Calendar_reminder_warning_cron_stale = 'Крон ядра (scripts/cronjob.php) не запускался с %1$s: сейчас напоминания обрабатываются только при открытии страниц. Проверьте регулярный запуск %2$s, см. %3$s.';
 $s_plugin_Calendar_reminder_cron_ok = 'Крон ядра работает, последний запуск %1$s.';
-$s_plugin_Calendar_reminder_cron_doc_link = 'документацию MantisBT о EVENT_CRONJOB';
+$s_plugin_Calendar_reminder_cron_doc_link = 'руководство администратора MantisBT, раздел $g_email_send_using_cronjob';
 $s_plugin_Calendar_reminder_notice_send_emails_cron = 'Включена отправка почты через крон, поэтому письма с напоминаниями доставляет ещё и scripts/send_emails.php.';
 
 $s_plugin_Calendar_reminders_title = 'Напоминания';
@@ -232,3 +232,99 @@ $s_plugin_Calendar_reminder_email_body = 'Событие: %1$s
 Начало: %3$s (через %4$s)
 
 %5$s';
+
+$s_plugin_Calendar_config_notifications_feature_enabled = 'Уведомлять об изменениях событий';
+
+$s_plugin_Calendar_notifications_title = 'Уведомления';
+$s_plugin_Calendar_notify_pref_created = 'Получать письма о новых событиях';
+$s_plugin_Calendar_notify_pref_updated = 'Получать письма об изменениях событий';
+$s_plugin_Calendar_notify_pref_deleted = 'Получать письма об отменённых событиях';
+$s_plugin_Calendar_notify_pref_hint = 'Письма приходят о событиях, в которых вы участвуете. О собственных изменениях письма не отправляются.';
+
+$s_plugin_Calendar_notify_created_email_subject = 'Новое событие: %1$s';
+$s_plugin_Calendar_notify_created_email_body = 'Вы участвуете в новом событии.
+
+Событие: %1$s
+Проект: %2$s
+Начало: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_updated_email_subject = 'Событие изменено: %1$s';
+$s_plugin_Calendar_notify_updated_email_body = 'Событие, в котором вы участвуете, изменено.
+
+Событие: %1$s
+Проект: %2$s
+Начало: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_deleted_email_subject = 'Событие отменено: %1$s';
+$s_plugin_Calendar_notify_deleted_email_body = 'Событие, в котором вы участвовали, удалено.
+
+Событие: %1$s
+Проект: %2$s
+Начало было назначено на: %3$s';
+$s_plugin_Calendar_notify_occurrence_cancelled_email_subject = 'Вхождение отменено: %1$s';
+$s_plugin_Calendar_notify_occurrence_cancelled_email_body = 'Отменено одно вхождение события, в котором вы участвуете, остальная серия не изменилась.
+
+Событие: %1$s
+Проект: %2$s
+Отменённое вхождение: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_from_date_cancelled_email_subject = 'Вхождения отменены: %1$s';
+$s_plugin_Calendar_notify_from_date_cancelled_email_body = 'Событие, в котором вы участвуете, отменено начиная с указанной даты, более ранние вхождения не изменились.
+
+Событие: %1$s
+Проект: %2$s
+Отменено начиная с: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_member_added_email_subject = 'Вас добавили в событие: %1$s';
+$s_plugin_Calendar_notify_member_added_email_body = 'Вас добавили в состав участников события.
+
+Событие: %1$s
+Проект: %2$s
+Начало: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_member_removed_email_subject = 'Вас исключили из события: %1$s';
+$s_plugin_Calendar_notify_member_removed_email_body = 'Вас исключили из состава участников события.
+
+Событие: %1$s
+Проект: %2$s
+Начало: %3$s';
+
+$s_plugin_Calendar_notify_config_title = 'Получатели уведомлений';
+$s_plugin_Calendar_notify_config_link = 'Настроить, кого уведомлять о каком действии';
+$s_plugin_Calendar_notify_config_feature_disabled = 'Уведомления об изменениях событий выключены, поэтому письма пока не отправляются. Получателей можно выбрать и сейчас — настройки вступят в силу, как только функция будет включена.';
+$s_plugin_Calendar_notify_config_hint = 'Поверх этой таблицы действуют личные настройки получателя и порог доступа к просмотру события: пользователю, который отключил письма или не имеет права видеть событие, письмо не отправляется.';
+$s_plugin_Calendar_notify_config_action_column = 'Действие с событием';
+$s_plugin_Calendar_notify_config_recipients_column = 'Получатели письма';
+$s_plugin_Calendar_notify_config_row_created = 'Событие создано';
+$s_plugin_Calendar_notify_config_row_updated = 'Событие изменено';
+$s_plugin_Calendar_notify_config_row_deleted = 'Событие отменено';
+$s_plugin_Calendar_notify_config_row_member_added = 'В событие добавлен участник';
+$s_plugin_Calendar_notify_config_row_member_removed = 'Из события исключён участник';
+$s_plugin_Calendar_notify_config_target_author = 'Автор события';
+$s_plugin_Calendar_notify_config_target_members = 'Участники события';
+$s_plugin_Calendar_notify_config_target_actor = 'Инициатор действия';
+$s_plugin_Calendar_notify_config_save_button = 'Сохранить';
+$s_plugin_Calendar_notify_config_revert_to_global = 'Вернуть глобальные значения';
+$s_plugin_Calendar_notify_config_revert_to_default = 'Вернуть значения по умолчанию';
+
+$s_plugin_Calendar_notify_member_added_others_email_subject = 'В событие добавлен участник: %1$s';
+$s_plugin_Calendar_notify_member_added_others_email_body = 'В событие, в котором вы участвуете, добавлен участник %5$s.
+
+Событие: %1$s
+Проект: %2$s
+Начало: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_member_removed_others_email_subject = 'Из события исключён участник: %1$s';
+$s_plugin_Calendar_notify_member_removed_others_email_body = 'Из события, в котором вы участвуете, исключён участник %5$s.
+
+Событие: %1$s
+Проект: %2$s
+Начало: %3$s
+
+%4$s';

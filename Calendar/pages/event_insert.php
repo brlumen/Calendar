@@ -83,6 +83,10 @@ switch( $t_range ) {
         # the split off event is fully assembled now
         event_signal_created( $t_event_child_id );
 
+        # splitting an occurrence off is how the change is stored, what the
+        # user did is attach an issue to the event - hence the mail about a change
+        calendar_notify_event_updated( $t_event_child_id, auth_get_current_user_id() );
+
         break;
 
     case 'THISANDFUTURE':
@@ -133,6 +137,10 @@ switch( $t_range ) {
         # the split off event is fully assembled now
         event_signal_created( $t_event_child_id );
 
+        # splitting an occurrence off is how the change is stored, what the
+        # user did is attach an issue to the event - hence the mail about a change
+        calendar_notify_event_updated( $t_event_child_id, auth_get_current_user_id() );
+
         $t_rrule_parent_old['UNTIL'] = strtotime( date( 'Y-m-d', $t_event_child_data->date_from ) );
         $t_rrule_parent_new          = new RRule\RRule( $t_rrule_parent_old );
 
@@ -159,6 +167,7 @@ switch( $t_range ) {
 
         event_google_update( $t_event_child_data );
 
+        calendar_notify_event_updated( $t_event_parent_data->id, auth_get_current_user_id() );
 }
 
 form_security_purge( 'event_insert' );

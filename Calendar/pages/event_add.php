@@ -93,6 +93,10 @@ event_google_add( $t_event_id, $t_event_data->author_id, $f_member_user_list );
 # the event is fully assembled now - announce it to the subscribers
 event_signal_created( $t_event_id );
 
+# the author and the members learn about the event by mail, the creator of it
+# does not need to be told what they have just done
+calendar_notify_event_created( $t_event_id, auth_get_current_user_id() );
+
 form_security_purge( 'event_add' );
 
 layout_page_header_begin();

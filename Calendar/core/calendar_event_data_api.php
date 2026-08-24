@@ -247,8 +247,12 @@ class CalendarEventData {
      */
     function delete() {
 
-        # keep the identifier, subscribers are notified after the row is gone
         $t_event_id = $this->id;
+
+        # the subscribers hear about the deletion first, the way the core
+        # raises EVENT_BUG_DELETED before bug_delete() touches anything: the
+        # event and its members are still there to be read by the handler
+        event_signal( 'EVENT_CALENDAR_EVENT_DELETED', array( $t_event_id ) );
 
         $t_calendar_event_table = plugin_table( 'events' );
 
@@ -267,8 +271,6 @@ class CalendarEventData {
 
         # Update the last update date
         event_update_date( $this->id );
-
-        event_signal( 'EVENT_CALENDAR_EVENT_DELETED', array( $t_event_id ) );
 
         return true;
     }

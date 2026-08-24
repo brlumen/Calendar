@@ -206,7 +206,7 @@ $s_plugin_Calendar_config_reminders_feature_enabled = 'Remind about upcoming eve
 $s_plugin_Calendar_reminder_warning_cron_never = 'The core cron job (scripts/cronjob.php) has never run: reminders are only processed when someone opens a MantisBT page, so how timely they are depends on the activity of the users. Schedule %1$s to run every 5 to 15 minutes; see %2$s.';
 $s_plugin_Calendar_reminder_warning_cron_stale = 'The core cron job (scripts/cronjob.php) has not run since %1$s: reminders are currently processed on page loads only. Check the schedule of %2$s; see %3$s.';
 $s_plugin_Calendar_reminder_cron_ok = 'The core cron job is running, last run %1$s.';
-$s_plugin_Calendar_reminder_cron_doc_link = 'the MantisBT documentation on EVENT_CRONJOB';
+$s_plugin_Calendar_reminder_cron_doc_link = 'the MantisBT administration guide, section $g_email_send_using_cronjob';
 $s_plugin_Calendar_reminder_notice_send_emails_cron = 'Sending mail through a cron job is switched on, so the reminder mail is delivered by scripts/send_emails.php as well.';
 
 $s_plugin_Calendar_reminders_title = 'Reminders';
@@ -231,3 +231,99 @@ Project: %2$s
 Starts: %3$s (in %4$s)
 
 %5$s';
+
+$s_plugin_Calendar_config_notifications_feature_enabled = 'Notificar sobre los cambios de los eventos';
+
+$s_plugin_Calendar_notifications_title = 'Notificaciones';
+$s_plugin_Calendar_notify_pref_created = 'Recibir correos sobre eventos nuevos';
+$s_plugin_Calendar_notify_pref_updated = 'Recibir correos sobre eventos modificados';
+$s_plugin_Calendar_notify_pref_deleted = 'Recibir correos sobre eventos cancelados';
+$s_plugin_Calendar_notify_pref_hint = 'Los correos se envían sobre los eventos en los que usted participa. Sus propios cambios nunca se le envían.';
+
+$s_plugin_Calendar_notify_created_email_subject = 'Nuevo evento: %1$s';
+$s_plugin_Calendar_notify_created_email_body = 'Usted participa en un nuevo evento.
+
+Evento: %1$s
+Proyecto: %2$s
+Comienza: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_updated_email_subject = 'Evento modificado: %1$s';
+$s_plugin_Calendar_notify_updated_email_body = 'Un evento en el que usted participa ha sido modificado.
+
+Evento: %1$s
+Proyecto: %2$s
+Comienza: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_deleted_email_subject = 'Evento cancelado: %1$s';
+$s_plugin_Calendar_notify_deleted_email_body = 'Un evento en el que usted participaba ha sido eliminado.
+
+Evento: %1$s
+Proyecto: %2$s
+Comenzaba: %3$s';
+$s_plugin_Calendar_notify_occurrence_cancelled_email_subject = 'Repetición cancelada: %1$s';
+$s_plugin_Calendar_notify_occurrence_cancelled_email_body = 'Se ha cancelado una repetición de un evento en el que usted participa, el resto de la serie no cambia.
+
+Evento: %1$s
+Proyecto: %2$s
+Repetición cancelada: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_from_date_cancelled_email_subject = 'Repeticiones canceladas: %1$s';
+$s_plugin_Calendar_notify_from_date_cancelled_email_body = 'Un evento en el que usted participa ha sido cancelado a partir de la fecha indicada, las repeticiones anteriores no cambian.
+
+Evento: %1$s
+Proyecto: %2$s
+Cancelado desde: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_member_added_email_subject = 'Añadido al evento: %1$s';
+$s_plugin_Calendar_notify_member_added_email_body = 'Usted ha sido añadido a un evento.
+
+Evento: %1$s
+Proyecto: %2$s
+Comienza: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_member_removed_email_subject = 'Eliminado del evento: %1$s';
+$s_plugin_Calendar_notify_member_removed_email_body = 'Usted ha sido eliminado de un evento.
+
+Evento: %1$s
+Proyecto: %2$s
+Comienza: %3$s';
+
+$s_plugin_Calendar_notify_config_title = 'Destinatarios de las notificaciones';
+$s_plugin_Calendar_notify_config_link = 'Configurar a quién se notifica de cada acción';
+$s_plugin_Calendar_notify_config_feature_disabled = 'Las notificaciones sobre los cambios de los eventos están desactivadas, por lo que todavía no se envía nada. Aun así puede elegir aquí los destinatarios: se aplicarán en cuanto se active la función.';
+$s_plugin_Calendar_notify_config_hint = 'Por encima de esta tabla se aplican la configuración personal del destinatario y el nivel de acceso necesario para ver el evento: a quien haya desactivado los correos, o no pueda ver el evento, nunca se le escribe.';
+$s_plugin_Calendar_notify_config_action_column = 'Acción sobre el evento';
+$s_plugin_Calendar_notify_config_recipients_column = 'Destinatarios del correo';
+$s_plugin_Calendar_notify_config_row_created = 'Evento creado';
+$s_plugin_Calendar_notify_config_row_updated = 'Evento modificado';
+$s_plugin_Calendar_notify_config_row_deleted = 'Evento cancelado';
+$s_plugin_Calendar_notify_config_row_member_added = 'Participante añadido al evento';
+$s_plugin_Calendar_notify_config_row_member_removed = 'Participante eliminado del evento';
+$s_plugin_Calendar_notify_config_target_author = 'Autor del evento';
+$s_plugin_Calendar_notify_config_target_members = 'Participantes del evento';
+$s_plugin_Calendar_notify_config_target_actor = 'Usuario que realiza la acción';
+$s_plugin_Calendar_notify_config_save_button = 'Guardar';
+$s_plugin_Calendar_notify_config_revert_to_global = 'Volver a los valores globales';
+$s_plugin_Calendar_notify_config_revert_to_default = 'Volver a los valores predeterminados';
+
+$s_plugin_Calendar_notify_member_added_others_email_subject = 'Participante añadido: %1$s';
+$s_plugin_Calendar_notify_member_added_others_email_body = 'Se ha añadido a %5$s a un evento en el que usted participa.
+
+Evento: %1$s
+Proyecto: %2$s
+Comienza: %3$s
+
+%4$s';
+$s_plugin_Calendar_notify_member_removed_others_email_subject = 'Participante eliminado: %1$s';
+$s_plugin_Calendar_notify_member_removed_others_email_body = '%5$s ya no participa en un evento en el que usted participa.
+
+Evento: %1$s
+Proyecto: %2$s
+Comienza: %3$s
+
+%4$s';
