@@ -11,7 +11,7 @@
  * @param DateTimeZone|null $p_timezone defaults to the current user's timezone
  * @return DateTime
  */
-function calendar_rrule_datetime( $p_timestamp, DateTimeZone $p_timezone = NULL ) {
+function calendar_rrule_datetime( $p_timestamp, ?DateTimeZone $p_timezone = NULL ) {
     $t_datetime = new DateTime( '@' . (int)$p_timestamp );
     return $t_datetime->setTimezone( $p_timezone === NULL ? new DateTimeZone( date_default_timezone_get() ) : $p_timezone );
 }
