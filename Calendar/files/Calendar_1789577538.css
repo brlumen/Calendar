@@ -43,6 +43,13 @@ td.column-this-day-td {
     background: rgba(3, 169, 244, 0.13);
 }
 
+/* On the issue page the grid sits in a cell of the bug view table: keep the
+   wrapper from widening that cell, so a wide week scrolls inside it instead */
+td.calendar-area-in-bugs .table-responsive {
+    width: 0;
+    min-width: 100%;
+}
+
 ul.column-header-day {
     background: #F1EFDE;
     padding: 10px;
