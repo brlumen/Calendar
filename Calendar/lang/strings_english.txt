@@ -1,17 +1,17 @@
 <?php
-# Copyright (c) 2025 Grigoriy Ermolaev (igflocal@gmail.com)
-# Calendar for MantisBT is free software: 
+# Copyright (c) 2026 Grigoriy Ermolaev (igflocal@gmail.com)
+# Calendar plugin for MantisBT is free software:
 # you can redistribute it and/or modify it under the terms of the GNU
-# General Public License as published by the Free Software Foundation, 
+# General Public License as published by the Free Software Foundation,
 # either version 2 of the License, or (at your option) any later version.
 #
-# Calendar plugin for for MantisBT is distributed in the hope 
-# that it will be useful, but WITHOUT ANY WARRANTY; without even the 
-# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+# Calendar plugin for MantisBT is distributed in the hope
+# that it will be useful, but WITHOUT ANY WARRANTY; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Customer management plugin for MantisBT.  
+# along with Calendar plugin for MantisBT.
 # If not, see <http://www.gnu.org/licenses/>.
 
 $s_plugin_Calendar_name_plugin_description_page = 'Calendar of Events';
@@ -115,7 +115,6 @@ $s_plugin_Calendar_insert_event = 'Add to an event';
 $s_plugin_Calendar_delete_event_sure_msg = 'Are you sure you want to delete this event?';
 $s_plugin_Calendar_delete_event_button = 'Delete';
 $s_plugin_Calendar_not_update = 'Not updated';
-$s_plugin_Calendar_last_update = 'Updated';
 $s_plugin_Calendar_author = 'Author';
 $s_plugin_Calendar_updater = 'Updated';
 $s_plugin_Calendar_in = 'in';
@@ -189,7 +188,6 @@ $s_plugin_Calendar_month_view_enter_event_time = 'Please specify the start and e
 $s_plugin_Calendar_events_for_date = 'Events for %s';
 
 $s_plugin_Calendar_week_view = 'Week';
-$s_plugin_Calendar_month_view = 'Month';
 $s_plugin_Calendar_view_selector = 'Calendar View';
 
 $s_plugin_Calendar_january = 'January';
