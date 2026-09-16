@@ -49,14 +49,15 @@ class EventArea {
         $t_hight = ( ( $t_segment_length / 60 ) / (ColumnForm::$intervals_per_hour ) ) * ColumnForm::$html_interval_height;
         $t_width = ( 100 - $t_left - 3 - (4 * ($this->total_event_in_group - ($this->current_number_in_group + 1))));
 
-        $t_text_area = event_get_field( $this->event['id'], "name" );
-        $t_text_area .= '</br>';
+        $t_name       = event_get_field( $this->event['id'], "name" );
+        $t_time_label = calendar_event_time_label( $this->event['date_from'], $this->event['duration'] );
 
-        $t_text_area .= calendar_event_time_label( $this->event['date_from'], $this->event['duration'] );
-        $t_text_area .= '</br>';
+        $t_text_area = $t_name . '</br>' . $t_time_label;
 
+        # the project is told by the colour of the block (see the legend)
+        # and named in the tooltip only
         $t_project_id = event_get_field( $this->event['id'], "project_id" );
-        $t_text_area .= '[ ' . project_get_field( $t_project_id, "name" ) . ' ]';
+        $t_title      = $t_name . ' | ' . $t_time_label . ' [ ' . project_get_field( $t_project_id, "name" ) . ' ]';
 
         $t_id = $this->is_in_past ? 'event_week_expired' : 'event_week';
 
@@ -64,6 +65,7 @@ class EventArea {
                 . '&event_id=' . $this->event['id']
                 . '&date=' . $this->event['date_from']
                 . ' id="' . $t_id . '"'
+                . ' title="' . string_attribute( $t_title ) . '"'
                 . ' style="' . calendar_project_color_style( $t_project_id )
                 . 'z-index:' . (100 + $this->current_number_in_group) . ';'
                 . ' height:' . $t_hight . 'px;'

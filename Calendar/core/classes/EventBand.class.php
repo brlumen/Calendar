@@ -50,8 +50,9 @@ class EventBand {
         $t_project_id = event_get_field( $this->event['id'], 'project_id' );
         $t_project    = project_get_field( $t_project_id, 'name' );
         # the bar itself shows which days the occurrence covers, so only the
-        # times of its start and end are spelled out
-        $t_text    = $t_name . ' | ' . date( 'H:i', $this->event['date_from'] ) . ' - ' . date( 'H:i', $this->event['date_from'] + $this->event['duration'] ) . ' [ ' . $t_project . ' ]';
+        # times of its start and end are spelled out; the project is told by
+        # the colour of the bar and named in the tooltip only
+        $t_text    = $t_name . ' | ' . date( 'H:i', $this->event['date_from'] ) . ' - ' . date( 'H:i', $this->event['date_from'] + $this->event['duration'] );
 
         # the tooltip carries the dates, the bar only marks where it is cut off
         $t_title = $t_name . ' | ' . calendar_event_time_label( $this->event['date_from'], $this->event['duration'] ) . ' [ ' . $t_project . ' ]';
