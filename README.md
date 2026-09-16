@@ -30,6 +30,13 @@ Screenshots
 ![alt text](doc/week_view_time_range_selection.png)
 -->
 
+<!-- SCREENSHOT PLACEHOLDER (3.0.0): multi-day events in the week view.
+     The week grid with two or three multi-day bands above the hourly rows,
+     one of them cut at the edge of the week.
+     Save as doc/week_view_multiday_bands.png and uncomment the line below.
+![alt text](doc/week_view_multiday_bands.png)
+-->
+
 ![alt text](doc/view_event_layers_in_bug_view.png)
 ![alt text](doc/add_event_view.png)
 
@@ -48,6 +55,26 @@ Screenshots
 ![alt text](doc/plugin_config_view.png)
 ![alt text](doc/workflow_thresholds_page.png)
 
+<!-- SCREENSHOT PLACEHOLDER (3.0.0): reminders and notifications of a user.
+     My Account -> "Event calendar" tab with the default reminders and the
+     notification switches.
+     Save as doc/account_event_calendar_tab.png and uncomment the line below.
+![alt text](doc/account_event_calendar_tab.png)
+-->
+
+<!-- SCREENSHOT PLACEHOLDER (3.0.0): notification recipient matrix.
+     Manage -> Manage Plugins -> Calendar -> notification settings page with
+     the per-project matrix.
+     Save as doc/notify_config_page.png and uncomment the line below.
+![alt text](doc/notify_config_page.png)
+-->
+
+<!-- SCREENSHOT PLACEHOLDER (3.0.0): event view page with description,
+     reminders and history.
+     Save as doc/view_event_page.png and uncomment the line below.
+![alt text](doc/view_event_page.png)
+-->
+
 Features
 --------
 - The ability to create event.
@@ -60,7 +87,12 @@ Features
 - Month view (v. >= 3.0.0).
 - Creating an event by selecting a time range in the week view — drag with the mouse or use two taps on a touch screen (v. >= 3.0.0).
 - Per-event time zone: an event remembers the time zone it was scheduled in, and recurring events keep their local time across DST transitions (v. >= 3.0.0).
-- Public API for other plugins: create events from your own plugin and subscribe to calendar changes (v. >= 3.0.0).
+- Events that span several days, shown as bands above the week grid (v. >= 3.0.0).
+- Event description (v. >= 3.0.0).
+- E-mail reminders about upcoming events: per-event reminders or personal defaults, with a per-user opt-out (v. >= 3.0.0).
+- E-mail notifications about created, changed and deleted events and about membership changes, with a per-project recipient matrix like the one of MantisBT itself (v. >= 3.0.0).
+- Event history, with records written by other plugins shown next to the native ones (v. >= 3.0.0).
+- Public API for other plugins: create events from your own plugin, write to the history of an event, ask who would be notified and subscribe to calendar changes (v. >= 3.0.0).
 
 Supported Versions
 ------------------
@@ -120,6 +152,28 @@ How to enabled Google Calendar Sync (for Calendar version >= 2.3.0 )
 Detailed instructions are provided in the project wiki.
 https://github.com/mantisbt-plugins/Calendar/wiki#how-to-enabled-google-calendar-sync
 
+
+Reminders and notifications (for Calendar version >= 3.0.0)
+------------------------------------------------------------
+
+Both features are switched off after the installation. Enable them on the
+Calendar settings page (Manage -> Manage Plugins -> Calendar):
+
+- **Reminders** are e-mails sent before the start of an occurrence to the
+  author and the members of the event. An event may carry its own reminders,
+  fall back to the personal defaults of each recipient, or have reminders
+  switched off; every user manages their defaults and opt-out on the
+  "Event calendar" tab of "My Account". Reminders are dispatched by the
+  MantisBT cron job (`scripts/cronjob.php`, hook `EVENT_CRONJOB`); without a
+  cron job they are still sent from page loads, throttled to once in five
+  minutes. The settings page shows when the cron job last ran.
+- **Notifications** are e-mails about created, changed and deleted events and
+  about membership changes. Who gets them is decided by a recipient matrix
+  (author, members, the acting user) that can be overridden per project, like
+  the e-mail notification settings of MantisBT itself, and every user can turn
+  off each kind of notification on the same "My Account" tab. The user who made
+  the change never gets a mail about it.
+
 Public API for other plugins (for Calendar version >= 3.0.0)
 ------------------------------------------------------------
 
@@ -136,16 +190,28 @@ if( class_exists( 'CalendarPluginApi\\EventCreateRequest' ) ) {
     $t_request->name       = 'Sprint review'; // required
     $t_request->user_id    = $t_user_id;      // required, the event author
     $t_request->date_from  = $t_from;         // required, Unix timestamp
-    $t_request->date_to    = $t_to;           // required, Unix timestamp
+    $t_request->date_to    = $t_to;           // required, Unix timestamp; a later
+                                              // day makes a multi-day event
 
+    $t_request->description        = 'Agenda: ...';      // optional
+    $t_request->duration           = 3600;               // seconds; optional for a single
+                                                         // event, required for a recurring one
     $t_request->bug_ids            = array( $t_bug_id ); // optional, attach issues
     $t_request->members            = array( 15, 22 );    // optional, defaults to the author
     $t_request->recurrence_pattern = 'RRULE:...';        // optional, RFC 5545
     $t_request->timezone           = 'Europe/Moscow';    // optional
+    $t_request->reminders          = array( 900, 86400 ); // optional, see below
 
     $t_event_id = calendar_api_event_create( $t_request );
 }
 ```
+
+For a recurring event `date_to` is the end of the last occurrence and
+`duration` is the length of one occurrence. `reminders` mirrors the three
+states of the event form: `null` (the default) leaves every recipient with
+their personal default reminders, a list of offsets in seconds before the start
+of an occurrence (each at least 60) applies to every recipient instead, and an
+empty array switches reminders off for this event.
 
 The facade owns all of the calendar rules, so the caller may hand over raw
 input: it verifies that everything referenced exists, that the author passes
@@ -164,12 +230,39 @@ returns the issues the given user may attach the event to, page by page, from
 the same source as the issue selector of the event form — use it to build an
 issue picker; any subset of the returned ids is guaranteed to be accepted.
 
-Calendar also declares three events other plugins can hook, each receiving the
-event id as its only parameter:
+`calendar_api_event_history_log( $p_event_id, $p_field_name, $p_old_value, $p_new_value, $p_user_id = null, $p_basename = null )`
+writes a record to the history of an event, the way `plugin_history_log()` of
+the core does for an issue. The field name is prefixed with the basename of the
+calling plugin, and that prefixed name doubles as the language key of the
+label: define `$s_plugin_<Basename>_<field_name>` in your language files, or
+the raw field name is shown. Values are stored and displayed as given.
+
+`calendar_api_event_notify_recipients( $p_event_id, $p_action, $p_actor_id = null )`
+returns the user ids the calendar itself would notify about the given action —
+one of `created`, `updated`, `deleted`, `member_added`, `member_removed` —
+after the recipient matrix, the personal settings and the access checks have
+been applied. Use it to deliver the same notification through your own channel;
+the master switch of the calendar mails is deliberately not consulted.
+
+Calendar also declares events other plugins can hook. The first three receive
+the event id as their only parameter; `EVENT_CALENDAR_EVENT_CREATED` is
+signalled only after the members, issues and reminders of the event have been
+written, and `EVENT_CALENDAR_EVENT_DELETED` before anything is deleted, so the
+handler still finds the event and its members:
 
 - `EVENT_CALENDAR_EVENT_CREATED` (`EVENT_TYPE_EXECUTE`)
 - `EVENT_CALENDAR_EVENT_UPDATED` (`EVENT_TYPE_EXECUTE`)
 - `EVENT_CALENDAR_EVENT_DELETED` (`EVENT_TYPE_EXECUTE`)
+- `EVENT_CALENDAR_EVENT_REMINDER` (`EVENT_TYPE_EXECUTE`) — once per due
+  reminder with `array( $p_event_id, $p_occurrence_timestamp, $p_user_id,
+  $p_offset_seconds )`, raised even when no mail is sent, so a subscriber can
+  deliver the reminder through its own channel.
+- `EVENT_CALENDAR_NOTIFY_USER_INCLUDE( $p_event_id, $p_action )` and
+  `EVENT_CALENDAR_NOTIFY_USER_EXCLUDE( $p_event_id, $p_action, $p_user_id )`
+  (`EVENT_TYPE_DEFAULT`) — take part in the choice of the recipients of a
+  notification, like `EVENT_NOTIFY_USER_INCLUDE` / `EVENT_NOTIFY_USER_EXCLUDE`
+  of the core: the first returns extra candidate user ids (they still pass all
+  the usual checks), a truthy answer to the second drops the candidate.
 
 ### Subscribing without a hard dependency
 
