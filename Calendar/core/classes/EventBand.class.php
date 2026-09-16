@@ -25,18 +25,24 @@ class EventBand {
     private $event;
     private $lane;
     private $span;
+    private $continues_left;
+    private $continues_right;
     private $is_in_past;
 
     /**
-     * @param array $p_event_row Day row of the occurrence (id, date_from, duration)
-     * @param int   $p_lane      Row of the band area the bar is drawn in, from 0
-     * @param int   $p_span      Number of day columns the bar covers
+     * @param array $p_event_row       Day row of the occurrence (id, date_from, duration)
+     * @param int   $p_lane            Row of the band area the bar is drawn in, from 0
+     * @param int   $p_span            Number of day columns the bar covers
+     * @param bool  $p_continues_left  The occurrence starts before the first covered column
+     * @param bool  $p_continues_right The occurrence ends after the last covered column
      */
-    function __construct( $p_event_row, $p_lane, $p_span ) {
-        $this->event      = $p_event_row;
-        $this->lane       = (int)$p_lane;
-        $this->span       = max( 1, (int)$p_span );
-        $this->is_in_past = ( $this->event['date_from'] + $this->event['duration'] ) < strtotime( date( 'j.n.Y' ) );
+    function __construct( $p_event_row, $p_lane, $p_span, $p_continues_left = FALSE, $p_continues_right = FALSE ) {
+        $this->event           = $p_event_row;
+        $this->lane            = (int)$p_lane;
+        $this->span            = max( 1, (int)$p_span );
+        $this->continues_left  = (bool)$p_continues_left;
+        $this->continues_right = (bool)$p_continues_right;
+        $this->is_in_past      = ( $this->event['date_from'] + $this->event['duration'] ) < strtotime( date( 'j.n.Y' ) );
     }
 
     public function html() {
@@ -46,20 +52,30 @@ class EventBand {
         # times of its start and end are spelled out
         $t_text    = $t_name . ' | ' . date( 'H:i', $this->event['date_from'] ) . ' - ' . date( 'H:i', $this->event['date_from'] + $this->event['duration'] ) . ' [ ' . $t_project . ' ]';
 
-        $t_top = ColumnForm::HEADER_HEIGHT + $this->lane * ColumnForm::BAND_HEIGHT + 1;
-        $t_id  = $this->is_in_past ? 'event_week_expired' : 'event_week';
+        # the tooltip carries the dates, the bar only marks where it is cut off
+        $t_title = $t_name . ' | ' . calendar_event_time_label( $this->event['date_from'], $this->event['duration'] ) . ' [ ' . $t_project . ' ]';
+
+        $t_top   = ColumnForm::HEADER_HEIGHT + $this->lane * ColumnForm::BAND_HEIGHT + 1;
+        $t_id    = $this->is_in_past ? 'event_week_expired' : 'event_week';
+        $t_class = 'event-band'
+                . ( $this->continues_left ? ' event-band-continues-left' : '' )
+                . ( $this->continues_right ? ' event-band-continues-right' : '' );
 
         # every column adds its own 1px border to the width of the bar
         return '<a href=' . WeekCalendar::$link_options
                 . '&event_id=' . $this->event['id']
                 . '&date=' . $this->event['date_from']
                 . ' id="' . $t_id . '"'
-                . ' class="event-band"'
-                . ' title="' . string_attribute( $t_text ) . '"'
+                . ' class="' . $t_class . '"'
+                . ' title="' . string_attribute( $t_title ) . '"'
                 . ' style="z-index:' . ( 100 + $this->lane ) . ';'
                 . ' top:' . $t_top . 'px;'
                 . ' height:' . ( ColumnForm::BAND_HEIGHT - 2 ) . 'px;'
-                . ' width: calc(' . $this->span . ' * (100% + 1px) + 1px);">' . $t_text . '</a>';
+                . ' width: calc(' . $this->span . ' * (100% + 1px) + 1px);">'
+                . ( $this->continues_left ? '<span class="event-band-cut">&laquo;</span>' : '' )
+                . '<span class="event-band-text">' . $t_text . '</span>'
+                . ( $this->continues_right ? '<span class="event-band-cut">&raquo;</span>' : '' )
+                . '</a>';
     }
 
 }

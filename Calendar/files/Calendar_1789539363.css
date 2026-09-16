@@ -125,11 +125,39 @@ a#event_week_expired:hover {
 }
 
 a.event-band {
+    display: flex;
+    align-items: center;
     right: auto;
     padding-top: 0;
-    line-height: 20px;
+}
+
+/* the text gives way to the cut markers and is shortened with an ellipsis */
+.event-band-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+/* The occurrence reaches beyond the shown columns: cut edge and a chevron */
+.event-band-cut {
+    flex: 0 0 auto;
+    padding: 0 4px;
+    font-size: 14px;
+    color: #90A53B;
+}
+
+a.event-band-continues-left {
+    border-left-style: dashed;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+a.event-band-continues-right {
+    border-right-style: dashed;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 /* Task list styles */

@@ -37,9 +37,10 @@ abstract class WeekCalendar {
 
                 $t_key = $t_event_row['id'] . '_' . $t_event_row['date_from'];
                 if( !isset( $t_bands[$t_key] ) ) {
-                    $t_bands[$t_key] = array( 'row' => $t_event_row, 'first' => $t_column, 'last' => $t_column );
+                    $t_bands[$t_key] = array( 'row' => $t_event_row, 'first' => $t_column, 'last' => $t_column, 'first_day' => $t_day );
                 }
-                $t_bands[$t_key]['last'] = $t_column;
+                $t_bands[$t_key]['last']     = $t_column;
+                $t_bands[$t_key]['last_day'] = $t_day;
             }
             $t_column++;
         }
@@ -50,7 +51,12 @@ abstract class WeekCalendar {
 
         $t_column_bands = array();
         foreach( $t_bands as $t_key => $t_band ) {
-            $t_column_bands[$t_band['first']][] = new EventBand( $t_band['row'], $t_lanes[$t_key], $t_band['last'] - $t_band['first'] + 1 );
+            # the occurrence may reach past the shown columns: into another
+            # week, or into a weekday the user has switched off
+            $t_row = $t_band['row'];
+            $t_column_bands[$t_band['first']][] = new EventBand( $t_row, $t_lanes[$t_key], $t_band['last'] - $t_band['first'] + 1,
+                                                                 $t_row['date_from'] < $t_band['first_day'],
+                                                                 $t_row['date_from'] + $t_row['duration'] > strtotime( '+1 day', $t_band['last_day'] ) );
         }
 
         $t_column = 0;
