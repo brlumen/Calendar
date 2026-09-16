@@ -32,7 +32,8 @@ Screenshots
 
 <!-- SCREENSHOT PLACEHOLDER (3.0.0): multi-day events in the week view.
      The week grid with two or three multi-day bands above the hourly rows,
-     one of them cut at the edge of the week.
+     one of them cut at the edge of the week; events of several projects in
+     their colours and the project legend in the bottom toolbar.
      Save as doc/week_view_multiday_bands.png and uncomment the line below.
 ![alt text](doc/week_view_multiday_bands.png)
 -->
@@ -86,8 +87,9 @@ Features
 - Recurring events (v. >= 2.4.0).
 - Month view (v. >= 3.0.0).
 - Creating an event by selecting a time range in the week view — drag with the mouse or use two taps on a touch screen (v. >= 3.0.0).
-- Per-event time zone: an event remembers the time zone it was scheduled in, and recurring events keep their local time across DST transitions (v. >= 3.0.0).
+- Per-event time zone: an event remembers the time zone it was scheduled in, and recurring events keep their local time across DST transitions; the time zone selector shows the UTC offset of every zone (v. >= 3.0.0).
 - Events that span several days, shown as bands above the week grid (v. >= 3.0.0).
+- Events are coloured by project, and a project legend below the calendar switches the current project with one click (v. >= 3.0.0).
 - Event description (v. >= 3.0.0).
 - E-mail reminders about upcoming events: per-event reminders or personal defaults, with a per-user opt-out (v. >= 3.0.0).
 - E-mail notifications about created, changed and deleted events and about membership changes, with a per-project recipient matrix like the one of MantisBT itself (v. >= 3.0.0).
