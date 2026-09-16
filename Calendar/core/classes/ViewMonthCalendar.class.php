@@ -236,6 +236,8 @@ class ViewMonthCalendar {
             $t_modal_events[] = $t_modal_event;
         }
         $t_events_attr = ' data-events="' . string_attribute(json_encode($t_modal_events)) . '"';
+        // Empty slots open the same modal window, so they carry the event list as well
+        $t_empty_slot = '<div class="calendar-event-empty clickable" data-date="' . $p_date . '"' . $t_events_attr . '></div>';
 
         echo '<td class="calendar-cell' .
              ($p_other_month ? ' other-month' : '') .
@@ -260,7 +262,7 @@ class ViewMonthCalendar {
                 echo '</a>';
                 echo '</div>';
             } else {
-                echo '<div class="calendar-event-empty clickable" data-date="' . $p_date . '"></div>';
+                echo $t_empty_slot;
             }
         }
 
@@ -274,7 +276,7 @@ class ViewMonthCalendar {
             echo '</i>';
             echo '</div>';
         } else {
-            echo '<div class="calendar-event-empty clickable" data-date="' . $p_date . '"></div>';
+            echo $t_empty_slot;
         }
 
         echo '</td>';
