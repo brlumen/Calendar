@@ -595,6 +595,7 @@ class CalendarPlugin extends MantisPlugin {
         require_once 'core/classes/TimeColumn.class.php';
         require_once 'core/classes/DayColumn.class.php';
         require_once 'core/classes/EventArea.class.php';
+        require_once 'core/classes/EventBand.class.php';
         require_once 'core/classes/ColumnViewIssuePage.class.php';
         require_once 'core/classes/ViewMonthCalendar.class.php';
 
@@ -739,7 +740,7 @@ class CalendarPlugin extends MantisPlugin {
     }
 
     function resources() {
-        return '<link rel="stylesheet" type="text/css" href="' . plugin_file( 'Calendar_1786727793.css' ) . '"></link>'
+        return '<link rel="stylesheet" type="text/css" href="' . plugin_file( 'Calendar_1789537355.css' ) . '"></link>'
                 . '<script type="text/javascript" src="' . plugin_file( 'calendar_filter.js' ) . '"></script>'
 //                . '<script type="text/javascript" src="' . plugin_file( 'calendar_modal.js' ) . '"></script>'
 //                . '<script type="text/javascript" src="' . plugin_file( 'calendar_event_create.js' ) . '"></script>'

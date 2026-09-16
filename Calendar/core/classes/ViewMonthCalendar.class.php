@@ -196,8 +196,9 @@ class ViewMonthCalendar {
         $t_day_events = array();
         if (isset($this->days_events[$p_date])) {
             $t_day_events = $this->days_events[$p_date];
+            // an event that started on an earlier day comes first
             usort($t_day_events, function($a, $b) {
-                return $a['date_from'] - $b['date_from'];
+                return $a['segment_from'] - $b['segment_from'];
             });
         }
 
@@ -205,8 +206,8 @@ class ViewMonthCalendar {
         $t_modal_events = array();
         foreach ($t_day_events as $t_event) {
             $t_modal_event = array(
-                'time' => date('H:i', $t_event['date_from']),
-                'duration' => number_format($t_event['duration'] / 3600, 1) . plugin_lang_get('hours_short'),
+                'time' => calendar_event_segment_time_label($t_event),
+                'duration' => calendar_event_duration_label($t_event['date_from'], $t_event['duration']),
                 'name' => string_html_specialchars($t_event['name']),
                 'url' => $this->get_event_url($t_event),
                 'project_name' => string_html_specialchars(project_get_name($t_event['project_id']))
@@ -238,8 +239,8 @@ class ViewMonthCalendar {
 
                 echo '<div class="calendar-event">';
                 echo '<a href="' . $this->get_event_url($t_event) . '">';
-                echo '<span class="event-time">' . date('H:i', $t_event['date_from']) . '</span> ';
-                echo '<span class="event-duration">(' . number_format($t_event['duration'] / 3600, 1) . plugin_lang_get('hours_short') . ')</span> ';
+                echo '<span class="event-time">' . calendar_event_segment_time_label($t_event) . '</span> ';
+                echo '<span class="event-duration">(' . calendar_event_duration_label($t_event['date_from'], $t_event['duration']) . ')</span> ';
                 echo string_html_specialchars($t_event['name']);
                 echo '</a>';
                 echo '</div>';

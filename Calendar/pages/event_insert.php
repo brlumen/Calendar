@@ -104,9 +104,11 @@ switch( $t_range ) {
             case 'YEARLY':
                 $t_rset_new = new CalendarPluginRRuleExt\RSetExt();
 
+                # the child series keeps the UNTIL of the parent rule: date_to
+                # of an event whose occurrences span days lies past it
                 $t_rrule = new RRule\RRule( array(
                                           'DTSTART'  => calendar_rrule_datetime( $t_event_child_data->date_from, $t_event_timezone ),
-                                          'UNTIL'    => calendar_rrule_datetime( $t_event_child_data->date_to, $t_event_timezone ),
+                                          'UNTIL'    => isset( $t_rrule_parent_old['UNTIL'] ) ? $t_rrule_parent_old['UNTIL'] : calendar_rrule_datetime( $t_event_child_data->date_to, $t_event_timezone ),
                                           'FREQ'     => $t_freq,
                                           'INTERVAL' => $t_interval
                         ) );

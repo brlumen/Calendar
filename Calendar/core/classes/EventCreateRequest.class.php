@@ -73,12 +73,22 @@ class EventCreateRequest {
 
     /**
      * End of the event, Unix timestamp. Required, > 0, and later than
-     * $date_from. For a recurring event this is the end of the last
-     * occurrence, the same way the event creation form stores it.
+     * $date_from; it may lie on a later day than $date_from, which makes
+     * the event span several days. For a recurring event this is the end of
+     * the last occurrence, the same way the event creation form stores it.
      *
      * @var int
      */
     public int $date_to;
+
+    /**
+     * Length of one occurrence in seconds, > 0. Optional for a single event,
+     * where it defaults to $date_to - $date_from; required for a recurring
+     * one, whose $date_to is the end of the whole series.
+     *
+     * @var int|null
+     */
+    public ?int $duration = null;
 
     /**
      * Identifiers of the issues to attach the event to. An empty array means
@@ -161,6 +171,16 @@ class EventCreateRequest {
                 \error_parameters( $t_positive_property );
                 \trigger_error( \ERROR_INVALID_FIELD_VALUE, \ERROR );
             }
+        }
+
+        if( $this->duration !== null && $this->duration <= 0 ) {
+            \error_parameters( 'duration' );
+            \trigger_error( \ERROR_INVALID_FIELD_VALUE, \ERROR );
+        }
+
+        if( $this->duration === null && !\is_blank( $this->recurrence_pattern ) ) {
+            \error_parameters( 'duration' );
+            \trigger_error( \ERROR_EMPTY_FIELD, \ERROR );
         }
 
         foreach( $this->bug_ids as $t_bug_id ) {

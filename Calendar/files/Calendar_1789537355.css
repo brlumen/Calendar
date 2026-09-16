@@ -119,6 +119,19 @@ a#event_week_expired:hover {
     z-index: 999999 !important;
 }
 
+/* Multi-day events: one bar per event under the day titles, spanning its days */
+.event-bands {
+    border-bottom: 1px solid #E0E0E0;
+}
+
+a.event-band {
+    right: auto;
+    padding-top: 0;
+    line-height: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 /* Task list styles */
 .tasks-list {
     margin: 0;

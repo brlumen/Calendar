@@ -192,7 +192,7 @@ function calendar_api_event_create( \CalendarPluginApi\EventCreateRequest $p_req
         $t_event_data->date_changed       = time();
         $t_event_data->date_from          = $p_request->date_from;
         $t_event_data->date_to            = $p_request->date_to;
-        $t_event_data->duration           = $p_request->date_to - $p_request->date_from;
+        $t_event_data->duration           = $p_request->duration ?? $p_request->date_to - $p_request->date_from;
         $t_event_data->recurrence_pattern = $t_recurrence_pattern;
         $t_event_data->timezone           = $t_timezone->getName();
 

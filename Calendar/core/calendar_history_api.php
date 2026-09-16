@@ -374,8 +374,10 @@ function event_history_format_value( $p_field_name, $p_value ) {
             return date( config_get( 'normal_date_format' ), (int)$p_value );
 
         case 'duration':
-            # a duration is a number of seconds, never a point in time
-            return gmdate( 'H:i', (int)$p_value );
+            # a duration is a number of seconds, never a point in time; the
+            # days are counted apart since gmdate() wraps at 24 hours
+            $t_days = intdiv( (int)$p_value, 86400 );
+            return ( $t_days > 0 ? $t_days . plugin_lang_get( 'days_short' ) . ' ' : '' ) . gmdate( 'H:i', (int)$p_value % 86400 );
 
         case 'recurrence_pattern':
         case 'description':

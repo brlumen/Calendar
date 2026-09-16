@@ -59,7 +59,6 @@ $t_form_title = plugin_lang_get( 'event_view_title' );
 
 $t_formatted_event_id = string_display_line( bug_format_id( $f_event_id ) );
 $t_project_name       = string_display_line( project_get_name( $t_event->project_id ) );
-$t_date_event         = date( config_get( 'short_date_format' ), $t_event->date_from );
 $t_last_updated       = date( config_get( 'normal_date_format' ), $t_event->date_changed );
 
 #
@@ -158,19 +157,21 @@ print_user( $t_event->author_id );
 echo '</td>';
 echo '</tr>';
 
+# the start and the end of the occurrence, each with its own date - the
+# same two rows whether or not the occurrence runs past midnight
+$t_datetime_format = config_get( 'short_date_format' ) . ' H:i';
+
 echo '<tr>';
-echo '<th class="bug-reporter category">', plugin_lang_get( 'date_event' ), '</th>';
+echo '<th class="bug-reporter category">', plugin_lang_get( 'date_from' ), '</th>';
 echo '<td class="bug-reporter">';
-echo $t_date_event;
+echo date( $t_datetime_format, $t_event->date_from );
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<th class="bug-reporter category">', plugin_lang_get( 'time_event' ), '</th>';
-echo '<td class="bug-reporter" >';
-$t_time_start  = date( "H:i", event_get_field( $t_event_id, "date_from" ) );
-$t_time_finish = date( "H:i", event_get_field( $t_event_id, "date_from" ) + event_get_field( $t_event_id, "duration" ) );
-echo $t_time_start . " " . plugin_lang_get( 'to_time' ) . " " . $t_time_finish;
+echo '<th class="bug-reporter category">', plugin_lang_get( 'date_to' ), '</th>';
+echo '<td class="bug-reporter">';
+echo date( $t_datetime_format, $t_event->date_from + $t_event->duration );
 echo '</td>';
 echo '</tr>';
 

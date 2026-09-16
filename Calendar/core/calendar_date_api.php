@@ -67,6 +67,134 @@ function times_day( $p_date, $p_full_time = FALSE ) {
     return $t_dates;
 }
 
+/**
+ * Split an occurrence into the parts that fall on each calendar day it
+ * touches. An event that ends exactly at midnight does not touch the next day.
+ *
+ * @param integer $p_date_from Start of the occurrence.
+ * @param integer $p_duration  Length of the occurrence in seconds.
+ * @return array Day start => array( segment start, segment end ), in day order.
+ */
+function calendar_event_day_segments( $p_date_from, $p_duration ) {
+    $t_from     = (int)$p_date_from;
+    $t_to       = $t_from + (int)$p_duration;
+    $t_segments = array();
+
+    # days are walked in the local timezone, so that a DST switch does not
+    # move the key off midnight
+    $t_day = strtotime( date( 'Y-m-d', $t_from ) );
+    while( $t_day < $t_to ) {
+        $t_next_day          = strtotime( '+1 day', $t_day );
+        $t_segments[$t_day] = array( max( $t_from, $t_day ), min( $t_to, $t_next_day ) );
+        $t_day               = $t_next_day;
+    }
+
+    return $t_segments;
+}
+
+/**
+ * Part of an occurrence that falls on the given day, NULL when it does not
+ * touch the day.
+ *
+ * @param integer $p_date_from Start of the occurrence.
+ * @param integer $p_duration  Length of the occurrence in seconds.
+ * @param integer $p_day       Start of the day.
+ * @return array|null array( segment start, segment end )
+ */
+function calendar_event_day_segment( $p_date_from, $p_duration, $p_day ) {
+    $t_day_start = (int)$p_day;
+    $t_day_end   = strtotime( '+1 day', $t_day_start );
+
+    $t_from = max( (int)$p_date_from, $t_day_start );
+    $t_to   = min( (int)$p_date_from + (int)$p_duration, $t_day_end );
+
+    return $t_from < $t_to ? array( $t_from, $t_to ) : NULL;
+}
+
+/**
+ * Number of calendar days an occurrence touches.
+ */
+function calendar_event_day_span( $p_date_from, $p_duration ) {
+    return max( 1, count( calendar_event_day_segments( $p_date_from, $p_duration ) ) );
+}
+
+/**
+ * Whether an occurrence runs past the midnight of the day it starts on.
+ */
+function calendar_event_is_multiday( $p_date_from, $p_duration ) {
+    return calendar_event_day_span( $p_date_from, $p_duration ) > 1;
+}
+
+/**
+ * "10:00 - 12:30" for an occurrence within a day, "2026-09-16 10:00 - 2026-09-18 18:00"
+ * for one that spans several days.
+ */
+function calendar_event_time_label( $p_date_from, $p_duration ) {
+    $t_date_to = (int)$p_date_from + (int)$p_duration;
+    $t_format  = calendar_event_is_multiday( $p_date_from, $p_duration ) ? config_get( 'short_date_format' ) . ' H:i' : 'H:i';
+
+    return date( $t_format, $p_date_from ) . ' - ' . date( $t_format, $t_date_to );
+}
+
+/**
+ * Compact time of the part of an occurrence shown on one day: "10:00" for an
+ * occurrence within the day, "10:00 →" on the day a longer one starts,
+ * "→ 18:00" on the day it ends and "→" on the days in between.
+ *
+ * @param array $p_event_row Day row with date_from, duration, segment_from and segment_to.
+ * @return string
+ */
+function calendar_event_segment_time_label( array $p_event_row ) {
+    $t_starts_here = $p_event_row['segment_from'] == $p_event_row['date_from'];
+    $t_ends_here   = $p_event_row['segment_to'] == $p_event_row['date_from'] + $p_event_row['duration'];
+
+    if( $t_starts_here && $t_ends_here ) {
+        return date( 'H:i', $p_event_row['date_from'] );
+    }
+    if( $t_starts_here ) {
+        return date( 'H:i', $p_event_row['segment_from'] ) . ' →';
+    }
+    if( $t_ends_here ) {
+        return '→ ' . date( 'H:i', $p_event_row['segment_to'] );
+    }
+    return '→';
+}
+
+/**
+ * "1.5h" for an occurrence within a day, "3d" for one spanning several days.
+ */
+function calendar_event_duration_label( $p_date_from, $p_duration ) {
+    $t_days = calendar_event_day_span( $p_date_from, $p_duration );
+    if( $t_days > 1 ) {
+        return $t_days . plugin_lang_get( 'days_short' );
+    }
+    return number_format( $p_duration / 3600, 1 ) . plugin_lang_get( 'hours_short' );
+}
+
+/**
+ * Day rows of the occurrences of an event, one row per day an occurrence
+ * touches, appended to $p_dates keyed by day start.
+ *
+ * @param array   $p_dates       Day start => list of day rows, extended in place.
+ * @param integer $p_event_id    Event identifier.
+ * @param array   $p_occurrences Start timestamps of the occurrences.
+ * @param integer $p_duration    Length of one occurrence in seconds.
+ * @return void
+ */
+function calendar_event_day_rows_add( array &$p_dates, $p_event_id, array $p_occurrences, $p_duration ) {
+    foreach( $p_occurrences as $t_occurrence ) {
+        foreach( calendar_event_day_segments( $t_occurrence, $p_duration ) as $t_day => $t_segment ) {
+            $p_dates[$t_day][] = array(
+                                      'id'           => (int)$p_event_id,
+                                      'date_from'    => (int)$t_occurrence,
+                                      'duration'     => (int)$p_duration,
+                                      'segment_from' => $t_segment[0],
+                                      'segment_to'   => $t_segment[1],
+            );
+        }
+    }
+}
+
 function get_dates_event_from_events_id( $p_events_id ) {
 
     $t_dates = array();
@@ -101,7 +229,6 @@ function get_dates_event_from_events_id( $p_events_id ) {
 function calendar_column_objects_get_from_event_ids( $p_events_id ) {
 
     $t_dates = array();
-    $t_day_objects = array();
 
     foreach( $p_events_id as $t_event_id ) {
         
@@ -109,41 +236,22 @@ function calendar_column_objects_get_from_event_ids( $p_events_id ) {
             continue;
         }
 
+        $t_duration = (int)event_get_field( $t_event_id, 'duration' );
+
         if( event_get_field( $t_event_id, 'recurrence_pattern' ) != '' ) {
             $t_rset          = new RRule\RSet( event_get_field( $t_event_id, 'recurrence_pattern' ) );
             $t_previous_days = $t_rset->getOccurrencesBetween( (int) event_get_field( $t_event_id, 'date_from' ), strtotime( 'tomorrow' ) );
             $t_next_days     = $t_rset->getOccurrencesBetween( strtotime( 'tomorrow' ), (int) event_get_field( $t_event_id, 'date_to' ), plugin_config_get( 'show_count_future_recurring_events_in_bug_view_page' ) );
-            foreach( $t_previous_days as $t_previous_day ) {
-                $t_time_start_day                                              = strtotime( date( "j.n.Y", $t_previous_day->getTimestamp() ) );
-//                $t_dates[$t_time_start_day][$t_previous_day->getTimestamp()][] = $t_event_id;
-                $t_event_row                                                   = array();
-                $t_event_row['id']                                             = $t_event_id;
-                $t_event_row['date_from']                                      = $t_previous_day->getTimestamp();
-                $t_event_row['duration']                                       = event_get_field( $t_event_id, "duration" );
 
-                 $t_dates[$t_time_start_day][] = $t_event_row;
-            }
-            foreach( $t_next_days as $t_next_day ) {
-                $t_time_start_day                                          = strtotime( date( "j.n.Y", $t_next_day->getTimestamp() ) );
-//                $t_dates[$t_time_start_day][$t_next_day->getTimestamp()][] = $t_event_id;
-                $t_event_row                                               = array();
-                $t_event_row['id']                                         = $t_event_id;
-                $t_event_row['date_from']                                  = $t_next_day->getTimestamp();
-                $t_event_row['duration']                                   = event_get_field( $t_event_id, "duration" );
-
-                 $t_dates[$t_time_start_day][] = $t_event_row;
+            $t_occurrences = array();
+            foreach( array_merge( $t_previous_days, $t_next_days ) as $t_occurrence ) {
+                $t_occurrences[] = $t_occurrence->getTimestamp();
             }
         } else {
-            $t_time_start_day                                                          = strtotime( date( "j.n.Y", event_get_field( $t_event_id, "date_from" ) ) );
-//            $t_dates[$t_time_start_day][event_get_field( $t_event_id, "date_from" )][] = $t_event_id;
-            
-            $t_event_row = array();
-            $t_event_row['id'] = $t_event_id;
-            $t_event_row['date_from'] = event_get_field( $t_event_id, "date_from" );
-            $t_event_row['duration'] = event_get_field( $t_event_id, "duration" );
-                                              
-            $t_dates[$t_time_start_day][] = $t_event_row;
+            $t_occurrences = array( (int)event_get_field( $t_event_id, 'date_from' ) );
         }
+
+        calendar_event_day_rows_add( $t_dates, $t_event_id, $t_occurrences, $t_duration );
     }
     
     ksort( $t_dates );
@@ -291,21 +399,22 @@ function get_days_object( $p_ar_all_days, $p_project_id, $p_user_id = ALL_USERS,
 
         db_param_push();
 
-        # A single range query for the whole set of days; rows are bucketed per day below
+        # A single range query for the whole set of days; rows are bucketed per day below.
+        # date_to is the end of a single event and the end of the series of a
+        # recurring one, so the same predicate finds an event that started
+        # before the range and is still running inside it
         if( $p_user_id == ALL_USERS ) {
             $p_query = "SELECT id,project_id,date_from,date_to,duration,name,recurrence_pattern FROM " . $t_table_calendar_events .
                     " WHERE activity = 'Y' AND project_id IN (" . implode( ',', $t_project_all ) . ")" .
-                    " AND ( date_from BETWEEN " . db_param() . " AND " . db_param() .
-                    " OR ( date_from < " . db_param() . " AND date_to > " . db_param() . " AND recurrence_pattern > '' ) )";
-            $t_result = db_query( $p_query, array( $t_range_start, $t_range_finish, $t_range_finish, $t_range_start ) );
+                    " AND date_from <= " . db_param() . " AND date_to > " . db_param();
+            $t_result = db_query( $p_query, array( $t_range_finish, $t_range_start ) );
         } else {
             $p_query = "SELECT et.id,et.project_id,et.date_from,et.date_to,et.duration,et.name,et.recurrence_pattern FROM " . $t_table_calendar_events . " AS et" .
                     " INNER JOIN " . $t_table_calendar_members . " AS mt" .
                     " ON et.id = mt.event_id" .
                     " WHERE et.activity = 'Y' AND et.project_id IN (" . implode( ',', $t_project_all ) . ") AND mt.user_id = " . db_param() .
-                    " AND ( et.date_from BETWEEN " . db_param() . " AND " . db_param() .
-                    " OR ( et.date_from < " . db_param() . " AND et.date_to > " . db_param() . " AND et.recurrence_pattern > '' ) )";
-            $t_result = db_query( $p_query, array( $p_user_id, $t_range_start, $t_range_finish, $t_range_finish, $t_range_start ) );
+                    " AND et.date_from <= " . db_param() . " AND et.date_to > " . db_param();
+            $t_result = db_query( $p_query, array( $p_user_id, $t_range_finish, $t_range_start ) );
         }
 
         # Collect the visible events once; the access check runs once per event
@@ -335,17 +444,29 @@ function get_days_object( $p_ar_all_days, $p_project_id, $p_user_id = ALL_USERS,
             $t_days[$t_day] = [];
             foreach( $t_events as $t_event_id => $t_event_row ) {
 
+                $t_duration = (int)$t_event_row['duration'];
+
                 if( isset( $t_rules[$t_event_id] ) ) {
-                    $t_is = $t_rules[$t_event_id]->getOccurrencesBetween( $t_time_start_day, $t_time_finish_day );
-                    if( $t_is != NULL ) {
-                        $t_event_row['date_from'] = date_timestamp_get( $t_is[0] );
-                        $t_days[$t_day][] = $t_event_row;
+                    # an occurrence belongs to the day when it starts during
+                    # the day or is still running at its start
+                    $t_occurrences = array();
+                    foreach( $t_rules[$t_event_id]->getOccurrencesBetween( $t_time_start_day - $t_duration + 1, $t_time_finish_day ) as $t_occurrence ) {
+                        $t_occurrences[] = $t_occurrence->getTimestamp();
                     }
                 } else {
-                    $t_time_event_start = (int)$t_event_row['date_from'];
-                    if( $t_time_event_start >= $t_time_start_day && $t_time_event_start <= $t_time_finish_day ) {
-                        $t_days[$t_day][] = $t_event_row;
+                    $t_occurrences = array( (int)$t_event_row['date_from'] );
+                }
+
+                # one row per occurrence, carrying the part of it that falls on this day
+                foreach( $t_occurrences as $t_occurrence ) {
+                    $t_segment = calendar_event_day_segment( $t_occurrence, $t_duration, $t_time_start_day );
+                    if( $t_segment === NULL ) {
+                        continue;
                     }
+                    $t_event_row['date_from']    = $t_occurrence;
+                    $t_event_row['segment_from'] = $t_segment[0];
+                    $t_event_row['segment_to']   = $t_segment[1];
+                    $t_days[$t_day][]            = $t_event_row;
                 }
             }
         }

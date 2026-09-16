@@ -84,15 +84,19 @@ switch( $t_range ) {
             break;
         }
 
-        $t_rset_new            = new CalendarPluginRRuleExt\RSetExt();
-        $t_event_data->date_to = $f_date_select - 1;
+        $t_rset_new = new CalendarPluginRRuleExt\RSetExt();
+        $t_until    = $f_date_select - 1;
+
+        # the series is over when its last remaining occurrence ends, which
+        # for an occurrence spanning days is later than the UNTIL of the rule
+        $t_event_data->date_to = $t_until + $t_event_data->duration;
 
         $t_rset_current = new \RRule\RSet( $t_event_data->recurrence_pattern );
         $t_rrules       = $t_rset_current->getRRules();
 
         foreach( $t_rrules as $t_rrule ) {
             $t_rule          = $t_rrule->getRule();
-            $t_rule['UNTIL'] = $t_event_data->date_to;
+            $t_rule['UNTIL'] = $t_until;
             $t_rrules_new    = new RRule\RRule( $t_rule );
             $t_rset_new->addRRule( $t_rrules_new );
         }

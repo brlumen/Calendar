@@ -12,6 +12,7 @@ abstract class ColumnForm {
     const DAY_MAX_TIME      = 86400;
     const HEADER_HEIGHT     = 38;
     const OUT_OF_RANGE_ROW_HEIGHT = 20;
+    const BAND_HEIGHT       = 22;
 
     protected $title_text     = '';
     protected $first_row_text = '';
@@ -23,6 +24,9 @@ abstract class ColumnForm {
     public static $min_segment_time_in_hour;
     public static $ratio_height;
     public static $total_days_counter;
+    # rows of multi-day bands between the day title and the hours, the same
+    # in every column so that the hour rows stay aligned; set by WeekCalendar
+    public static $band_lanes = 0;
 
     function __construct() {
         if( !self::$is_initialized ) {
@@ -61,11 +65,22 @@ abstract class ColumnForm {
         return '';
     }
 
+    /**
+     * Height of the band area, what the hour rows are pushed down by
+     */
+    public static function bands_height() {
+        return self::$band_lanes * self::BAND_HEIGHT;
+    }
+
     final public function html() {
         $t_result = '';
 
         $t_result .= $this->html_column_param();
         $t_result .= '<ul class="column-header-day"><span>' . $this->title_text . '</span></ul>';
+
+        if( self::$band_lanes > 0 ) {
+            $t_result .= '<div class="event-bands" style="height: ' . self::bands_height() . 'px"></div>';
+        }
 
         $t_result .= "<ul class=\"hour first-row\" id=\"area_hour_top\">";
         $t_result .= "<li>" . $this->first_row_text . "</li>";

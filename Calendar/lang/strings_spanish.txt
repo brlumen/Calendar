@@ -182,6 +182,7 @@ $s_plugin_Calendar_view_event_timezone_created = 'Creado en la zona horaria %1$s
 $s_plugin_Calendar_month_view = 'Mes';
 $s_plugin_Calendar_more_events = '%d eventos más';
 $s_plugin_Calendar_hours_short = 'h';
+$s_plugin_Calendar_days_short = 'd';
 $s_plugin_Calendar_month_view_enter_event_name = 'Por favor, introduzca el nombre del evento';
 $s_plugin_Calendar_month_view_enter_event_time = 'Por favor, indique la hora de inicio y de fin del evento';
 

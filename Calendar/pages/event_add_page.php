@@ -51,15 +51,29 @@ if( $f_bug_id == 0 ) {
         print_header_redirect( $_SERVER['REQUEST_URI'], true, false, true );
     }
 
+    # The project selector returns to "ref" as is, so the prefilled data from
+    # the calendar has to travel inside it; the whole URL is a single parameter
+    $t_ref_params = array();
+    foreach( array( 'name', 'date', 'time_start', 'time_end', 'full_time' ) as $t_key ) {
+        if( gpc_isset( $t_key ) ) {
+            $t_ref_params[$t_key] = gpc_get_string( $t_key );
+        }
+    }
+    $t_ref = plugin_page( 'event_add_page', TRUE );
+    if( !empty( $t_ref_params ) ) {
+        $t_ref .= '&' . http_build_query( $t_ref_params );
+    }
+    $t_select_project_url = 'login_select_proj_page.php?ref=' . string_url( $t_ref );
+
 # New issues cannot be reported for the 'All Project' selection
     if( ALL_PROJECTS == $t_current_project ) {
-        print_header_redirect( 'login_select_proj_page.php?ref=' . plugin_page( 'event_add_page', TRUE ) );
+        print_header_redirect( $t_select_project_url );
     }
 # Check for event report threshold
     if( !access_has_project_level( plugin_config_get( 'report_event_threshold' ) ) ) {
         # If can't report on current project, show project selector if there is any other allowed project
         access_ensure_any_project_level( plugin_config_get( 'report_event_threshold' ) );
-        print_header_redirect( 'login_select_proj_page.php?ref=' . plugin_page( 'event_add_page', TRUE ) );
+        print_header_redirect( $t_select_project_url );
     }
     access_ensure_project_level( plugin_config_get( 'report_event_threshold' ) );
 } else {
@@ -158,6 +172,23 @@ $t_form_encoding   = '';
                                 </td>
                             </tr>
 
+
+                            <!--#Date to: blank means the event ends on the day it starts-->
+
+                            <tr>
+                                <th class="category">
+                                    <label for="date_event_to"><?php echo plugin_lang_get( 'date_to' ) ?></label>
+                                </th>
+                                <td>
+                                    <?php
+                                    echo '<input ' . helper_get_tab_index() . ' type="text" id="date_event_to" name="date_event_to" class="datetimepicker input-sm" ' .
+                                    'data-picker-locale="' . lang_get_current_datetime_locale() .
+                                    '" data-picker-format="' . plugin_config_get( 'datetime_picker_format' ) . '" ' .
+                                    'size="10" maxlength="10" value="' . $t_date_to_display . '" />'
+                                    ?>
+                                    <i class="fa fa-calendar fa-xlg datetimepicker"></i>
+                                </td>
+                            </tr>
 
                             <!--#event_time_finish-->
 

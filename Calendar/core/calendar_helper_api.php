@@ -56,6 +56,43 @@ function calendar_strtotime_in_timezone( $p_date_string, DateTimeZone $p_timezon
 }
 
 /**
+ * Period of the event described by the date and time fields of the event
+ * form (date_event, date_event_to, event_time_start, event_time_finish),
+ * interpreted in the given timezone. A blank end date means the event ends
+ * on the day it starts.
+ *
+ * @param DateTimeZone $p_timezone Timezone the dates of the form are in.
+ * @return array date_from   - start of the event,
+ *               date_to     - end of the event,
+ *               duration    - length of the event in seconds,
+ *               time_finish - end time as seconds since midnight, what the
+ *                             UNTIL of a series adds to its last day,
+ *               end_offset  - date_to relative to the start of the first day,
+ *                             what the end of a series adds to its last day.
+ */
+function calendar_event_form_period( DateTimeZone $p_timezone ) {
+    $t_time_start  = gpc_get_int( 'event_time_start' );
+    $t_time_finish = gpc_get_int( 'event_time_finish' );
+    $t_day_from    = calendar_strtotime_in_timezone( gpc_get_string( 'date_event' ), $p_timezone );
+    $t_day_to      = calendar_strtotime_in_timezone( gpc_get_string( 'date_event_to', '' ), $p_timezone );
+
+    if( $t_day_to === FALSE ) {
+        $t_day_to = $t_day_from;
+    }
+
+    $t_date_from = $t_day_from + $t_time_start;
+    $t_date_to   = $t_day_to + $t_time_finish;
+
+    return array(
+                              'date_from'   => $t_date_from,
+                              'date_to'     => $t_date_to,
+                              'duration'    => $t_date_to - $t_date_from,
+                              'time_finish' => $t_time_finish,
+                              'end_offset'  => $t_date_to - $t_day_from,
+    );
+}
+
+/**
  * Store a calendar state value in a cookie, using the lifetime
  * defined by the core cookie_time_length setting.
  *

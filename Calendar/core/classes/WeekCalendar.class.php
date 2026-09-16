@@ -19,14 +19,84 @@ abstract class WeekCalendar {
         self::$full_time_is = $p_is_full_time;
         self::$link_options = $p_link_options;
 
+        # an occurrence that runs past midnight leaves the hour grid: it is
+        # drawn once as a band over the columns of its days, the other rows
+        # stay in their day columns
+        $t_day_rows = array();
+        $t_bands    = array();
+        $t_column   = 0;
+
         foreach( $p_days_events as $t_day => $t_events_row ) {
-            $this->day_colums[] = new DayColumn( $t_day, $t_events_row, $p_is_full_time ? NULL : $this->full_time_url() );
+            $t_day_rows[$t_day] = array();
+
+            foreach( $t_events_row as $t_event_row ) {
+                if( !calendar_event_is_multiday( $t_event_row['date_from'], $t_event_row['duration'] ) ) {
+                    $t_day_rows[$t_day][] = $t_event_row;
+                    continue;
+                }
+
+                $t_key = $t_event_row['id'] . '_' . $t_event_row['date_from'];
+                if( !isset( $t_bands[$t_key] ) ) {
+                    $t_bands[$t_key] = array( 'row' => $t_event_row, 'first' => $t_column, 'last' => $t_column );
+                }
+                $t_bands[$t_key]['last'] = $t_column;
+            }
+            $t_column++;
+        }
+
+        $t_lanes = $this->assign_band_lanes( $t_bands );
+
+        ColumnForm::$band_lanes = count( array_unique( $t_lanes ) );
+
+        $t_column_bands = array();
+        foreach( $t_bands as $t_key => $t_band ) {
+            $t_column_bands[$t_band['first']][] = new EventBand( $t_band['row'], $t_lanes[$t_key], $t_band['last'] - $t_band['first'] + 1 );
+        }
+
+        $t_column = 0;
+        foreach( $t_day_rows as $t_day => $t_events_row ) {
+            $this->day_colums[] = new DayColumn( $t_day, $t_events_row, $p_is_full_time ? NULL : $this->full_time_url(),
+                                                 isset( $t_column_bands[$t_column] ) ? $t_column_bands[$t_column] : array() );
+            $t_column++;
         }
     }
-    
+
+    /**
+     * Give every band a lane so that bands sharing a column never overlap:
+     * bands are taken in order of their first column, each goes to the first
+     * lane that is free from that column on.
+     *
+     * @param array $p_bands Key => array( 'first' => column, 'last' => column )
+     * @return array Key => lane number, from 0
+     */
+    private function assign_band_lanes( array $p_bands ) {
+        uasort( $p_bands, function( $p_a, $p_b ) {
+            if( $p_a['first'] != $p_b['first'] ) {
+                return $p_a['first'] - $p_b['first'];
+            }
+            return $p_b['last'] - $p_a['last'];
+        } );
+
+        $t_lane_last_column = array();
+        $t_lanes            = array();
+
+        foreach( $p_bands as $t_key => $t_band ) {
+            $t_lane = 0;
+            while( isset( $t_lane_last_column[$t_lane] ) && $t_lane_last_column[$t_lane] >= $t_band['first'] ) {
+                $t_lane++;
+            }
+            $t_lane_last_column[$t_lane] = $t_band['last'];
+            $t_lanes[$t_key]             = $t_lane;
+        }
+
+        return $t_lanes;
+    }
+
     public function __destruct() {
         ColumnForm::$is_initialized = FALSE;
+        ColumnForm::$band_lanes     = 0;
     }
+
     protected function print_spacer_top() {
         echo '';
     }

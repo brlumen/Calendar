@@ -115,7 +115,8 @@ layout_page_begin();
                                 <!--#Date-->
 
                                 <?php
-                                $t_date_to_display = ( new DateTime( '@' . $t_event->date_from ) )->setTimezone( $t_form_timezone )->format( plugin_config_get( 'short_date_format' ) );
+                                $t_date_to_display     = ( new DateTime( '@' . $t_event->date_from ) )->setTimezone( $t_form_timezone )->format( plugin_config_get( 'short_date_format' ) );
+                                $t_date_end_to_display = ( new DateTime( '@' . ( $t_event->date_from + $t_event->duration ) ) )->setTimezone( $t_form_timezone )->format( plugin_config_get( 'short_date_format' ) );
                                 ?>
                                 <tr>
                                     <th class="category">
@@ -149,6 +150,23 @@ layout_page_begin();
                                     </td>
                                 </tr>
 
+
+                                <!--#Date to-->
+
+                                <tr>
+                                    <th class="category">
+                                        <label for="date_event_to"><?php echo plugin_lang_get( 'date_to' ) ?></label>
+                                    </th>
+                                    <td>
+                                        <?php
+                                        echo '<input ' . helper_get_tab_index() . ' type="text" id="date_event_to" name="date_event_to" class="datetimepicker input-sm" ' .
+                                        'data-picker-locale="' . lang_get_current_datetime_locale() .
+                                        '" data-picker-format="' . plugin_config_get( 'datetime_picker_format' ) . '" ' .
+                                        'size="20" maxlength="16" value="' . $t_date_end_to_display . '" />'
+                                        ?>
+                                        <i class="fa fa-calendar fa-xlg datetimepicker"></i>
+                                    </td>
+                                </tr>
 
                                 <!--#event_time_finish-->
 
