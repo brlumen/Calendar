@@ -445,6 +445,10 @@ a.event-band-continues-right {
     margin: inherit;
 }
 
+.calendar-more-events .fa::before {
+    margin-right: 6px;
+}
+
 /* Modal window styles */
 .modal {
     display: none;
