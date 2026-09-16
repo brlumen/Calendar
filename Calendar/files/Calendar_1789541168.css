@@ -590,12 +590,9 @@ a.event-band-continues-right {
     /*width: 100%;*/
 }
 
-#select_date_form {
-    width: 100%;
-}
-
-/* The week view nests the navigation in a flex form: both wrappers must be allowed to shrink */
+/* The week view nests the navigation in a flex form: it spans the toolbar and must be allowed to shrink */
 #select_date_form.btn-toolbar {
+    width: 100%;
     min-width: 0;
 }
 
