@@ -213,7 +213,7 @@ $t_form_encoding   = '';
                                 </th>
                                 <td>
                                     <select <?php helper_get_tab_index() ?> name="event_timezone" id="event_timezone">
-                                        <?php print_timezone_option_list( date_default_timezone_get() ); ?>
+                                        <?php print_timezone_offset_option_list( date_default_timezone_get() ); ?>
                                     </select>
                                 </td>
                             </tr>

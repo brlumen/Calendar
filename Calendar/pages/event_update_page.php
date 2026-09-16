@@ -193,7 +193,7 @@ layout_page_begin();
                                         <select <?php helper_get_tab_index() ?> name="event_timezone" id="event_timezone">
                                             <?php
                                             # the same timezone the dates above are prefilled in
-                                            print_timezone_option_list( $t_form_timezone->getName() );
+                                            print_timezone_offset_option_list( $t_form_timezone->getName(), $t_event->date_from );
                                             ?>
                                         </select>
                                     </td>

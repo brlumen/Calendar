@@ -14,6 +14,37 @@
 # along with Calendar plugin for MantisBT.
 # If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Timezone <option> list grouped by continent, like the core
+ * print_timezone_option_list(), but with the UTC offset in effect at
+ * $p_timestamp appended to every label, e.g. "Moscow (UTC+03:00)".
+ *
+ * @param string   $p_selected  timezone identifier to preselect
+ * @param int|null $p_timestamp moment to take the offset at, defaults to now
+ */
+function print_timezone_offset_option_list( $p_selected, $p_timestamp = NULL ) {
+    $t_moment    = new DateTime( '@' . ( $p_timestamp === NULL ? time() : (int)$p_timestamp ) );
+    $t_locations = array();
+
+    foreach( timezone_identifiers_list( DateTimeZone::ALL ) as $t_identifier ) {
+        $t_zone   = explode( '/', $t_identifier, 2 );
+        $t_offset = $t_moment->setTimezone( new DateTimeZone( $t_identifier ) )->format( 'P' );
+        $t_label  = str_replace( '_', ' ', isset( $t_zone[1] ) ? $t_zone[1] : $t_identifier ) . ' (UTC' . $t_offset . ')';
+
+        $t_locations[$t_zone[0]][$t_identifier] = $t_label;
+    }
+
+    foreach( $t_locations as $t_continent => $t_zones ) {
+        echo "\t" . '<optgroup label="' . $t_continent . '">' . "\n";
+        foreach( $t_zones as $t_identifier => $t_label ) {
+            echo "\t\t" . '<option value="' . $t_identifier . '"';
+            check_selected( $p_selected, $t_identifier );
+            echo '>' . $t_label . '</option>' . "\n";
+        }
+        echo "\t" . '</optgroup>' . "\n";
+    }
+}
+
 function print_time_select_option( $p_selected_time = NULL, $p_full_range = FALSE ) {
 
     if( $p_full_range == FALSE ) {
