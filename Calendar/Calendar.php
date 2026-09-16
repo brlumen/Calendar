@@ -1,18 +1,17 @@
 <?php
-# Copyright (c) 2025 Grigoriy Ermolaev (igflocal@gmail.com)
-# 
-# Calendar for MantisBT is free software: 
+# Copyright (c) 2026 Grigoriy Ermolaev (igflocal@gmail.com)
+# Calendar plugin for MantisBT is free software:
 # you can redistribute it and/or modify it under the terms of the GNU
-# General Public License as published by the Free Software Foundation, 
+# General Public License as published by the Free Software Foundation,
 # either version 2 of the License, or (at your option) any later version.
 #
-# Calendar plugin for for MantisBT is distributed in the hope 
-# that it will be useful, but WITHOUT ANY WARRANTY; without even the 
-# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+# Calendar plugin for MantisBT is distributed in the hope
+# that it will be useful, but WITHOUT ANY WARRANTY; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Customer management plugin for MantisBT.  
+# along with Calendar plugin for MantisBT.
 # If not, see <http://www.gnu.org/licenses/>.
 
 function install_date_from_date_to() { //version 0.9 (schema 3)
@@ -740,14 +739,14 @@ class CalendarPlugin extends MantisPlugin {
     }
 
     function resources() {
-        return '<link rel="stylesheet" type="text/css" href="' . plugin_file( 'Calendar_1789539363.css' ) . '"></link>'
+        return '<link rel="stylesheet" type="text/css" href="' . plugin_file( 'Calendar_1789541168.css' ) . '"></link>'
                 . '<script type="text/javascript" src="' . plugin_file( 'calendar_filter.js' ) . '"></script>'
 //                . '<script type="text/javascript" src="' . plugin_file( 'calendar_modal.js' ) . '"></script>'
 //                . '<script type="text/javascript" src="' . plugin_file( 'calendar_event_create.js' ) . '"></script>'
-                . '<script type="text/javascript" src="' . plugin_file( 'calendar_events_1786870753.js' ) . '"></script>'
-                . '<script type="text/javascript" src="' . plugin_file( 'calendar_week_select_1786707597.js' ) . '"></script>'
-                . '<script type="text/javascript" src="' . plugin_file( 'calendar_reminders_1786961174.js' ) . '"></script>'
-                . '<script type="text/javascript" src="' . plugin_file( 'date_time_picker_1787050164.js' ) . '"></script>';
+                . '<script type="text/javascript" src="' . plugin_file( 'calendar_events_1789541168.js' ) . '"></script>'
+                . '<script type="text/javascript" src="' . plugin_file( 'calendar_week_select_1789541168.js' ) . '"></script>'
+                . '<script type="text/javascript" src="' . plugin_file( 'calendar_reminders_1789541168.js' ) . '"></script>'
+                . '<script type="text/javascript" src="' . plugin_file( 'date_time_picker_1789541168.js' ) . '"></script>';
     }
 
     function menu_main_front() {

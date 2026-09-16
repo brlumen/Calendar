@@ -15,13 +15,16 @@
 # If not, see <http://www.gnu.org/licenses/>.
 */
 
-$(document).ready(function () {
-    $('[name=for_user]').change(function () {
-        $(this).parent().submit();
-    });
+/*
+ * Month view date picker tweaks.
+ */
 
-    // Handler for the date selection field
-    $('.datetimepicker').on('dp.change', function(e) {
-        $('#select_date_form').submit();
-    });
+$(document).ready(function () {
+    // The month selector exists in the month view only; in the week view the
+    // element is absent and the picker instance is undefined.
+    var t_picker = $('#view_month_date_select').data('DateTimePicker');
+
+    if (t_picker) {
+        t_picker.viewMode('months');
+    }
 });
