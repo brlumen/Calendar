@@ -63,6 +63,7 @@ define( 'CALENDAR_HISTORY_REMINDER_SENT_MANY', 11 );
 function event_history_tracked_fields() {
     return array(
                               'name',
+                              'description',
                               'activity',
                               'date_from',
                               'date_to',
@@ -303,6 +304,9 @@ function event_history_field_label( $p_field_name ) {
         case 'name':
             return plugin_lang_get( 'name_event' );
 
+        case 'description':
+            return plugin_lang_get( 'description_event' );
+
         case 'activity':
             return plugin_lang_get( 'event_activity' );
 
@@ -353,7 +357,9 @@ function event_history_format_value( $p_field_name, $p_value ) {
             return gmdate( 'H:i', (int)$p_value );
 
         case 'recurrence_pattern':
-            # an RFC string is multi line, the table cell is not
+        case 'description':
+            # an RFC string and a free text description can both be multi
+            # line, the table cell is not
             return implode( '; ', preg_split( "/\r\n|\n|\r/", trim( $p_value ) ) );
 
         default:

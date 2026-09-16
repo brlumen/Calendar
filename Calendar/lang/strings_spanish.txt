@@ -75,6 +75,7 @@ $s_plugin_Calendar_config_user_google_access_denie = 'El servidor negó la solic
 
 $s_plugin_Calendar_menu_main_front = 'Calendario';
 $s_plugin_Calendar_name_event = 'Nombre del evento';
+$s_plugin_Calendar_description_event = 'Descripción';
 $s_plugin_Calendar_date_event = 'Fecha del evento';
 $s_plugin_Calendar_event = 'Evento de calendario';
 $s_plugin_Calendar_members = 'Miembros del evento';

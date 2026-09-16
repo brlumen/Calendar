@@ -485,6 +485,10 @@ class CalendarPlugin extends MantisPlugin {
                                   array( 'CreateIndexSQL', array( 'idx_event_reminder_event_id', plugin_table( "event_reminder" ), "
                                       event_id
                                       " ) ),
+                                  //version 3.0.0 (schema 22)
+                                  array( 'AddColumnSQL', array( plugin_table( "events" ), "
+                                        description X
+                                " ) ),
         );
     }
 

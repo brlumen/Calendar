@@ -40,13 +40,14 @@ if( calendar_reminder_feature_enabled() ) {
 
 $t_event_data = new CalendarEventData();
 
-$t_event_data->project_id = $f_project_id;
-$t_event_data->name       = gpc_get_string( 'name_event' );
-$t_event_data->activity   = "Y";
-$t_event_data->author_id  = auth_get_current_user_id();
-$t_event_data->date_from  = calendar_strtotime_in_timezone( gpc_get_string( 'date_event' ), $t_event_timezone ) + $f_event_time_start;
-$t_event_data->duration   = $f_event_time_finish - $f_event_time_start;
-$t_event_data->timezone   = $t_event_timezone->getName();
+$t_event_data->project_id  = $f_project_id;
+$t_event_data->name        = gpc_get_string( 'name_event' );
+$t_event_data->description = gpc_get_string( 'description_event', '' );
+$t_event_data->activity    = "Y";
+$t_event_data->author_id   = auth_get_current_user_id();
+$t_event_data->date_from   = calendar_strtotime_in_timezone( gpc_get_string( 'date_event' ), $t_event_timezone ) + $f_event_time_start;
+$t_event_data->duration    = $f_event_time_finish - $f_event_time_start;
+$t_event_data->timezone    = $t_event_timezone->getName();
 
 switch( $f_selected_freq ) {
     case 'DAILY':

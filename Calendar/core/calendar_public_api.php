@@ -185,6 +185,7 @@ function calendar_api_event_create( \CalendarPluginApi\EventCreateRequest $p_req
 
         $t_event_data->project_id         = $t_project_id;
         $t_event_data->name               = $p_request->name;
+        $t_event_data->description        = $p_request->description;
         $t_event_data->activity           = 'Y';
         $t_event_data->author_id          = $t_user_id;
         $t_event_data->changed_user_id    = $t_user_id;

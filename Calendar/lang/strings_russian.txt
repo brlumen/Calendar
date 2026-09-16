@@ -75,6 +75,7 @@ $s_plugin_Calendar_config_user_google_access_denie = 'Сервер отклон�
 
 $s_plugin_Calendar_menu_main_front = 'Календарь событий';
 $s_plugin_Calendar_name_event = 'Имя события';
+$s_plugin_Calendar_description_event = 'Описание';
 $s_plugin_Calendar_date_event = 'Дата события';
 $s_plugin_Calendar_event = 'Событие календаря';
 $s_plugin_Calendar_members = 'Участники события';

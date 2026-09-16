@@ -24,6 +24,7 @@ class CalendarEventData {
     protected $changed_user_id    = 0;
     protected $status             = false;
     protected $name               = '';
+    protected $description        = '';
     protected $activity           = 'Y';
     protected $date_changed       = NULL;
     protected $date_from          = 1;
@@ -49,6 +50,11 @@ class CalendarEventData {
             case 'name':
             case 'timezone':
                 $value = trim( $value );
+                break;
+
+            case 'description':
+                # NULL from the database (nullable column) becomes ''
+                $value = trim( (string)$value );
                 break;
 
             case 'date_changed':
@@ -127,23 +133,23 @@ class CalendarEventData {
         # Insert the rest of the data
         $query = "INSERT INTO $t_event_table
                                                 ( project_id, name,
-                                                  activity, author_id, date_changed,
-                                                  changed_user_id, date_from, date_to,
-                                                  duration, recurrence_pattern, parent_id,
-                                                  timezone
+                                                  description, activity, author_id,
+                                                  date_changed, changed_user_id, date_from,
+                                                  date_to, duration, recurrence_pattern,
+                                                  parent_id, timezone
                                                 )
                                               VALUES
                                                 ( " . db_param() . ',' . db_param() . ",
                                                   " . db_param() . ',' . db_param() . ',' . db_param() . ",
                                                   " . db_param() . ',' . db_param() . ',' . db_param() . ",
                                                   " . db_param() . ',' . db_param() . ',' . db_param() . ",
-                                                  " . db_param() . ')';
+                                                  " . db_param() . ',' . db_param() . ')';
 
         db_query( $query, Array( $this->project_id, $this->name,
-                                  $this->activity, $this->author_id, $this->date_changed,
-                                  $this->changed_user_id, $this->date_from, $this->date_to,
-                                  $this->duration, $this->recurrence_pattern, $this->parent_id,
-                                  $this->timezone ) );
+                                  $this->description, $this->activity, $this->author_id,
+                                  $this->date_changed, $this->changed_user_id, $this->date_from,
+                                  $this->date_to, $this->duration, $this->recurrence_pattern,
+                                  $this->parent_id, $this->timezone ) );
 
         $this->id = db_insert_id( $t_event_table );
 
@@ -196,13 +202,13 @@ class CalendarEventData {
         #  shouldn't get updated like this anyway.  If you really need to change
         #  them use bug_set_field()
         $query = "UPDATE $t_calendar_event_table
-                                            SET name=" . db_param() . ",
+                                            SET name=" . db_param() . ", description=" . db_param() . ",
 						activity=" . db_param() . ", changed_user_id=" . db_param() . ",
                                                 date_from=" . db_param() . ", date_to=" . db_param() . ", duration=" . db_param() . ",
                                                 recurrence_pattern=" . db_param() . ", parent_id=" . db_param() . ", timezone=" . db_param();
 
         $t_fields = Array(
-                                  $this->name,
+                                  $this->name, $this->description,
                                   $this->activity, $this->changed_user_id,
                                   $this->date_from, $this->date_to, $this->duration,
                                   $this->recurrence_pattern, $this->parent_id, $this->timezone,
@@ -219,6 +225,7 @@ class CalendarEventData {
         $t_new_row = array(
                                   'id'                 => $this->id,
                                   'name'               => $this->name,
+                                  'description'        => $this->description,
                                   'activity'           => $this->activity,
                                   'date_from'          => $this->date_from,
                                   'date_to'            => $this->date_to,

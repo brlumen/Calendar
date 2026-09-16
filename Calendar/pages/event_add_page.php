@@ -117,6 +117,15 @@ $t_form_encoding   = '';
                                 </td>
                             </tr>
 
+                            <tr>
+                                <th class="category">
+                                    <label for="description_event"><?php echo plugin_lang_get( 'description_event' ); ?></label>
+                                </th>
+                                <td>
+                                    <textarea <?php echo helper_get_tab_index() ?> id="description_event" name="description_event" class="form-control" cols="80" rows="5"></textarea>
+                                </td>
+                            </tr>
+
                             <!--#Date-->
 
                             <tr>

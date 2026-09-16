@@ -230,6 +230,15 @@ echo $t_formatted_event_id . ": " . $t_event->name;
 echo '</td>';
 echo '</tr>';
 
+if( !is_blank( $t_event->description ) ) {
+    echo '<tr>';
+    echo '<th class="bug-reporter category">', plugin_lang_get( 'description_event' ), '</th>';
+    echo '<td class="bug-reporter" >';
+    echo string_display_links( $t_event->description );
+    echo '</td>';
+    echo '</tr>';
+}
+
 echo '</tbody></table>';
 echo '</div></div></div></div></div>';
 

@@ -297,6 +297,12 @@ function event_is_synchronized_with_google( $p_event_id ) {
 function string_get_google_description( $p_event_id ) {
     $t_description = '';
 
+    # the event's own description comes first, the linked issues follow
+    $t_event_description = event_get_field( $p_event_id, 'description' );
+    if( !is_blank( $t_event_description ) ) {
+        $t_description .= nl2br( string_html_specialchars( $t_event_description ) ) . '<br><br>';
+    }
+
     $t_bugs_id = event_get_attached_bugs_id( $p_event_id );
 
     foreach( $t_bugs_id as $t_bug_id ) {

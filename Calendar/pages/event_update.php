@@ -41,6 +41,7 @@ $t_event_parent_data = event_get( $f_event_id );
 $t_event_child_data  = clone $t_event_parent_data;
 
 $t_event_child_data->name            = gpc_get_string( 'name_event' );
+$t_event_child_data->description     = gpc_get_string( 'description_event', '' );
 $t_event_child_data->activity        = "Y";
 $t_event_child_data->changed_user_id = auth_get_current_user_id();
 $t_event_child_data->date_from       = calendar_strtotime_in_timezone( gpc_get_string( 'date_event' ), $t_event_timezone ) + $f_event_time_start;

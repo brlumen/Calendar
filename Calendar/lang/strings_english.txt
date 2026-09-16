@@ -75,6 +75,7 @@ $s_plugin_Calendar_config_user_google_access_denie = 'The server denied the requ
 
 $s_plugin_Calendar_menu_main_front = 'Calendar';
 $s_plugin_Calendar_name_event = 'Event Name';
+$s_plugin_Calendar_description_event = 'Description';
 $s_plugin_Calendar_date_event = 'Date of the event';
 $s_plugin_Calendar_event = 'Calendar Event';
 $s_plugin_Calendar_members = 'Event Members';

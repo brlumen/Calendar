@@ -75,6 +75,7 @@ $s_plugin_Calendar_config_user_google_access_denie = '服务器拒绝此请求. 
 
 $s_plugin_Calendar_menu_main_front = '日历';
 $s_plugin_Calendar_name_event = '事件名称';
+$s_plugin_Calendar_description_event = '描述';
 $s_plugin_Calendar_date_event = '创建日期';
 $s_plugin_Calendar_event = '事件日历';
 $s_plugin_Calendar_members = '事件成员';

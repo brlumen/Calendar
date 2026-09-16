@@ -48,6 +48,14 @@ class EventCreateRequest {
     public string $name;
 
     /**
+     * Free text description of the event, optional. Defaults to an empty
+     * string.
+     *
+     * @var string
+     */
+    public string $description = '';
+
+    /**
      * Identifier of the user the event is created on behalf of. Required,
      * > 0. The access check and the Google synchronisation are both made
      * for this user, and the event is authored by them.
