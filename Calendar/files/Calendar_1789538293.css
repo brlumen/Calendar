@@ -566,14 +566,31 @@ a.event-band {
     width: 100%;
 }
 
+/* The week view nests the navigation in a flex form: both wrappers must be allowed to shrink */
+#select_date_form.btn-toolbar {
+    min-width: 0;
+}
+
 #nav-button {
     display: flex;
     margin-left: auto;
-    /*overflow-x: auto;*/
+    min-width: 0;
 }
 
-#nav-button-current-period {
-    width: 100%;
+.calendar-nav-period {
+    min-width: 0;
+}
+
+.calendar-nav-period > .btn {
+    flex-shrink: 0;
+}
+
+/* Let the "current period" button give up width first so the arrows stay on screen */
+.calendar-nav-period > .calendar-nav-current {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .modal-create-event {

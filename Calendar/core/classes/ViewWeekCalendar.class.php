@@ -125,14 +125,14 @@ class ViewWeekCalendar extends WeekCalendar {
                                 '" data-picker-format="' . plugin_config_get( 'datetime_picker_format' ) . '" ' .
                                 'size="10" maxlength="10" autocomplete="off" value="' . $t_date_to_display . '" />';
         echo '</div>';
-        echo '<div id="nav-button" class="btn-group pull-right">';
+        echo '<div id="nav-button" class="btn-group pull-right calendar-nav-period">';
         if( self::$full_time_is == FALSE ) {
             print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . date( "W", timestamp_previous_week_get( $this->week, $this->year ) ) . "&year=" . date( "o", timestamp_previous_week_get( $this->week, $this->year ) ), '<<' );
-            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . (int)date( "W" ), plugin_lang_get('current_period') );
+            print_link_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . (int)date( "W" ), plugin_lang_get( 'current_period' ), 'btn-sm calendar-nav-current' );
             print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . date( "W", timestamp_next_week_get( $this->week, $this->year ) ) . "&year=" . date( "o", timestamp_next_week_get( $this->week, $this->year ) ), '>>' );
         } else {
             print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . date( "W", timestamp_previous_week_get( $this->week, $this->year ) ) . "&year=" . date( "o", timestamp_previous_week_get( $this->week, $this->year ) ) . "&full_time=TRUE", '<<' );
-            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . (int)date( "W" ) . "&full_time=TRUE", plugin_lang_get('current_period') );
+            print_link_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . (int)date( "W" ) . "&full_time=TRUE", plugin_lang_get( 'current_period' ), 'btn-sm calendar-nav-current' );
             print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . date( "W", timestamp_next_week_get( $this->week, $this->year ) ) . "&year=" . date( "o", timestamp_next_week_get( $this->week, $this->year ) ) . "&full_time=TRUE", '>>' );
         }
         echo '</div>';

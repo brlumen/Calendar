@@ -286,7 +286,7 @@ class ViewMonthCalendar {
         
 
         # Navigation block
-        echo '<div id="nav-button" class="btn-group pull-right">';
+        echo '<div id="nav-button" class="btn-group pull-right calendar-nav-period">';
 
         # Date selection block
         echo '<form id="select_date_form" method="post" action="' . plugin_page('calendar_user_page') . '" class="form-inline pull-left padding-left-8">';
@@ -310,7 +310,7 @@ class ViewMonthCalendar {
         
         # Navigation buttons
         print_small_button( plugin_page('calendar_user_page') . '&view=month&month=' . ($this->month == 1 ? 12 : $this->month - 1) . '&year=' . ($this->month == 1 ? $this->year - 1 : $this->year), '<<' );
-        print_small_button( plugin_page('calendar_user_page') . '&view=month&month=' . date('m') . '&year=' . date('Y'), plugin_lang_get('current_period') );
+        print_link_button( plugin_page('calendar_user_page') . '&view=month&month=' . date('m') . '&year=' . date('Y'), plugin_lang_get( 'current_period' ), 'btn-sm calendar-nav-current' );
         print_small_button( plugin_page('calendar_user_page') . '&view=month&month=' . ($this->month == 12 ? 1 : $this->month + 1) . '&year=' . ($this->month == 12 ? $this->year + 1 : $this->year), '>>' );
         echo '</div>';
         
