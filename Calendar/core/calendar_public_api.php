@@ -430,3 +430,91 @@ function calendar_api_event_notify_recipients( int $p_event_id, string $p_action
         plugin_pop_current();
     }
 }
+
+/**
+ * Add a record of the calling plugin to the history of the given event.
+ *
+ * The counterpart of the core plugin_history_log() for the change log of a
+ * calendar event: a plugin that keeps its own data about an event - a booked
+ * room, a synchronized meeting, an approval - can make its changes visible
+ * where the user already looks for the history of that event, instead of
+ * hiding them in a log of its own.
+ *
+ * The record is stored with the type CALENDAR_HISTORY_PLUGIN and its field
+ * name is prefixed with the basename of the caller, so the records of a plugin
+ * can never collide with the native ones or with those of another plugin. That
+ * prefixed name is at the same time the language key of the caller: a string
+ * $s_plugin_<Basename>_<field_name> in its language files is what the history
+ * shows as the label, the raw field name is shown when there is none. The
+ * values are stored and displayed as they are given, the calendar does not
+ * interpret them.
+ *
+ * Writing history is not access checked - the caller has decided that the
+ * change happened, exactly as the core does for issue history. Who gets to
+ * *see* the record is decided by the calendar: the whole history block obeys
+ * the 'view_event_history_threshold' of the event.
+ *
+ * @param int         $p_event_id   Event the record belongs to.
+ * @param string      $p_field_name Name of the field of the caller.
+ * @param string      $p_old_value  Value before the change, or the single
+ *                                  value of an action.
+ * @param string      $p_new_value  Value after the change, empty for an action.
+ * @param int|null    $p_user_id    Acting user, defaults to the logged in one.
+ * @param string|null $p_basename   Basename of the plugin the record belongs
+ *                                  to, defaults to the calling plugin.
+ * @return void
+ * @throws \Mantis\Exceptions\ClientException When the event, the user, the
+ *                                            basename or the field name is
+ *                                            rejected.
+ * @access public
+ */
+function calendar_api_event_history_log( int $p_event_id, string $p_field_name, string $p_old_value = '', string $p_new_value = '', ?int $p_user_id = null, ?string $p_basename = null ) : void {
+
+    # read before the calendar is pushed on the stack of current plugins,
+    # otherwise the answer is 'Calendar' rather than the caller
+    $t_basename = ( $p_basename === null ) ? plugin_get_current() : $p_basename;
+
+    plugin_push_current( 'Calendar' );
+
+    # the same reason as in calendar_api_event_create(): an API consumer has no
+    # error page to fall back to, so every ERROR becomes a catchable exception
+    set_error_handler( function( $p_severity, $p_message ) {
+        $t_code = is_numeric( $p_message ) ? (int)$p_message : ERROR_GENERIC;
+        throw new \Mantis\Exceptions\ClientException( error_string( $p_message ), $t_code );
+    }, E_USER_ERROR );
+
+    try {
+        event_ensure_exists( $p_event_id );
+
+        # plugin_get_current() answers null outside of any plugin context, in
+        # which case the caller has to name itself
+        if( is_blank( $t_basename ) ) {
+            error_parameters( 'basename' );
+            trigger_error( ERROR_INVALID_FIELD_VALUE, ERROR );
+        }
+
+        if( is_blank( $p_field_name ) ) {
+            error_parameters( 'field_name' );
+            trigger_error( ERROR_INVALID_FIELD_VALUE, ERROR );
+        }
+
+        $t_field_name = $t_basename . '_' . $p_field_name;
+
+        # a silently truncated name would still be stored, but under a key that
+        # resolves to no language string and to no field of the caller
+        if( mb_strlen( $t_field_name ) > CALENDAR_HISTORY_FIELD_NAME_MAXLEN ) {
+            error_parameters( 'field_name' );
+            trigger_error( ERROR_INVALID_FIELD_VALUE, ERROR );
+        }
+
+        if( $p_user_id !== null ) {
+            user_ensure_exists( $p_user_id );
+        }
+
+        event_history_log( $p_event_id, CALENDAR_HISTORY_PLUGIN, $t_field_name,
+                           $p_old_value, $p_new_value, $p_user_id );
+    } finally {
+        restore_error_handler();
+        plugin_pop_current();
+    }
+}

@@ -55,6 +55,15 @@ define( 'CALENDAR_HISTORY_REMINDER_SENT', 10 );
 # instead of one per recipient, which would swamp the history of a series.
 define( 'CALENDAR_HISTORY_REMINDER_SENT_MANY', 11 );
 
+# a record written by another plugin through calendar_api_event_history_log(),
+# field_name = basename of that plugin plus the name of its own field,
+# old_value/new_value are its raw values. The number leaves room for further
+# native types, the same way PLUGIN_HISTORY does in the core.
+define( 'CALENDAR_HISTORY_PLUGIN', 100 );
+
+# size of the field_name column of the event_history table, see schema()
+define( 'CALENDAR_HISTORY_FIELD_NAME_MAXLEN', 64 );
+
 /**
  * Fields of the event row that are tracked by the change log
  * @return array
@@ -285,6 +294,18 @@ function event_history_localize_row( array $p_row ) {
         case CALENDAR_HISTORY_REMINDER_SENT_MANY:
             $t_localized['note']      = sprintf( plugin_lang_get( 'event_history_reminder_sent_many' ), (int)$p_row['new_value'] );
             $t_localized['new_value'] = calendar_reminder_format_offset( (int)$p_row['old_value'] );
+            break;
+
+        case CALENDAR_HISTORY_PLUGIN:
+            # the field name is already prefixed with the basename of the
+            # calling plugin, which makes it the language key of that plugin as
+            # well - the same lookup the core does for its own plugin history,
+            # so a caller localizes its records by shipping the string with it
+            $t_label = lang_get_defaulted( 'plugin_' . $p_row['field_name'], $p_row['field_name'] );
+
+            $t_localized['note']      = sprintf( plugin_lang_get( 'event_history_plugin' ), $t_label );
+            $t_localized['old_value'] = $p_row['old_value'];
+            $t_localized['new_value'] = $p_row['new_value'];
             break;
     }
 

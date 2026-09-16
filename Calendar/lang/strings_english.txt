@@ -103,6 +103,7 @@ $s_plugin_Calendar_event_history_reminder_added = 'Reminder added';
 $s_plugin_Calendar_event_history_reminder_removed = 'Reminder removed';
 $s_plugin_Calendar_event_history_reminder_sent = 'Reminder sent';
 $s_plugin_Calendar_event_history_reminder_sent_many = 'Reminder sent to %1$d recipients';
+$s_plugin_Calendar_event_history_plugin = '%1$s (plugin)';
 $s_plugin_Calendar_event_duration = 'Duration';
 $s_plugin_Calendar_event_recurrence = 'Recurrence rule';
 $s_plugin_Calendar_event_activity = 'Activity';

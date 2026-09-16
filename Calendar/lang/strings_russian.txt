@@ -103,6 +103,7 @@ $s_plugin_Calendar_event_history_reminder_added = 'Напоминание доб
 $s_plugin_Calendar_event_history_reminder_removed = 'Напоминание удалено';
 $s_plugin_Calendar_event_history_reminder_sent = 'Напоминание отправлено';
 $s_plugin_Calendar_event_history_reminder_sent_many = 'Напоминание отправлено %1$d получателям';
+$s_plugin_Calendar_event_history_plugin = '%1$s (плагин)';
 $s_plugin_Calendar_event_duration = 'Длительность';
 $s_plugin_Calendar_event_recurrence = 'Правило повторения';
 $s_plugin_Calendar_event_activity = 'Активность';

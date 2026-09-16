@@ -103,6 +103,7 @@ $s_plugin_Calendar_event_history_reminder_added = 'Reminder added';
 $s_plugin_Calendar_event_history_reminder_removed = 'Reminder removed';
 $s_plugin_Calendar_event_history_reminder_sent = 'Reminder sent';
 $s_plugin_Calendar_event_history_reminder_sent_many = 'Reminder sent to %1$d recipients';
+$s_plugin_Calendar_event_history_plugin = '%1$s（插件）';
 $s_plugin_Calendar_event_duration = '持续时间';
 $s_plugin_Calendar_event_recurrence = '重复规则';
 $s_plugin_Calendar_event_activity = '活动';
