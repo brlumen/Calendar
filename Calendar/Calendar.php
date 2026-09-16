@@ -739,11 +739,11 @@ class CalendarPlugin extends MantisPlugin {
     }
 
     function resources() {
-        return '<link rel="stylesheet" type="text/css" href="' . plugin_file( 'Calendar_1789577538.css' ) . '"></link>'
+        return '<link rel="stylesheet" type="text/css" href="' . plugin_file( 'Calendar_1789620000.css' ) . '"></link>'
                 . '<script type="text/javascript" src="' . plugin_file( 'calendar_filter.js' ) . '"></script>'
 //                . '<script type="text/javascript" src="' . plugin_file( 'calendar_modal.js' ) . '"></script>'
 //                . '<script type="text/javascript" src="' . plugin_file( 'calendar_event_create.js' ) . '"></script>'
-                . '<script type="text/javascript" src="' . plugin_file( 'calendar_events_1789541168.js' ) . '"></script>'
+                . '<script type="text/javascript" src="' . plugin_file( 'calendar_events_1789600000.js' ) . '"></script>'
                 . '<script type="text/javascript" src="' . plugin_file( 'calendar_week_select_1789541168.js' ) . '"></script>'
                 . '<script type="text/javascript" src="' . plugin_file( 'calendar_reminders_1789541168.js' ) . '"></script>'
                 . '<script type="text/javascript" src="' . plugin_file( 'date_time_picker_1789541168.js' ) . '"></script>';

@@ -23,6 +23,7 @@ abstract class WeekCalendar {
     public static $full_time_is = false;
     public static $link_options = '';
     protected $day_colums       = array();
+    protected $project_ids      = array();
 
     public function __construct( $p_days_events, $p_link_options, $p_is_full_time = false ) {
         self::$full_time_is = $p_is_full_time;
@@ -39,6 +40,8 @@ abstract class WeekCalendar {
             $t_day_rows[$t_day] = array();
 
             foreach( $t_events_row as $t_event_row ) {
+                $this->project_ids[] = event_get_field( $t_event_row['id'], 'project_id' );
+
                 if( !calendar_event_is_multiday( $t_event_row['date_from'], $t_event_row['duration'] ) ) {
                     $t_day_rows[$t_day][] = $t_event_row;
                     continue;

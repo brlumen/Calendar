@@ -162,6 +162,20 @@ function calendar_full_time_get() {
     return $t_full_time;
 }
 
+/**
+ * The colour a project is drawn with in the calendar. Hues are spread by the
+ * golden angle so that neighbouring project ids never look alike, and the
+ * colour is derived from the id alone, so it is the same on every page.
+ *
+ * @param integer $p_project_id
+ * @return string Inline CSS custom properties: --project-color (border) and --project-bg (fill)
+ */
+function calendar_project_color_style( $p_project_id ) {
+    $t_hue = (int)fmod( (int)$p_project_id * 137.508, 360 );
+
+    return '--project-color:hsl(' . $t_hue . ',55%,50%);--project-bg:hsl(' . $t_hue . ',65%,86%);';
+}
+
 function helper_ensure_event_update_confirmed( $p_message ) {
     if( true == gpc_get_string( '_confirmed', FALSE ) ) {
         return gpc_get_string( '_confirmed' );

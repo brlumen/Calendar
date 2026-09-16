@@ -125,6 +125,13 @@ function calendar_event_is_multiday( $p_date_from, $p_duration ) {
 }
 
 /**
+ * Whether an occurrence ended before the start of today.
+ */
+function calendar_event_is_in_past( $p_date_from, $p_duration ) {
+    return (int)$p_date_from + (int)$p_duration < strtotime( date( 'j.n.Y' ) );
+}
+
+/**
  * "10:00 - 12:30" for an occurrence within a day, "2026-09-16 10:00 - 2026-09-18 18:00"
  * for one that spans several days.
  */

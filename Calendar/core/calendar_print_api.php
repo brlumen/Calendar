@@ -156,3 +156,38 @@ function print_event_reminder_row( array $p_input, $p_is_template ) {
 
     echo '</div>';
 }
+
+/**
+ * Legend of the project colours: one swatch per project, sorted by name.
+ * Every entry switches the current project, the way the navbar menu does;
+ * with a project selected, a leading entry leads back to all projects.
+ *
+ * @param array $p_project_ids Projects that have events in the shown period
+ * @return void
+ */
+function print_project_legend( array $p_project_ids ) {
+    $t_names = array();
+    foreach( array_unique( $p_project_ids ) as $t_project_id ) {
+        $t_names[$t_project_id] = project_get_name( $t_project_id );
+    }
+    if( count( $t_names ) == 0 ) {
+        return;
+    }
+    natcasesort( $t_names );
+
+    $t_current = helper_get_current_project();
+    $t_ref     = '&ref=' . string_url( string_sanitize_url( $_SERVER['REQUEST_URI'] ) );
+
+    echo '<div class="calendar-project-legend pull-left">';
+    if( $t_current != ALL_PROJECTS ) {
+        echo '<a class="calendar-project-legend-item" href="' . helper_mantis_url( 'set_project.php?project_id=' . ALL_PROJECTS . $t_ref ) . '">'
+                . lang_get( 'all_projects' ) . '</a>';
+    }
+    foreach( $t_names as $t_project_id => $t_name ) {
+        echo '<a class="calendar-project-legend-item' . ( $t_project_id == $t_current ? ' active' : '' ) . '"'
+                . ' style="' . calendar_project_color_style( $t_project_id ) . '"'
+                . ' href="' . helper_mantis_url( 'set_project.php?project_id=' . $t_project_id . $t_ref ) . '">'
+                . '<i class="calendar-project-swatch"></i>' . string_display_line( $t_name ) . '</a>';
+    }
+    echo '</div>';
+}

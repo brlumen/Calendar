@@ -42,12 +42,13 @@ class EventBand {
         $this->span            = max( 1, (int)$p_span );
         $this->continues_left  = (bool)$p_continues_left;
         $this->continues_right = (bool)$p_continues_right;
-        $this->is_in_past      = ( $this->event['date_from'] + $this->event['duration'] ) < strtotime( date( 'j.n.Y' ) );
+        $this->is_in_past      = calendar_event_is_in_past( $this->event['date_from'], $this->event['duration'] );
     }
 
     public function html() {
-        $t_name    = event_get_field( $this->event['id'], 'name' );
-        $t_project = project_get_field( event_get_field( $this->event['id'], 'project_id' ), 'name' );
+        $t_name       = event_get_field( $this->event['id'], 'name' );
+        $t_project_id = event_get_field( $this->event['id'], 'project_id' );
+        $t_project    = project_get_field( $t_project_id, 'name' );
         # the bar itself shows which days the occurrence covers, so only the
         # times of its start and end are spelled out
         $t_text    = $t_name . ' | ' . date( 'H:i', $this->event['date_from'] ) . ' - ' . date( 'H:i', $this->event['date_from'] + $this->event['duration'] ) . ' [ ' . $t_project . ' ]';
@@ -68,7 +69,8 @@ class EventBand {
                 . ' id="' . $t_id . '"'
                 . ' class="' . $t_class . '"'
                 . ' title="' . string_attribute( $t_title ) . '"'
-                . ' style="z-index:' . ( 100 + $this->lane ) . ';'
+                . ' style="' . calendar_project_color_style( $t_project_id )
+                . 'z-index:' . ( 100 + $this->lane ) . ';'
                 . ' top:' . $t_top . 'px;'
                 . ' height:' . ( ColumnForm::BAND_HEIGHT - 2 ) . 'px;'
                 . ' width: calc(' . $this->span . ' * (100% + 1px) + 1px);">'

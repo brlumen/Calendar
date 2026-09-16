@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function() {
         var eventHtml = "";
         if(events !== null){
             events.forEach(function(event) {
-                eventHtml += "<a href='" + event.url + "' class='modal-event'>";
+                eventHtml += "<a href='" + event.url + "' class='modal-event' style='" + (event.style || "") + "'>";
                 eventHtml += "<div class='event-time'>" + event.time + "</div>";
                 eventHtml += "<div class='event-duration'>" + event.duration + "</div>";
                 eventHtml += "<div class='event-name'>" + event.name + "</div>";

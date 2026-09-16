@@ -100,10 +100,11 @@ a#event_week_expired {
     left: -1px;
     right: -1px;
     box-sizing: border-box;
-    border: 1px solid rgb(206, 230, 105);
+    /* the project colour comes as --project-color / --project-bg on the element */
+    border: 1px solid var(--project-color, rgb(206, 230, 105));
     border-radius: 6px;
     font-size: 12px;
-    box-shadow: 0 0 4px #90A53B;
+    box-shadow: 0 0 4px var(--project-color, #90A53B);
     text-decoration: none;
     color: #535c69;
     font-weight: bold;
@@ -112,9 +113,10 @@ a#event_week_expired {
 }
 
 a#event_week {
-    background: rgba(215, 232, 143, 1);
+    background: var(--project-bg, rgba(215, 232, 143, 1));
 }
 
+/* a past event keeps the grey fill, only its outline tells the project */
 a#event_week_expired {
     background: rgba(232, 232, 226, 1);
     cursor: pointer;
@@ -152,7 +154,67 @@ a.event-band {
     flex: 0 0 auto;
     padding: 0 4px;
     font-size: 14px;
-    color: #90A53B;
+    color: var(--project-color, #90A53B);
+}
+
+/* Bottom toolbar: button, legend and user filter flow as flex items, so on
+   a narrow screen the filter wraps onto its own row instead of being pushed
+   out of the window by the legend */
+.calendar-toolbar-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+}
+
+.calendar-toolbar-bottom > .pull-left,
+.calendar-toolbar-bottom > .pull-right {
+    float: none;
+}
+
+.calendar-toolbar-bottom > .pull-right {
+    margin-left: auto;
+    max-width: 100%;
+}
+
+.calendar-toolbar-bottom select {
+    max-width: 100%;
+}
+
+/* Project legend in the bottom toolbar: a swatch in the project colour per project */
+.calendar-project-legend {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 4px 0;
+    font-size: 12px;
+}
+
+.calendar-project-legend-item {
+    display: inline-block;
+    margin-right: 12px;
+    white-space: nowrap;
+    color: #535c69;
+}
+
+.calendar-project-legend-item:hover {
+    color: #535c69;
+    text-decoration: underline;
+}
+
+.calendar-project-legend-item.active {
+    font-weight: bold;
+}
+
+.calendar-project-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    vertical-align: -2px;
+    box-sizing: border-box;
+    border: 1px solid var(--project-color);
+    border-radius: 3px;
+    background: var(--project-bg);
 }
 
 a.event-band-continues-left {
@@ -225,7 +287,6 @@ a.event-band-continues-right {
 
 .calendar-cell.other-month .calendar-event {
     opacity: 0.8;
-    background: #e9ecef;
 }
 
 .calendar-cell.other-month .calendar-event-empty {
@@ -288,7 +349,8 @@ a.event-band-continues-right {
 
 /* Event styles */
 .calendar-event {
-    background: #e9ecef;
+    background: var(--project-bg, #e9ecef);
+    border-left: 3px solid var(--project-color, transparent);
     padding: 2px 5px;
     margin: 2px 0;
     border-radius: 3px;
@@ -305,7 +367,12 @@ a.event-band-continues-right {
 }
 
 .calendar-event:hover {
-    background: #dee2e6;
+    filter: brightness(0.95);
+}
+
+/* a past event keeps the grey fill, only its edge tells the project */
+.calendar-event.calendar-event-expired {
+    background: #e9ecef;
 }
 
 .calendar-event.active {
@@ -456,6 +523,7 @@ a.event-band-continues-right {
 .modal-event {
     padding: 10px;
     border-bottom: 1px solid #dee2e6;
+    border-left: 4px solid var(--project-color, transparent);
     display: flex;
     align-items: center;
     flex-wrap: wrap;

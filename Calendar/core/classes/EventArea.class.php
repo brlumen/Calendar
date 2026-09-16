@@ -28,7 +28,7 @@ class EventArea {
     function __construct( $p_event_row, $p_total_event_in_group, $p_current_number_in_group ) {
 
         $this->event      = $p_event_row;
-        $this->is_in_past = ( $this->event['date_from'] + $this->event['duration'] ) < date( "U", strtotime( date( "j.n.Y" ) ) ) ? TRUE : FALSE;
+        $this->is_in_past = calendar_event_is_in_past( $this->event['date_from'], $this->event['duration'] );
 
         $this->total_event_in_group    = $p_total_event_in_group;
         $this->current_number_in_group = $p_current_number_in_group;
@@ -55,7 +55,8 @@ class EventArea {
         $t_text_area .= calendar_event_time_label( $this->event['date_from'], $this->event['duration'] );
         $t_text_area .= '</br>';
 
-        $t_text_area .= '[ ' . project_get_field( event_get_field( $this->event['id'], "project_id" ), "name" ) . ' ]';
+        $t_project_id = event_get_field( $this->event['id'], "project_id" );
+        $t_text_area .= '[ ' . project_get_field( $t_project_id, "name" ) . ' ]';
 
         $t_id = $this->is_in_past ? 'event_week_expired' : 'event_week';
 
@@ -63,7 +64,8 @@ class EventArea {
                 . '&event_id=' . $this->event['id']
                 . '&date=' . $this->event['date_from']
                 . ' id="' . $t_id . '"'
-                . ' style="z-index:' . (100 + $this->current_number_in_group) . ';'
+                . ' style="' . calendar_project_color_style( $t_project_id )
+                . 'z-index:' . (100 + $this->current_number_in_group) . ';'
                 . ' height:' . $t_hight . 'px;'
                 . ' width:' . $t_width . '%;'
                 . ' top:' . ($t_top + ColumnForm::HEADER_HEIGHT + ColumnForm::bands_height() + ColumnForm::OUT_OF_RANGE_ROW_HEIGHT) . 'px;'

@@ -89,7 +89,7 @@ class ViewWeekSelect extends ViewWeekCalendar {
     protected function print_menu_bottom() {
 
         echo '<div class="widget-toolbox padding-8 clearfix">';
-        echo '<div class="btn-toolbar">';
+        echo '<div class="btn-toolbar calendar-toolbar-bottom">';
 
         echo '<div class="btn-group pull-left">';
         if( access_compare_level( access_get_project_level(), plugin_config_get( 'report_event_threshold' ) ) ) {
@@ -100,6 +100,8 @@ class ViewWeekSelect extends ViewWeekCalendar {
             }
         }
         echo '</div>';
+
+        print_project_legend( $this->project_ids );
 
         echo '<div class="btn-group pull-right">';
 
