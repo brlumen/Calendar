@@ -23,8 +23,12 @@ class ViewWeekSelect extends ViewWeekCalendar {
     private $bug_id;
 
     public function __construct( $p_week, $p_user, $p_is_full_time, $p_days_events, $p_bug_id, $p_year ) {
-        parent::__construct( $p_week, $p_user, $p_is_full_time, $p_days_events, plugin_page( 'event_insert' ) . '&bug_id=' . $p_bug_id . htmlspecialchars( form_security_param( 'event_insert' ) ), $p_year );
         $this->bug_id = (int)$p_bug_id;
+        parent::__construct( $p_week, $p_user, $p_is_full_time, $p_days_events, plugin_page( 'event_insert' ) . '&bug_id=' . $p_bug_id . htmlspecialchars( form_security_param( 'event_insert' ) ), $p_year );
+    }
+
+    protected function full_time_url() {
+        return plugin_page( 'event_insert_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=TRUE" . '&id=' . $this->bug_id;
     }
 
     protected function print_spacer_top() {
@@ -60,7 +64,7 @@ class ViewWeekSelect extends ViewWeekCalendar {
 
         echo '<div class="btn-group pull-left">';
         if( WeekCalendar::$full_time_is == FALSE ) {
-            print_small_button( plugin_page( 'event_insert_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=TRUE" . '&id=' . $this->bug_id, "0-24" );
+            print_small_button( $this->full_time_url(), "0-24" );
         } else {
             print_small_button( plugin_page( 'event_insert_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . '&id=' . $this->bug_id, gmdate( "H", plugin_config_get( 'time_day_start' ) ) . "-" . gmdate( "H", plugin_config_get( 'time_day_finish' ) ) );
         }

@@ -7,7 +7,13 @@ class DayColumn extends ColumnForm {
     protected $event_above_count = 0;
     protected $event_below_count = 0;
 
-    public function __construct( $p_timestamp, $p_events_row ) {
+    /**
+     * @param int    $p_timestamp     Day start
+     * @param array  $p_events_row    Events of the day
+     * @param string $p_full_time_url URL of the same view in 0-24 mode; NULL leaves the
+     *                                out-of-range counters as plain text
+     */
+    public function __construct( $p_timestamp, $p_events_row, $p_full_time_url = NULL ) {
         parent::__construct();
 
         $this->timestamp = $p_timestamp;
@@ -45,10 +51,10 @@ class DayColumn extends ColumnForm {
 
         $this->title_text = plugin_lang_get( date( "D", $this->timestamp ) ) . ', ' . date( config_get( 'short_date_format' ), $this->timestamp );
         if( $this->event_above_count > 0 ) {
-            $this->first_row_text = "+" . $this->event_above_count . " " . plugin_lang_get( 'out_of_range_above' );
+            $this->first_row_text = $this->out_of_range_html( $this->event_above_count, 'out_of_range_above', $p_full_time_url );
         }
         if( $this->event_below_count > 0 ) {
-            $this->last_row_text = "+" . $this->event_below_count . " " . plugin_lang_get( 'out_of_range_below' );
+            $this->last_row_text = $this->out_of_range_html( $this->event_below_count, 'out_of_range_below', $p_full_time_url );
         }
 
         $this->is_today = date( "U", strtotime( date( "j.n.Y" ) ) ) == $this->timestamp ? TRUE : FALSE;
@@ -58,6 +64,18 @@ class DayColumn extends ColumnForm {
 //    public static function get_event_area( $p_event_row, $p_total_event_in_group, $p_current_number_in_group ) {
 //        return new EventArea( $p_event_row, $p_total_event_in_group, $p_current_number_in_group );
 //    }
+
+    /**
+     * "+N events earlier/later" counter, linked to the 0-24 view when a URL is given
+     */
+    private function out_of_range_html( $p_count, $p_lang_key, $p_full_time_url ) {
+        $t_text = '+' . $p_count . ' ' . plugin_lang_get( $p_lang_key );
+        if( $p_full_time_url === NULL ) {
+            return $t_text;
+        }
+
+        return '<a href="' . string_attribute( $p_full_time_url ) . '">' . $t_text . '</a>';
+    }
 
     protected function html_column_param() {
         $t_class = $this->is_today ? 'column-this-day-td' : 'column-day-td';

@@ -152,8 +152,8 @@ $s_plugin_Calendar_event_relationships_bugs = 'Tareas relacionadas';
 $s_plugin_Calendar_date_from = 'Fecha de inicio del evento';
 $s_plugin_Calendar_date_to = 'Fecha de finalización del evento';
 $s_plugin_Calendar_out_of_range = 'eventos fuera de rango';
-$s_plugin_Calendar_out_of_range_above = 'eventos arriba';
-$s_plugin_Calendar_out_of_range_below = 'eventos abajo';
+$s_plugin_Calendar_out_of_range_above = 'eventos antes';
+$s_plugin_Calendar_out_of_range_below = 'eventos después';
 
 $s_plugin_Calendar_view_submitted_event_link = 'Ver el evento creado %1$s';
 

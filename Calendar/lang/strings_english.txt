@@ -152,8 +152,8 @@ $s_plugin_Calendar_event_relationships_bugs = 'Related tasks';
 $s_plugin_Calendar_date_from = 'Event start date';
 $s_plugin_Calendar_date_to = 'Event end date';
 $s_plugin_Calendar_out_of_range = 'events out of range';
-$s_plugin_Calendar_out_of_range_above = 'events above';
-$s_plugin_Calendar_out_of_range_below = 'events below';
+$s_plugin_Calendar_out_of_range_above = 'events earlier';
+$s_plugin_Calendar_out_of_range_below = 'events later';
 
 $s_plugin_Calendar_view_submitted_event_link = 'View the created event %1$s';
 

@@ -27,13 +27,24 @@ class ViewWeekCalendar extends WeekCalendar {
 
     //put your code here
     public function __construct( $p_week, $p_user, $p_is_full_time, $p_days_events, $p_link_options, $p_year, $p_date_selected = false ) {
-        parent::__construct($p_days_events, $p_link_options, $p_is_full_time);
-
-        $this->week         = $p_week;
-        $this->for_user     = (int)$p_user;
-        $this->year         = $p_year;
-        
+        $this->week          = $p_week;
+        $this->for_user      = (int)$p_user;
+        $this->year          = $p_year;
         $this->date_selected = $p_date_selected;
+
+        parent::__construct($p_days_events, $p_link_options, $p_is_full_time);
+    }
+
+    protected function date_to_display() {
+        if( !is_bool( $this->date_selected ) ) {
+            return date( plugin_config_get( 'short_date_format' ), $this->date_selected );
+        }
+
+        return date( plugin_config_get( 'short_date_format' ) );
+    }
+
+    protected function full_time_url() {
+        return plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=TRUE" . "&date_select=" . $this->date_to_display();
     }
 
     protected function print_spacer_top() {
@@ -95,15 +106,11 @@ class ViewWeekCalendar extends WeekCalendar {
         
         # Time range toggle button
         echo '<div class="btn-group">';
-        if( !is_bool( $this->date_selected ) ) {
-            $t_date_to_display = date( plugin_config_get( 'short_date_format' ), $this->date_selected );
-	} else {
-            $t_date_to_display = date( plugin_config_get( 'short_date_format' ) );
-        }
-        
+        $t_date_to_display = $this->date_to_display();
+
         if( self::$full_time_is == FALSE ) {
             print_hidden_inputs( array( 'full_time' => 'FALSE' ) );
-            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=TRUE" . "&date_select=" . $t_date_to_display, "0-24" );
+            print_small_button( $this->full_time_url(), "0-24" );
         } else {
             print_hidden_inputs( array( 'full_time' => 'TRUE' ) );
             print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=FALSE" . "&date_select=" . $t_date_to_display, gmdate( "H", plugin_config_get( 'time_day_start' ) ) . "-" . gmdate( "H", plugin_config_get( 'time_day_finish' ) ) );

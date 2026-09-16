@@ -20,7 +20,7 @@ abstract class WeekCalendar {
         self::$link_options = $p_link_options;
 
         foreach( $p_days_events as $t_day => $t_events_row ) {
-            $this->day_colums[] = new DayColumn( $t_day, $t_events_row );
+            $this->day_colums[] = new DayColumn( $t_day, $t_events_row, $p_is_full_time ? NULL : $this->full_time_url() );
         }
     }
     
@@ -35,6 +35,15 @@ abstract class WeekCalendar {
 
     protected function print_menu_top() {
         echo '';
+    }
+
+    /**
+     * URL of this view with the 0-24 time range; NULL when the view cannot switch.
+     * Called from the constructor, so subclasses must set the fields it needs
+     * before calling parent::__construct().
+     */
+    protected function full_time_url() {
+        return NULL;
     }
 
     /**
