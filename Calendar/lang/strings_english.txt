@@ -237,6 +237,12 @@ Starts: %3$s (in %4$s)
 
 $s_plugin_Calendar_config_notifications_feature_enabled = 'Notify about the changes of events';
 
+$s_plugin_Calendar_config_bug_calendar_block_position = 'Calendar on the issue view page';
+$s_plugin_Calendar_config_bug_calendar_block_details = 'A row of the issue details';
+$s_plugin_Calendar_config_bug_calendar_block_extra = 'A block of its own below the notes';
+$s_plugin_Calendar_config_bug_calendar_block_user_choice = 'Every user chooses';
+$s_plugin_Calendar_user_config_bug_calendar_block_separate = 'Show the calendar as a block of its own below the notes';
+
 $s_plugin_Calendar_notifications_title = 'Notifications';
 $s_plugin_Calendar_notify_pref_created = 'Receive mail about new events';
 $s_plugin_Calendar_notify_pref_updated = 'Receive mail about changed events';

@@ -160,6 +160,32 @@ $t_name_days_week = plugin_config_get( 'arWeekdaysName' );
                                     </td>
                                 </tr>
 
+                                <tr>
+                                    <td class="category" width="50%">
+                                        <?php echo plugin_lang_get( 'config_bug_calendar_block_position' ) ?>
+
+                                    </td>
+
+                                    <td colspan="3" width="50%">
+                                        <?php
+                                        $t_bug_calendar_block_position = (int)plugin_config_get( 'bug_calendar_block_position' );
+
+                                        $t_bug_calendar_block_options = array(
+                                            CALENDAR_BUG_BLOCK_DETAILS     => 'config_bug_calendar_block_details',
+                                            CALENDAR_BUG_BLOCK_EXTRA       => 'config_bug_calendar_block_extra',
+                                            CALENDAR_BUG_BLOCK_USER_CHOICE => 'config_bug_calendar_block_user_choice',
+                                        );
+
+                                        echo '<select name="bug_calendar_block_position" class="input-sm">';
+                                        foreach( $t_bug_calendar_block_options as $t_value => $t_lang_key ) {
+                                            echo '<option value="' . $t_value . '"' . ( $t_value == $t_bug_calendar_block_position ? ' selected="selected"' : '' ) . '>'
+                                                    . plugin_lang_get( $t_lang_key ) . '</option>';
+                                        }
+                                        echo '</select>';
+                                        ?>
+                                    </td>
+                                </tr>
+
                                 <?php
                                 $t_google_client_id = json_decode( plugin_config_get( 'google_client_secret' ), TRUE );
                                 if( is_array( $t_google_client_id ) && !empty( $t_google_client_id['web']['client_id'] ) ) {

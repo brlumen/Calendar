@@ -123,6 +123,18 @@ $t_name_days_week = plugin_config_get( 'arWeekdaysName' );
                                     </td>
                                 </tr>
                                 
+                                <?php if( plugin_config_get( 'bug_calendar_block_position' ) == CALENDAR_BUG_BLOCK_USER_CHOICE ) { ?>
+                                    <tr>
+                                        <td class="category" width="50%">
+                                            <?php echo plugin_lang_get( 'user_config_bug_calendar_block_separate' ) ?>
+                                        </td>
+
+                                        <td colspan="3" width="50%">
+                                            <label><input type="checkbox" name="bug_calendar_block_separate" value="1"<?php echo calendar_bug_block_is_separate() ? ' checked="checked"' : '' ?>></input></label>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+
                                 <?php if( plugin_config_get( 'google_client_secret' ) ) { ?>
                                     <tr>
                                         <td class="category" width="50%">

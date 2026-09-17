@@ -24,6 +24,7 @@ $f_time_finish = gpc_get_int( 'time_day_finish' );
 
 $f_reminders_feature_enabled     = gpc_get_bool( 'reminders_feature_enabled' ) ? ON : OFF;
 $f_notifications_feature_enabled = gpc_get_bool( 'notifications_feature_enabled' ) ? ON : OFF;
+$f_bug_calendar_block_position   = gpc_get_int( 'bug_calendar_block_position' );
 
 $f_file = gpc_get_file( 'ufile' );
 
@@ -39,6 +40,11 @@ foreach( $t_days_week_config as $t_name_day => $t_status ) {
 if( $f_time_start >= $f_time_finish ) {
     error_parameters( plugin_lang_get( 'date_event' ) );
     plugin_error( 'ERROR_RANGE_TIME', ERROR );
+}
+
+if( !in_array( $f_bug_calendar_block_position, array( CALENDAR_BUG_BLOCK_DETAILS, CALENDAR_BUG_BLOCK_EXTRA, CALENDAR_BUG_BLOCK_USER_CHOICE ) ) ) {
+    error_parameters( 'bug_calendar_block_position' );
+    trigger_error( ERROR_INVALID_FIELD_VALUE, ERROR );
 }
 
 
@@ -60,6 +66,10 @@ if( plugin_config_get( 'reminders_feature_enabled' ) != $f_reminders_feature_ena
 
 if( plugin_config_get( 'notifications_feature_enabled' ) != $f_notifications_feature_enabled ) {
     plugin_config_set( 'notifications_feature_enabled', $f_notifications_feature_enabled );
+}
+
+if( plugin_config_get( 'bug_calendar_block_position' ) != $f_bug_calendar_block_position ) {
+    plugin_config_set( 'bug_calendar_block_position', $f_bug_calendar_block_position );
 }
 
 if( !is_blank( $f_file['tmp_name'] ) ) {

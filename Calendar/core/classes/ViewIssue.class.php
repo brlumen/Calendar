@@ -31,8 +31,12 @@ class ViewIssue extends WeekCalendar {
     }
 
     protected function print_spacer_top() {
-        echo '<div class="space-10">';
-        echo '</div>';
+        # a widget of its own keeps the same distance from the notes as the
+        # other blocks of the page; inside the details table the cell pads
+        if( calendar_bug_block_is_separate() ) {
+            echo '<div class="space-10">';
+            echo '</div>';
+        }
     }
 
     protected function print_headline() {

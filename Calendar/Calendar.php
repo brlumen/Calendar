@@ -503,6 +503,8 @@ class CalendarPlugin extends MantisPlugin {
 //                                  'startStepDays'                        => date( 'w' )-1,
                                   'countStepDays'                                       => 7,
                                   'show_count_future_recurring_events_in_bug_view_page' => 1,
+                                  'bug_calendar_block_position'                         => 0, //Where the calendar sits on the issue view page, see the CALENDAR_BUG_BLOCK_* constants (config() runs before init(), so the literal).
+                                  'bug_calendar_block_separate'                         => OFF, //Per user choice, only consulted under CALENDAR_BUG_BLOCK_USER_CHOICE.
                                   'arWeekdaysName'                                      => array(
                                                                                             'Mon' => ON,
                                                                                             'Tue' => ON,
@@ -676,7 +678,8 @@ class CalendarPlugin extends MantisPlugin {
         return array(
                                   'EVENT_LAYOUT_RESOURCES' => 'resources',
                                   'EVENT_MENU_MAIN_FRONT'  => 'menu_main_front',
-                                  'EVENT_VIEW_BUG_EXTRA'   => 'html_print_calendar',
+                                  'EVENT_VIEW_BUG_DETAILS' => 'html_print_calendar',
+                                  'EVENT_VIEW_BUG_EXTRA'   => 'html_print_calendar_extra',
                                   'EVENT_FILTER_COLUMNS'    => 'column_add_in_view_all_bug_page',
                                   'EVENT_DISPLAY_TEXT'      => 'column_title_formating',
                                   'EVENT_CRONJOB'           => 'process_reminders_cron',
@@ -759,22 +762,48 @@ class CalendarPlugin extends MantisPlugin {
         return $t_links;
     }
 
-    function html_print_calendar( $p_first_option, $p_bug_id ) {
+    /**
+     * The calendar as a row of the issue details table. Both view page hooks
+     * are registered, and calendar_bug_block_is_separate() decides which of
+     * the two prints, so the block never shows up twice.
+     * @param string $p_event
+     * @param integer $p_bug_id
+     */
+    function html_print_calendar( $p_event, $p_bug_id ) {
 
-        if( access_has_project_level( plugin_config_get( 'bug_calendar_view_threshold' ) ) ) {
-
-            echo '<tr class=calendar-area align="center">';
-            echo '<td class=calendar-area-in-bugs align="center" colspan="6">';
-
-            $t_events_id = get_events_id_from_bug_id( $p_bug_id );
-            $t_dates     = calendar_column_objects_get_from_event_ids( $t_events_id );
-
-            $t_calendar_issue_view = new ViewIssue( $t_dates, $p_bug_id );
-            $t_calendar_issue_view->print_html();
-
-            echo '</td>';
-            echo '</tr>';
+        if( calendar_bug_block_is_separate() || !access_has_project_level( plugin_config_get( 'bug_calendar_view_threshold' ) ) ) {
+            return;
         }
+
+        echo '<tr class=calendar-area align="center">';
+        echo '<td class=calendar-area-in-bugs align="center" colspan="6">';
+
+        $this->print_issue_calendar( $p_bug_id );
+
+        echo '</td>';
+        echo '</tr>';
+    }
+
+    /**
+     * The calendar as a widget of its own below the notes
+     * @param string $p_event
+     * @param integer $p_bug_id
+     */
+    function html_print_calendar_extra( $p_event, $p_bug_id ) {
+
+        if( !calendar_bug_block_is_separate() || !access_has_project_level( plugin_config_get( 'bug_calendar_view_threshold' ) ) ) {
+            return;
+        }
+
+        $this->print_issue_calendar( $p_bug_id );
+    }
+
+    private function print_issue_calendar( $p_bug_id ) {
+        $t_events_id = get_events_id_from_bug_id( $p_bug_id );
+        $t_dates     = calendar_column_objects_get_from_event_ids( $t_events_id );
+
+        $t_calendar_issue_view = new ViewIssue( $t_dates, $p_bug_id );
+        $t_calendar_issue_view->print_html();
     }
     
     function column_add_in_view_all_bug_page( $p_type_event, $p_param ){

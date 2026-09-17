@@ -237,6 +237,12 @@ $s_plugin_Calendar_reminder_email_body = 'Событие: %1$s
 
 $s_plugin_Calendar_config_notifications_feature_enabled = 'Уведомлять об изменениях событий';
 
+$s_plugin_Calendar_config_bug_calendar_block_position = 'Календарь на странице задачи';
+$s_plugin_Calendar_config_bug_calendar_block_details = 'Строка в сведениях о задаче';
+$s_plugin_Calendar_config_bug_calendar_block_extra = 'Отдельный блок под заметками';
+$s_plugin_Calendar_config_bug_calendar_block_user_choice = 'По выбору пользователя';
+$s_plugin_Calendar_user_config_bug_calendar_block_separate = 'Показывать календарь отдельным блоком под заметками';
+
 $s_plugin_Calendar_notifications_title = 'Уведомления';
 $s_plugin_Calendar_notify_pref_created = 'Получать письма о новых событиях';
 $s_plugin_Calendar_notify_pref_updated = 'Получать письма об изменениях событий';

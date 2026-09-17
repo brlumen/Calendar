@@ -30,6 +30,8 @@ $f_count_step_days        = gpc_get_int( 'count_step_days' );
 
 $f_google_calendar_list = gpc_get_string( 'google_calendar_list', NULL );
 
+$f_bug_calendar_block_separate = gpc_get_bool( 'bug_calendar_block_separate' ) ? ON : OFF;
+
 foreach( $t_days_week_config as $t_name_day => $t_status ) {
     if( in_array( $t_name_day, $f_days_week_cheked ) ) {
         $t_days_week_config_set[$t_name_day] = ON;
@@ -64,6 +66,12 @@ if( plugin_config_get( 'time_day_finish', plugin_config_get( 'time_day_finish' )
 plugin_config_set( 'stepDayMinutesCount', $f_step_day_minutes_count, $t_current_user_id );
 plugin_config_set( 'startStepDays', $f_start_step_days, $t_current_user_id );
 plugin_config_set( 'countStepDays', $f_count_step_days, $t_current_user_id );
+
+# the checkbox is only on the form while the administrator leaves the choice to the users
+if( plugin_config_get( 'bug_calendar_block_position' ) == CALENDAR_BUG_BLOCK_USER_CHOICE
+        && plugin_config_get( 'bug_calendar_block_separate', OFF, FALSE, $t_current_user_id ) != $f_bug_calendar_block_separate ) {
+    plugin_config_set( 'bug_calendar_block_separate', $f_bug_calendar_block_separate, $t_current_user_id );
+}
 
 
 $t_google_calendar_sync_id = plugin_config_get( 'google_calendar_sync_id', "0", FALSE, $t_current_user_id );

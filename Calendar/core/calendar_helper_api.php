@@ -14,6 +14,34 @@
 # along with Calendar plugin for MantisBT.
 # If not, see <http://www.gnu.org/licenses/>.
 
+# Where the calendar of the issue view page is placed, see bug_calendar_block_position.
+# A row of the issue details table, the way it has always been.
+define( 'CALENDAR_BUG_BLOCK_DETAILS', 0 );
+# A widget of its own below the notes, for everyone.
+define( 'CALENDAR_BUG_BLOCK_EXTRA', 1 );
+# Every user picks one of the two on the personal settings page.
+define( 'CALENDAR_BUG_BLOCK_USER_CHOICE', 2 );
+
+/**
+ * Whether the calendar of the issue view page is shown as a widget of its
+ * own below the notes (EVENT_VIEW_BUG_EXTRA) rather than as a row of the
+ * issue details table (EVENT_VIEW_BUG_DETAILS). Resolves the administrator's
+ * bug_calendar_block_position and, when the choice is left to the users,
+ * the per-user bug_calendar_block_separate.
+ *
+ * @param integer|null $p_user_id defaults to the current user
+ * @return boolean
+ */
+function calendar_bug_block_is_separate( $p_user_id = NULL ) {
+    $t_position = (int)plugin_config_get( 'bug_calendar_block_position' );
+
+    if( $t_position == CALENDAR_BUG_BLOCK_USER_CHOICE ) {
+        return plugin_config_get( 'bug_calendar_block_separate', OFF, FALSE, $p_user_id ) == ON;
+    }
+
+    return $t_position == CALENDAR_BUG_BLOCK_EXTRA;
+}
+
 /**
  * Convert a Unix timestamp to a DateTime carrying a timezone, for use as
  * DTSTART/UNTIL of an RRULE. An integer timestamp would be treated as UTC
