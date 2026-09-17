@@ -95,7 +95,7 @@ Features
 - E-mail notifications about created, changed and deleted events and about membership changes, with a per-project recipient matrix like the one of MantisBT itself (v. >= 3.0.0).
 - Event history, with records written by other plugins shown next to the native ones (v. >= 3.0.0).
 - Public API for other plugins: create events from your own plugin, write to the history of an event, ask who would be notified and subscribe to calendar changes (v. >= 3.0.0).
-- Managing calendar events from Telegram — with the [TelegramBot](https://github.com/mantisbt-plugins/TelegramBot) plugin 2.0 and newer (v. >= 3.0.0).
+- Telegram integration: creating and managing calendar events from Telegram and receiving Telegram notifications about created and changed events — with the [TelegramBot](https://github.com/mantisbt-plugins/TelegramBot) plugin 2.0 and newer (v. >= 3.0.0).
 
 Supported Versions
 ------------------

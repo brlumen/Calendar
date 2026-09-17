@@ -9,8 +9,9 @@ enough to know whether Calendar is installed and loaded.
 
 The [TelegramBot](https://github.com/mantisbt-plugins/TelegramBot) plugin uses this
 API since its version 2.0: it creates calendar events from Telegram and
-subscribes to the calendar signals to announce them, so it doubles as a
-worked example of the integration.
+subscribes to the calendar signals to send Telegram notifications about
+created and changed events to the same recipients the calendar mails go to,
+so it doubles as a worked example of the integration.
 
 ```php
 if( class_exists( 'CalendarPluginApi\\EventCreateRequest' ) ) {
