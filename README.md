@@ -118,28 +118,6 @@ How to install
 6. Click Install.
 
 
-Upgrading to 3.0.0
-------------------
-Version 3.0.0 changes how recurring events are stored: recurrence rules are
-re-anchored from UTC to the time zone of the event's author, so occurrences
-keep their local time across DST transitions (issue #104). Before upgrading:
-
-1. Back up the MantisBT database — the conversion cannot be undone.
-2. Make sure the time zone in each user's profile is correct: the migration
-   anchors existing recurrence rules to the author's current profile time zone,
-   and a wrong time zone can only be fixed afterwards by re-saving the event.
-
-The upgrade shows a confirmation page listing the affected events and requires
-both points to be explicitly confirmed before any database change is made.
-
-<!-- SCREENSHOT PLACEHOLDER (3.0.0): migration confirmation page.
-     Manage -> Manage Plugins -> Upgrade for the Calendar plugin, showing the
-     warnings, the table of affected events and the two mandatory checkboxes.
-     Save as doc/upgrade_confirmation_page.png and uncomment the line below.
-![alt text](doc/upgrade_confirmation_page.png)
--->
-
-
 How to enabled Google Calendar Sync (for Calendar version >= 2.3.0 )
 ----------------------------------------------------------------
 
