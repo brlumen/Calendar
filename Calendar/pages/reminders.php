@@ -14,7 +14,7 @@
 # along with Calendar plugin for MantisBT.
 # If not, see <http://www.gnu.org/licenses/>.
 
-# Store the personal reminder and notification settings submitted from
+# Store the personal reminder, notification and issue page settings submitted from
 # reminders_page.php. A block that the page did not render must not be stored,
 # otherwise switching a feature off would silently reset the settings of every
 # user who saves the page meanwhile.
@@ -27,8 +27,9 @@ form_security_validate( 'calendar_reminders_edit' );
 
 $t_reminders_enabled     = calendar_reminder_feature_enabled();
 $t_notifications_enabled = calendar_notify_feature_enabled();
+$t_bug_block_user_choice = calendar_bug_block_user_choice();
 
-if( !$t_reminders_enabled && !$t_notifications_enabled ) {
+if( !$t_reminders_enabled && !$t_notifications_enabled && !$t_bug_block_user_choice ) {
     access_denied();
 }
 
@@ -54,6 +55,10 @@ if( $t_notifications_enabled ) {
 
         plugin_config_set( 'notify_event_' . $t_notify_action, $t_notify_enabled, $t_current_user_id );
     }
+}
+
+if( $t_bug_block_user_choice ) {
+    plugin_config_set( 'bug_calendar_block_separate', gpc_get_bool( 'bug_calendar_block_separate' ) ? ON : OFF, $t_current_user_id );
 }
 
 form_security_purge( 'calendar_reminders_edit' );

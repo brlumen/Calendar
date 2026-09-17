@@ -14,11 +14,12 @@
 # along with Calendar plugin for MantisBT.
 # If not, see <http://www.gnu.org/licenses/>.
 
-# Personal reminder and notification settings, a tab of the account section.
-# Anyone who can be a member of an event has to reach this page, so it is not
-# behind any of the calendar thresholds - it only ever touches the settings of
-# the current user. Each block is shown only when its feature is switched on,
-# and the page as a whole is reachable as long as one of them is.
+# Personal reminder, notification and issue page settings, a tab of the
+# account section. Anyone who can be a member of an event or open an issue has
+# to reach this page, so it is not behind any of the calendar thresholds - it
+# only ever touches the settings of the current user. Each block is shown only
+# when its feature is switched on, and the page as a whole is reachable as
+# long as one of them is.
 
 auth_ensure_user_authenticated();
 
@@ -26,8 +27,9 @@ current_user_ensure_unprotected();
 
 $t_reminders_enabled     = calendar_reminder_feature_enabled();
 $t_notifications_enabled = calendar_notify_feature_enabled();
+$t_bug_block_user_choice = calendar_bug_block_user_choice();
 
-if( !$t_reminders_enabled && !$t_notifications_enabled ) {
+if( !$t_reminders_enabled && !$t_notifications_enabled && !$t_bug_block_user_choice ) {
     access_denied();
 }
 
@@ -137,6 +139,44 @@ print_account_menu( plugin_page( 'reminders_page', TRUE ) );
                                 <tr>
                                     <td class="category" colspan="2">
                                         <span class="small"><?php echo plugin_lang_get( 'notify_pref_hint' ) ?></span>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php } ?>
+
+            <?php if( $t_bug_block_user_choice ) { ?>
+            <div class="widget-box widget-color-blue2">
+                <div class="widget-header widget-header-small">
+                    <h4 class="widget-title lighter">
+                        <i class="ace-icon fa fa-list-alt"></i>
+                        <?php echo plugin_lang_get( 'config_bug_calendar_block_position' ) ?>
+                    </h4>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main no-padding">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-condensed table-hover">
+                                <colgroup>
+                                    <col style="width:50%" />
+                                    <col style="width:50%" />
+                                </colgroup>
+
+                                <tr>
+                                    <td class="category">
+                                        <?php echo plugin_lang_get( 'user_config_bug_calendar_block_separate' ) ?>
+                                    </td>
+
+                                    <td>
+                                        <?php
+                                        echo '<label><input type="checkbox" name="bug_calendar_block_separate" value="1"'
+                                                . ( calendar_bug_block_is_separate( $t_current_user_id ) ? ' checked="checked"' : '' ) . '></input></label>';
+                                        ?>
                                     </td>
                                 </tr>
 

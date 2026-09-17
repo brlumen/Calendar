@@ -689,17 +689,17 @@ class CalendarPlugin extends MantisPlugin {
     }
 
     /**
-     * Add the personal reminder and notification settings as a tab of the
-     * account section. They live there rather than on the plugin's own
-     * settings page, because every user who can be a member of an event must
-     * be able to reach them, while the plugin page is behind
-     * manage_calendar_threshold. The tab appears as soon as one of the two
-     * features is switched on, the page itself shows the blocks that apply.
+     * Add the personal reminder, notification and issue page settings as a
+     * tab of the account section. They live there rather than on the plugin's
+     * own settings page, because every user who can be a member of an event
+     * or open an issue must be able to reach them, while the plugin page is
+     * behind manage_calendar_threshold. The tab appears as soon as one of the
+     * blocks applies, the page itself shows the blocks that do.
      * @return array of hyperlinks
      */
     function menu_account() {
 
-        if( !calendar_reminder_feature_enabled() && !calendar_notify_feature_enabled() ) {
+        if( !calendar_reminder_feature_enabled() && !calendar_notify_feature_enabled() && !calendar_bug_block_user_choice() ) {
             return array();
         }
 

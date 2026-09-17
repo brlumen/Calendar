@@ -19,8 +19,17 @@
 define( 'CALENDAR_BUG_BLOCK_DETAILS', 0 );
 # A widget of its own below the notes, for everyone.
 define( 'CALENDAR_BUG_BLOCK_EXTRA', 1 );
-# Every user picks one of the two on the personal settings page.
+# Every user picks one of the two on the account tab.
 define( 'CALENDAR_BUG_BLOCK_USER_CHOICE', 2 );
+
+/**
+ * Whether the administrator leaves the placement of the issue page calendar
+ * to every user, which puts the choice on the account tab
+ * @return boolean
+ */
+function calendar_bug_block_user_choice() {
+    return (int)plugin_config_get( 'bug_calendar_block_position' ) == CALENDAR_BUG_BLOCK_USER_CHOICE;
+}
 
 /**
  * Whether the calendar of the issue view page is shown as a widget of its
@@ -33,13 +42,11 @@ define( 'CALENDAR_BUG_BLOCK_USER_CHOICE', 2 );
  * @return boolean
  */
 function calendar_bug_block_is_separate( $p_user_id = NULL ) {
-    $t_position = (int)plugin_config_get( 'bug_calendar_block_position' );
-
-    if( $t_position == CALENDAR_BUG_BLOCK_USER_CHOICE ) {
+    if( calendar_bug_block_user_choice() ) {
         return plugin_config_get( 'bug_calendar_block_separate', OFF, FALSE, $p_user_id ) == ON;
     }
 
-    return $t_position == CALENDAR_BUG_BLOCK_EXTRA;
+    return (int)plugin_config_get( 'bug_calendar_block_position' ) == CALENDAR_BUG_BLOCK_EXTRA;
 }
 
 /**
