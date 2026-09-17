@@ -315,6 +315,14 @@ $s_plugin_Calendar_notify_member_removed_email_body = '您已从一个事件中�
 项目: %2$s
 开始时间: %3$s';
 
+$s_plugin_Calendar_config_update_check = '插件更新';
+$s_plugin_Calendar_update_check_button = '检查更新';
+$s_plugin_Calendar_update_check_installed = '已安装版本：%s';
+$s_plugin_Calendar_update_check_available = '有新版本 %1$s（发布于 %2$s）。';
+$s_plugin_Calendar_update_check_up_to_date = '已安装的版本是最新的。';
+$s_plugin_Calendar_update_check_failed = '检查失败：%s';
+$s_plugin_Calendar_update_check_checked_at = '上次检查：%s';
+
 $s_plugin_Calendar_notify_config_title = '通知接收人';
 $s_plugin_Calendar_notify_config_link = '设置每种操作通知哪些人';
 $s_plugin_Calendar_notify_config_feature_disabled = '事件变更通知已关闭，目前不会发送任何邮件。您仍可在此选择接收人，一旦启用该功能即刻生效。';

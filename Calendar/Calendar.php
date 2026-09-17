@@ -563,6 +563,8 @@ class CalendarPlugin extends MantisPlugin {
                                                                                             'member_added'   => array( 'author' => OFF, 'members' => OFF, 'actor' => OFF ),
                                                                                             'member_removed' => array( 'author' => OFF, 'members' => OFF, 'actor' => OFF )
                                                                                             ),
+                                  //Outcome of the last manual check for a newer release, see core/calendar_update_api.php.
+                                  'update_check_result'                                 => array(),
                                   //Google settings
                                   'oauth_key'                                           => array(),
                                   'google_calendar_sync_id'                             => '',
@@ -589,6 +591,7 @@ class CalendarPlugin extends MantisPlugin {
         require_once 'core/calendar_google_api.php';
         require_once 'core/calendar_menu_api.php';
         require_once 'core/calendar_public_api.php';
+        require_once 'core/calendar_update_api.php';
         require_once 'core/classes/WeekCalendar.class.php';
         require_once 'core/classes/ViewWeekCalendar.class.php';
         require_once 'core/classes/ViewIssue.class.php';

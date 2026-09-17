@@ -314,6 +314,14 @@ Evento: %1$s
 Proyecto: %2$s
 Comienza: %3$s';
 
+$s_plugin_Calendar_config_update_check = 'Actualizaciones del plugin';
+$s_plugin_Calendar_update_check_button = 'Buscar actualizaciones';
+$s_plugin_Calendar_update_check_installed = 'Versión instalada: %s';
+$s_plugin_Calendar_update_check_available = 'La versión %1$s está disponible (publicada el %2$s).';
+$s_plugin_Calendar_update_check_up_to_date = 'La versión instalada es la más reciente.';
+$s_plugin_Calendar_update_check_failed = 'La comprobación ha fallado: %s';
+$s_plugin_Calendar_update_check_checked_at = 'Última comprobación: %s';
+
 $s_plugin_Calendar_notify_config_title = 'Destinatarios de las notificaciones';
 $s_plugin_Calendar_notify_config_link = 'Configurar a quién se notifica de cada acción';
 $s_plugin_Calendar_notify_config_feature_disabled = 'Las notificaciones sobre los cambios de los eventos están desactivadas, por lo que todavía no se envía nada. Aun así puede elegir aquí los destinatarios: se aplicarán en cuanto se active la función.';

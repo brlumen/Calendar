@@ -231,6 +231,40 @@ $t_name_days_week = plugin_config_get( 'arWeekdaysName' );
                                 </tr>
 
                                 <tr>
+                                    <td class="category" width="50%">
+                                        <?php echo plugin_lang_get( 'config_update_check' ) ?>
+                                    </td>
+
+                                    <td colspan="3" width="50%">
+                                        <?php
+                                        # the check is a link rather than a nested form, so it can sit
+                                        # inside the settings form and still carry its own security token
+                                        echo sprintf( plugin_lang_get( 'update_check_installed' ), plugin_get()->version );
+                                        echo '<div class="space-4"></div>';
+                                        echo '<a class="btn btn-primary btn-sm btn-white btn-round" href="'
+                                                . plugin_page( 'update_check' ) . form_security_param( 'update_check' ) . '">'
+                                                . plugin_lang_get( 'update_check_button' ) . '</a>';
+
+                                        $t_update = calendar_update_result_get();
+                                        if( !empty( $t_update ) ) {
+                                            $t_checked_at = date( config_get( 'normal_date_format' ), $t_update['checked_at'] );
+
+                                            if( isset( $t_update['error'] ) ) {
+                                                echo '<div class="alert alert-danger">' . sprintf( plugin_lang_get( 'update_check_failed' ), string_display_line( $t_update['error'] ) ) . '</div>';
+                                            } else if( calendar_update_is_available( $t_update ) ) {
+                                                $t_latest = '<a href="' . string_attribute( $t_update['url'] ) . '" target="_blank" rel="noopener">' . string_display_line( $t_update['latest'] ) . '</a>';
+                                                echo '<div class="alert alert-warning">' . sprintf( plugin_lang_get( 'update_check_available' ), $t_latest, date( config_get( 'normal_date_format' ), $t_update['published_at'] ) ) . '</div>';
+                                            } else {
+                                                echo '<div class="alert alert-success">' . plugin_lang_get( 'update_check_up_to_date' ) . '</div>';
+                                            }
+
+                                            echo '<div class="small">' . sprintf( plugin_lang_get( 'update_check_checked_at' ), $t_checked_at ) . '</div>';
+                                        }
+                                        ?>
+                                    </td>
+                                </tr>
+
+                                <tr>
                                     <td class="center" colspan="3">
                                         <input type="submit" class="button" value="<?php echo lang_get( 'change_configuration' ) ?>" />
                                     </td>

@@ -315,6 +315,14 @@ Event: %1$s
 Project: %2$s
 Starts: %3$s';
 
+$s_plugin_Calendar_config_update_check = 'Plugin updates';
+$s_plugin_Calendar_update_check_button = 'Check for updates';
+$s_plugin_Calendar_update_check_installed = 'Installed version: %s';
+$s_plugin_Calendar_update_check_available = 'Version %1$s is available (released %2$s).';
+$s_plugin_Calendar_update_check_up_to_date = 'The installed version is the latest.';
+$s_plugin_Calendar_update_check_failed = 'The check failed: %s';
+$s_plugin_Calendar_update_check_checked_at = 'Last checked: %s';
+
 $s_plugin_Calendar_notify_config_title = 'Notification recipients';
 $s_plugin_Calendar_notify_config_link = 'Choose who is notified about which action';
 $s_plugin_Calendar_notify_config_feature_disabled = 'Notifications about the changes of events are switched off, so nothing is sent yet. The recipients can be chosen here all the same, and they apply as soon as the feature is switched on.';

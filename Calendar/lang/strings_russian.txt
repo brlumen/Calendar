@@ -315,6 +315,14 @@ $s_plugin_Calendar_notify_member_removed_email_body = 'Вас исключили
 Проект: %2$s
 Начало: %3$s';
 
+$s_plugin_Calendar_config_update_check = 'Обновления плагина';
+$s_plugin_Calendar_update_check_button = 'Проверить наличие обновления';
+$s_plugin_Calendar_update_check_installed = 'Установлена версия: %s';
+$s_plugin_Calendar_update_check_available = 'Доступна версия %1$s (выпущена %2$s).';
+$s_plugin_Calendar_update_check_up_to_date = 'Установлена последняя версия.';
+$s_plugin_Calendar_update_check_failed = 'Проверка не удалась: %s';
+$s_plugin_Calendar_update_check_checked_at = 'Последняя проверка: %s';
+
 $s_plugin_Calendar_notify_config_title = 'Получатели уведомлений';
 $s_plugin_Calendar_notify_config_link = 'Настроить, кого уведомлять о каком действии';
 $s_plugin_Calendar_notify_config_feature_disabled = 'Уведомления об изменениях событий выключены, поэтому письма пока не отправляются. Получателей можно выбрать и сейчас — настройки вступят в силу, как только функция будет включена.';
