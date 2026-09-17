@@ -206,9 +206,9 @@ $s_plugin_Calendar_week_view = 'Semana';
 $s_plugin_Calendar_view_selector = 'Vista del Calendario';
 
 $s_plugin_Calendar_config_reminders_feature_enabled = 'Remind about upcoming events';
-$s_plugin_Calendar_reminder_warning_cron_never = 'The core cron job (scripts/cronjob.php) has never run: reminders are only processed when someone opens a MantisBT page, so how timely they are depends on the activity of the users. Schedule %1$s to run every 5 to 15 minutes; see %2$s.';
-$s_plugin_Calendar_reminder_warning_cron_stale = 'The core cron job (scripts/cronjob.php) has not run since %1$s: reminders are currently processed on page loads only. Check the schedule of %2$s; see %3$s.';
-$s_plugin_Calendar_reminder_cron_ok = 'The core cron job is running, last run %1$s.';
+$s_plugin_Calendar_reminder_warning_cron_never = 'La tarea cron del núcleo (scripts/cronjob.php) nunca se ha ejecutado: los recordatorios solo se procesan cuando alguien abre una página de MantisBT, así que su puntualidad depende de la actividad de los usuarios. Programe %1$s cada minuto: el recordatorio sale en la primera ejecución posterior a su momento, por lo que el intervalo de la tarea cron es el retraso del recordatorio; vea %2$s.';
+$s_plugin_Calendar_reminder_warning_cron_stale = 'La tarea cron del núcleo (scripts/cronjob.php) no se ejecuta desde %1$s: ahora los recordatorios solo se procesan al cargar páginas. Revise la programación de %2$s, debe ejecutarse cada minuto; vea %3$s.';
+$s_plugin_Calendar_reminder_cron_ok = 'La tarea cron del núcleo funciona, última ejecución %1$s. El recordatorio sale en la primera ejecución posterior a su momento, por lo que la tarea debe ejecutarse cada minuto.';
 $s_plugin_Calendar_reminder_cron_doc_link = 'the MantisBT administration guide, section $g_email_send_using_cronjob';
 $s_plugin_Calendar_reminder_notice_send_emails_cron = 'Sending mail through a cron job is switched on, so the reminder mail is delivered by scripts/send_emails.php as well.';
 

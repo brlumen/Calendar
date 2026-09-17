@@ -207,9 +207,9 @@ $s_plugin_Calendar_december = '十二月';
 $s_plugin_Calendar_month = '月';
 
 $s_plugin_Calendar_config_reminders_feature_enabled = 'Remind about upcoming events';
-$s_plugin_Calendar_reminder_warning_cron_never = 'The core cron job (scripts/cronjob.php) has never run: reminders are only processed when someone opens a MantisBT page, so how timely they are depends on the activity of the users. Schedule %1$s to run every 5 to 15 minutes; see %2$s.';
-$s_plugin_Calendar_reminder_warning_cron_stale = 'The core cron job (scripts/cronjob.php) has not run since %1$s: reminders are currently processed on page loads only. Check the schedule of %2$s; see %3$s.';
-$s_plugin_Calendar_reminder_cron_ok = 'The core cron job is running, last run %1$s.';
+$s_plugin_Calendar_reminder_warning_cron_never = '核心计划任务 (scripts/cronjob.php) 从未运行：提醒仅在有人打开 MantisBT 页面时处理，其及时性取决于用户的活跃程度。请设置 %1$s 每分钟运行一次：提醒在其时刻之后的首次运行时发出，因此计划任务的间隔就是提醒的延迟；参见 %2$s。';
+$s_plugin_Calendar_reminder_warning_cron_stale = '核心计划任务 (scripts/cronjob.php) 自 %1$s 起未运行：目前提醒仅在页面加载时处理。请检查 %2$s 的计划，应每分钟运行一次；参见 %3$s。';
+$s_plugin_Calendar_reminder_cron_ok = '核心计划任务正在运行，上次运行 %1$s。提醒在其时刻之后的首次运行时发出，因此计划任务应每分钟运行一次。';
 $s_plugin_Calendar_reminder_cron_doc_link = 'the MantisBT administration guide, section $g_email_send_using_cronjob';
 $s_plugin_Calendar_reminder_notice_send_emails_cron = 'Sending mail through a cron job is switched on, so the reminder mail is delivered by scripts/send_emails.php as well.';
 

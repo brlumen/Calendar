@@ -207,9 +207,9 @@ $s_plugin_Calendar_december = 'December';
 $s_plugin_Calendar_month = 'Month';
 
 $s_plugin_Calendar_config_reminders_feature_enabled = 'Remind about upcoming events';
-$s_plugin_Calendar_reminder_warning_cron_never = 'The core cron job (scripts/cronjob.php) has never run: reminders are only processed when someone opens a MantisBT page, so how timely they are depends on the activity of the users. Schedule %1$s to run every 5 to 15 minutes; see %2$s.';
-$s_plugin_Calendar_reminder_warning_cron_stale = 'The core cron job (scripts/cronjob.php) has not run since %1$s: reminders are currently processed on page loads only. Check the schedule of %2$s; see %3$s.';
-$s_plugin_Calendar_reminder_cron_ok = 'The core cron job is running, last run %1$s.';
+$s_plugin_Calendar_reminder_warning_cron_never = 'The core cron job (scripts/cronjob.php) has never run: reminders are only processed when someone opens a MantisBT page, so how timely they are depends on the activity of the users. Schedule %1$s to run every minute: a reminder goes out on the first run after its moment, so the interval of the cron job is the delay of the reminder; see %2$s.';
+$s_plugin_Calendar_reminder_warning_cron_stale = 'The core cron job (scripts/cronjob.php) has not run since %1$s: reminders are currently processed on page loads only. Check the schedule of %2$s, it should run every minute; see %3$s.';
+$s_plugin_Calendar_reminder_cron_ok = 'The core cron job is running, last run %1$s. A reminder goes out on the first run after its moment, so the job should run every minute.';
 $s_plugin_Calendar_reminder_cron_doc_link = 'the MantisBT administration guide, section $g_email_send_using_cronjob';
 $s_plugin_Calendar_reminder_notice_send_emails_cron = 'Sending mail through a cron job is switched on, so the reminder mail is delivered by scripts/send_emails.php as well.';
 

@@ -207,9 +207,9 @@ $s_plugin_Calendar_week_view = 'Неделя';
 $s_plugin_Calendar_view_selector = 'Вид календаря';
 
 $s_plugin_Calendar_config_reminders_feature_enabled = 'Напоминать о предстоящих событиях';
-$s_plugin_Calendar_reminder_warning_cron_never = 'Крон ядра (scripts/cronjob.php) ни разу не запускался: напоминания обрабатываются только при открытии страниц MantisBT, поэтому их оперативность зависит от активности пользователей. Настройте регулярный запуск %1$s каждые 5–15 минут, см. %2$s.';
-$s_plugin_Calendar_reminder_warning_cron_stale = 'Крон ядра (scripts/cronjob.php) не запускался с %1$s: сейчас напоминания обрабатываются только при открытии страниц. Проверьте регулярный запуск %2$s, см. %3$s.';
-$s_plugin_Calendar_reminder_cron_ok = 'Крон ядра работает, последний запуск %1$s.';
+$s_plugin_Calendar_reminder_warning_cron_never = 'Крон ядра (scripts/cronjob.php) ни разу не запускался: напоминания обрабатываются только при открытии страниц MantisBT, поэтому их оперативность зависит от активности пользователей. Настройте запуск %1$s каждую минуту: напоминание уходит при первом запуске после назначенного момента, поэтому интервал крона — это опоздание напоминания; см. %2$s.';
+$s_plugin_Calendar_reminder_warning_cron_stale = 'Крон ядра (scripts/cronjob.php) не запускался с %1$s: сейчас напоминания обрабатываются только при открытии страниц. Проверьте расписание %2$s, запуск нужен каждую минуту; см. %3$s.';
+$s_plugin_Calendar_reminder_cron_ok = 'Крон ядра работает, последний запуск %1$s. Напоминание уходит при первом запуске после назначенного момента, поэтому запускать крон следует каждую минуту.';
 $s_plugin_Calendar_reminder_cron_doc_link = 'руководство администратора MantisBT, раздел $g_email_send_using_cronjob';
 $s_plugin_Calendar_reminder_notice_send_emails_cron = 'Включена отправка почты через крон, поэтому письма с напоминаниями доставляет ещё и scripts/send_emails.php.';
 
