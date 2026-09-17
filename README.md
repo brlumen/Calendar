@@ -109,12 +109,12 @@ Please download the stable version.
 
 Documentation
 -------------
-The instructions live in the [project wiki](https://github.com/mantisbt-plugins/Calendar/wiki):
+The instructions live in the [doc](doc/) folder of the repository:
 
-- [Installation](https://github.com/mantisbt-plugins/Calendar/wiki/Installation) — requirements, installing and upgrading the plugin.
-- [Google Calendar Sync](https://github.com/mantisbt-plugins/Calendar/wiki/Google-Calendar-Sync) — enabling the one-way synchronization, step by step.
-- [Reminders and Notifications](https://github.com/mantisbt-plugins/Calendar/wiki/Reminders-and-Notifications) — e-mail reminders and notifications about changes (v. >= 3.0.0).
-- [Public API for other plugins](https://github.com/mantisbt-plugins/Calendar/wiki/Public-API-for-other-plugins) — creating events, writing event history and subscribing to calendar signals from your own plugin (v. >= 3.0.0).
+- [Installation](doc/installation.md) — requirements, installing and upgrading the plugin.
+- [Google Calendar Sync](doc/google-calendar-sync.md) — enabling the one-way synchronization, step by step.
+- [Reminders and Notifications](doc/reminders-and-notifications.md) — e-mail reminders and notifications about changes (v. >= 3.0.0).
+- [Public API for other plugins](doc/public-api.md) — creating events, writing event history and subscribing to calendar signals from your own plugin (v. >= 3.0.0).
 
 The upgrade notes of each version are part of its [release](https://github.com/mantisbt-plugins/Calendar/releases).
 
