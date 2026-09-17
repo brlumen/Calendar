@@ -597,11 +597,12 @@ function event_member_delete( $p_event_id, $p_user_id = NULL ) {
 /**
  * Returns the list of users members the specified event
  *
- * @param integer $p_bevent_id Integer representing event identifier.
+ * @param integer      $p_event_id Integer representing event identifier.
+ * @param integer|null $p_user_id  User the list is read for, defaults to null to use current user.
  * @return array
  */
-function event_get_members( $p_event_id ) {
-    if( !access_has_event_level( plugin_config_get( 'show_member_list_threshold' ), $p_event_id ) ) {
+function event_get_members( $p_event_id, $p_user_id = null ) {
+    if( !access_has_event_level( plugin_config_get( 'show_member_list_threshold' ), $p_event_id, $p_user_id ) ) {
         return array();
     }
 

@@ -43,13 +43,15 @@ function access_ensure_event_level( $p_access_level, $p_event_id, $p_user_id = n
  */
 function access_has_event_level( $p_access_level, $p_event_id, $p_user_id = null ) {
 	if( $p_user_id === null ) {
+		# Deal with not logged in silently: auth_get_current_user_id() would
+		# redirect to the login page instead, which kills a cron run
+		if( !auth_is_user_authenticated() ) {
+			return false;
+		}
 		$p_user_id = auth_get_current_user_id();
 	}
 
-	# Deal with not logged in silently in this case
-	# @@@ we may be able to remove this and just error
-	#     and once we default to anon login, we can remove it for sure
-	if( empty( $p_user_id ) && !auth_is_user_authenticated() ) {
+	if( empty( $p_user_id ) ) {
 		return false;
 	}
 
