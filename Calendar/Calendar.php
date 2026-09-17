@@ -503,7 +503,7 @@ class CalendarPlugin extends MantisPlugin {
 //                                  'startStepDays'                        => date( 'w' )-1,
                                   'countStepDays'                                       => 7,
                                   'show_count_future_recurring_events_in_bug_view_page' => 1,
-                                  'bug_calendar_block_position'                         => 0, //Where the calendar sits on the issue view page, see the CALENDAR_BUG_BLOCK_* constants (config() runs before init(), so the literal).
+                                  'bug_calendar_block_position'                         => 2, //Where the calendar sits on the issue view page, see the CALENDAR_BUG_BLOCK_* constants (config() runs before init(), so the literal).
                                   'bug_calendar_block_separate'                         => OFF, //Per user choice, only consulted under CALENDAR_BUG_BLOCK_USER_CHOICE.
                                   'arWeekdaysName'                                      => array(
                                                                                             'Mon' => ON,
