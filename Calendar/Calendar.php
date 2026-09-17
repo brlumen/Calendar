@@ -578,6 +578,7 @@ class CalendarPlugin extends MantisPlugin {
         require_once 'core/calendar_history_api.php';
         require_once 'core/calendar_reminder_api.php';
         require_once 'core/calendar_notify_api.php';
+        require_once 'core/calendar_ical_api.php';
         require_once 'core/calendar_date_api.php';
         require_once 'core/calendar_access_api.php';
         require_once 'core/calendar_print_api.php';

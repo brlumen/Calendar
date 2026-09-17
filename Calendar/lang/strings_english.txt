@@ -144,6 +144,7 @@ $s_plugin_Calendar_goto_date_button = 'Go to date:';
 $s_plugin_Calendar_assigned_event = 'Assigned Events';
 $s_plugin_Calendar_not_assigned_event = 'No events assigned';
 $s_plugin_Calendar_event_view_title = 'Event Viewer';
+$s_plugin_Calendar_event_ics_button = 'Download .ics';
 $s_plugin_Calendar_id = 'Number';
 $s_plugin_Calendar_last_update = 'Date edited';
 $s_plugin_Calendar_view_event_google_last_sync = 'Synced with google';
@@ -256,7 +257,9 @@ Event: %1$s
 Project: %2$s
 Starts: %3$s
 
-%4$s';
+%4$s
+
+Calendar file (.ics): %5$s';
 $s_plugin_Calendar_notify_updated_email_subject = 'Event changed: %1$s';
 $s_plugin_Calendar_notify_updated_email_body = 'An event you take part in has been changed.
 
@@ -264,7 +267,9 @@ Event: %1$s
 Project: %2$s
 Starts: %3$s
 
-%4$s';
+%4$s
+
+Calendar file (.ics): %5$s';
 $s_plugin_Calendar_notify_deleted_email_subject = 'Event cancelled: %1$s';
 $s_plugin_Calendar_notify_deleted_email_body = 'An event you took part in has been deleted.
 
@@ -278,7 +283,9 @@ Event: %1$s
 Project: %2$s
 Cancelled occurrence: %3$s
 
-%4$s';
+%4$s
+
+Calendar file (.ics): %5$s';
 $s_plugin_Calendar_notify_from_date_cancelled_email_subject = 'Occurrences cancelled: %1$s';
 $s_plugin_Calendar_notify_from_date_cancelled_email_body = 'An event you take part in has been cancelled from the given date on, the earlier occurrences are unchanged.
 
@@ -286,7 +293,9 @@ Event: %1$s
 Project: %2$s
 Cancelled from: %3$s
 
-%4$s';
+%4$s
+
+Calendar file (.ics): %5$s';
 $s_plugin_Calendar_notify_member_added_email_subject = 'Added to the event: %1$s';
 $s_plugin_Calendar_notify_member_added_email_body = 'You have been added to an event.
 
@@ -294,7 +303,9 @@ Event: %1$s
 Project: %2$s
 Starts: %3$s
 
-%4$s';
+%4$s
+
+Calendar file (.ics): %5$s';
 $s_plugin_Calendar_notify_member_removed_email_subject = 'Removed from the event: %1$s';
 $s_plugin_Calendar_notify_member_removed_email_body = 'You have been removed from an event.
 
@@ -321,18 +332,22 @@ $s_plugin_Calendar_notify_config_revert_to_global = 'Revert to the global values
 $s_plugin_Calendar_notify_config_revert_to_default = 'Revert to the built-in values';
 
 $s_plugin_Calendar_notify_member_added_others_email_subject = 'Member added: %1$s';
-$s_plugin_Calendar_notify_member_added_others_email_body = '%5$s has been added to an event you take part in.
+$s_plugin_Calendar_notify_member_added_others_email_body = '%6$s has been added to an event you take part in.
 
 Event: %1$s
 Project: %2$s
 Starts: %3$s
 
-%4$s';
+%4$s
+
+Calendar file (.ics): %5$s';
 $s_plugin_Calendar_notify_member_removed_others_email_subject = 'Member removed: %1$s';
-$s_plugin_Calendar_notify_member_removed_others_email_body = '%5$s no longer takes part in an event you take part in.
+$s_plugin_Calendar_notify_member_removed_others_email_body = '%6$s no longer takes part in an event you take part in.
 
 Event: %1$s
 Project: %2$s
 Starts: %3$s
 
-%4$s';
+%4$s
+
+Calendar file (.ics): %5$s';

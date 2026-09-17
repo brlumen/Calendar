@@ -83,16 +83,19 @@ echo '<table class="table table-bordered table-condensed">';
 
 $t_access_level_current_user = access_get_project_level();
 
-if( access_compare_level( $t_access_level_current_user, plugin_config_get( 'update_event_threshold' ) ) ) {
-    echo '<tfoot>';
-    echo '<tr class="noprint"><td colspan="2">';
+echo '<tfoot>';
+echo '<tr class="noprint"><td colspan="2">';
 
+if( access_compare_level( $t_access_level_current_user, plugin_config_get( 'update_event_threshold' ) ) ) {
     print_small_button( plugin_page( 'event_update_page' ) . "&event_id=" . $f_event_id . "&date=" . $t_event->date_from, lang_get( 'edit' ) );
     print_small_button( plugin_page( 'event_delete' ) . "&from_bug_id=" . $f_from_bug_id . "&event_id=" . $f_event_id . "&date=" . $t_event->date_from . form_security_param( 'event_delete' ), lang_get( 'delete' ) );
-
-    echo '</tr>';
-    echo '</tfoot>';
 }
+
+# whoever may view the event may take it along into a calendar of their own
+print_small_button( plugin_page( 'event_ics' ) . "&event_id=" . $f_event_id, plugin_lang_get( 'event_ics_button' ) );
+
+echo '</td></tr>';
+echo '</tfoot>';
 
 
 

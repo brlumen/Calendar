@@ -144,6 +144,7 @@ $s_plugin_Calendar_goto_date_button = '转到日期:';
 $s_plugin_Calendar_assigned_event = '已分配事件';
 $s_plugin_Calendar_not_assigned_event = '未分配事件';
 $s_plugin_Calendar_event_view_title = '事件查看';
+$s_plugin_Calendar_event_ics_button = '下载 .ics';
 $s_plugin_Calendar_id = '序号';
 $s_plugin_Calendar_last_update = '编辑时间';
 $s_plugin_Calendar_view_event_google_last_sync = '与Google同步';
@@ -256,7 +257,9 @@ $s_plugin_Calendar_notify_created_email_body = '您参与了一个新事件。
 项目: %2$s
 开始时间: %3$s
 
-%4$s';
+%4$s
+
+日历文件 (.ics)：%5$s';
 $s_plugin_Calendar_notify_updated_email_subject = '事件已变更: %1$s';
 $s_plugin_Calendar_notify_updated_email_body = '您参与的事件已变更。
 
@@ -264,7 +267,9 @@ $s_plugin_Calendar_notify_updated_email_body = '您参与的事件已变更。
 项目: %2$s
 开始时间: %3$s
 
-%4$s';
+%4$s
+
+日历文件 (.ics)：%5$s';
 $s_plugin_Calendar_notify_deleted_email_subject = '事件已取消: %1$s';
 $s_plugin_Calendar_notify_deleted_email_body = '您参与的事件已被删除。
 
@@ -278,7 +283,9 @@ $s_plugin_Calendar_notify_occurrence_cancelled_email_body = '您参与的事件�
 项目: %2$s
 已取消的重复: %3$s
 
-%4$s';
+%4$s
+
+日历文件 (.ics)：%5$s';
 $s_plugin_Calendar_notify_from_date_cancelled_email_subject = '多个重复项已取消: %1$s';
 $s_plugin_Calendar_notify_from_date_cancelled_email_body = '您参与的事件自指定日期起已取消，此前的重复不变。
 
@@ -286,7 +293,9 @@ $s_plugin_Calendar_notify_from_date_cancelled_email_body = '您参与的事件�
 项目: %2$s
 取消起始日期: %3$s
 
-%4$s';
+%4$s
+
+日历文件 (.ics)：%5$s';
 $s_plugin_Calendar_notify_member_added_email_subject = '已加入事件: %1$s';
 $s_plugin_Calendar_notify_member_added_email_body = '您已被加入一个事件。
 
@@ -294,7 +303,9 @@ $s_plugin_Calendar_notify_member_added_email_body = '您已被加入一个事件
 项目: %2$s
 开始时间: %3$s
 
-%4$s';
+%4$s
+
+日历文件 (.ics)：%5$s';
 $s_plugin_Calendar_notify_member_removed_email_subject = '已从事件中移除: %1$s';
 $s_plugin_Calendar_notify_member_removed_email_body = '您已从一个事件中被移除。
 
@@ -321,18 +332,22 @@ $s_plugin_Calendar_notify_config_revert_to_global = '恢复为全局设置';
 $s_plugin_Calendar_notify_config_revert_to_default = '恢复为默认设置';
 
 $s_plugin_Calendar_notify_member_added_others_email_subject = '已加入参与者: %1$s';
-$s_plugin_Calendar_notify_member_added_others_email_body = '%5$s 已被加入您参与的事件。
+$s_plugin_Calendar_notify_member_added_others_email_body = '%6$s 已被加入您参与的事件。
 
 事件: %1$s
 项目: %2$s
 开始时间: %3$s
 
-%4$s';
+%4$s
+
+日历文件 (.ics)：%5$s';
 $s_plugin_Calendar_notify_member_removed_others_email_subject = '已移除参与者: %1$s';
-$s_plugin_Calendar_notify_member_removed_others_email_body = '%5$s 已不再参与您参与的事件。
+$s_plugin_Calendar_notify_member_removed_others_email_body = '%6$s 已不再参与您参与的事件。
 
 事件: %1$s
 项目: %2$s
 开始时间: %3$s
 
-%4$s';
+%4$s
+
+日历文件 (.ics)：%5$s';

@@ -144,6 +144,7 @@ $s_plugin_Calendar_goto_date_button = 'Ir a la fecha:';
 $s_plugin_Calendar_assigned_event = 'Eventos asignados';
 $s_plugin_Calendar_not_assigned_event = 'No hay eventos asignados';
 $s_plugin_Calendar_event_view_title = 'Visor de eventos';
+$s_plugin_Calendar_event_ics_button = 'Descargar .ics';
 $s_plugin_Calendar_id = 'Number';
 $s_plugin_Calendar_last_update = 'Editar Fecha';
 $s_plugin_Calendar_view_event_google_last_sync = 'Sincronizado con google';
@@ -255,7 +256,9 @@ Evento: %1$s
 Proyecto: %2$s
 Comienza: %3$s
 
-%4$s';
+%4$s
+
+Archivo de calendario (.ics): %5$s';
 $s_plugin_Calendar_notify_updated_email_subject = 'Evento modificado: %1$s';
 $s_plugin_Calendar_notify_updated_email_body = 'Un evento en el que usted participa ha sido modificado.
 
@@ -263,7 +266,9 @@ Evento: %1$s
 Proyecto: %2$s
 Comienza: %3$s
 
-%4$s';
+%4$s
+
+Archivo de calendario (.ics): %5$s';
 $s_plugin_Calendar_notify_deleted_email_subject = 'Evento cancelado: %1$s';
 $s_plugin_Calendar_notify_deleted_email_body = 'Un evento en el que usted participaba ha sido eliminado.
 
@@ -277,7 +282,9 @@ Evento: %1$s
 Proyecto: %2$s
 Repetición cancelada: %3$s
 
-%4$s';
+%4$s
+
+Archivo de calendario (.ics): %5$s';
 $s_plugin_Calendar_notify_from_date_cancelled_email_subject = 'Repeticiones canceladas: %1$s';
 $s_plugin_Calendar_notify_from_date_cancelled_email_body = 'Un evento en el que usted participa ha sido cancelado a partir de la fecha indicada, las repeticiones anteriores no cambian.
 
@@ -285,7 +292,9 @@ Evento: %1$s
 Proyecto: %2$s
 Cancelado desde: %3$s
 
-%4$s';
+%4$s
+
+Archivo de calendario (.ics): %5$s';
 $s_plugin_Calendar_notify_member_added_email_subject = 'Añadido al evento: %1$s';
 $s_plugin_Calendar_notify_member_added_email_body = 'Usted ha sido añadido a un evento.
 
@@ -293,7 +302,9 @@ Evento: %1$s
 Proyecto: %2$s
 Comienza: %3$s
 
-%4$s';
+%4$s
+
+Archivo de calendario (.ics): %5$s';
 $s_plugin_Calendar_notify_member_removed_email_subject = 'Eliminado del evento: %1$s';
 $s_plugin_Calendar_notify_member_removed_email_body = 'Usted ha sido eliminado de un evento.
 
@@ -320,18 +331,22 @@ $s_plugin_Calendar_notify_config_revert_to_global = 'Volver a los valores global
 $s_plugin_Calendar_notify_config_revert_to_default = 'Volver a los valores predeterminados';
 
 $s_plugin_Calendar_notify_member_added_others_email_subject = 'Participante añadido: %1$s';
-$s_plugin_Calendar_notify_member_added_others_email_body = 'Se ha añadido a %5$s a un evento en el que usted participa.
+$s_plugin_Calendar_notify_member_added_others_email_body = 'Se ha añadido a %6$s a un evento en el que usted participa.
 
 Evento: %1$s
 Proyecto: %2$s
 Comienza: %3$s
 
-%4$s';
+%4$s
+
+Archivo de calendario (.ics): %5$s';
 $s_plugin_Calendar_notify_member_removed_others_email_subject = 'Participante eliminado: %1$s';
-$s_plugin_Calendar_notify_member_removed_others_email_body = '%5$s ya no participa en un evento en el que usted participa.
+$s_plugin_Calendar_notify_member_removed_others_email_body = '%6$s ya no participa en un evento en el que usted participa.
 
 Evento: %1$s
 Proyecto: %2$s
 Comienza: %3$s
 
-%4$s';
+%4$s
+
+Archivo de calendario (.ics): %5$s';

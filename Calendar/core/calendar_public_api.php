@@ -26,8 +26,14 @@
  * - the whole body runs inside plugin_push_current( 'Calendar' ), otherwise
  *   plugin_table() / plugin_config_get() would resolve against the calling
  *   plugin instead of this one;
- * - all input arrives through the request object - no gpc_*, no current user
- *   and no form security here, those belong to the pages/ layer.
+ * - all input arrives through the arguments - no gpc_*, no current user and
+ *   no form security here, those belong to the pages/ layer.
+ *
+ * The facades that read - the candidate lists, the recipients of a
+ * notification, the iCalendar file of an event - exist so that a plugin with
+ * a channel of its own can show the same things the calendar shows in its
+ * pages and mails, to the same circle of users, without reimplementing the
+ * rules behind them.
  */
 
 /**
@@ -512,6 +518,93 @@ function calendar_api_event_history_log( int $p_event_id, string $p_field_name, 
 
         event_history_log( $p_event_id, CALENDAR_HISTORY_PLUGIN, $t_field_name,
                            $p_old_value, $p_new_value, $p_user_id );
+    } finally {
+        restore_error_handler();
+        plugin_pop_current();
+    }
+}
+
+/**
+ * Link to the iCalendar file of the given event.
+ *
+ * The very link the notification mails of the calendar carry: a plugin that
+ * delivers its notifications through another channel - a messenger, a chat
+ * room - can offer the same "add to your calendar" link there, or fetch the
+ * file itself with calendar_api_event_ics() and send it along as a document.
+ *
+ * The link is built from the configured path of the installation, so it
+ * holds outside of any request as well. Whoever follows it has to log in and
+ * to pass the view threshold of the event, nothing is disclosed by the link
+ * itself - hence no check here and no exception: the link of an event that
+ * does not exist merely leads to the error page.
+ *
+ * @param int $p_event_id Event the file is of.
+ * @return string Absolute URL.
+ * @access public
+ */
+function calendar_api_event_ics_url( int $p_event_id ) : string {
+
+    plugin_push_current( 'Calendar' );
+
+    try {
+        return calendar_ical_url( $p_event_id );
+    } finally {
+        plugin_pop_current();
+    }
+}
+
+/**
+ * The iCalendar file of the given event, built for the given user.
+ *
+ * What the file holds is described in calendar_ical_api.php: one event or one
+ * whole series, published rather than sent as an invitation, with a UID that
+ * stays the same across the changes of the event so that a client replaces
+ * its copy on a later import. A caller that attaches the file to a message
+ * gets the name to attach it under along with the content; the media type is
+ * text/calendar.
+ *
+ * The user is the one who is going to receive the file - the recipient of a
+ * notification, typically. They have to pass the view threshold of the event,
+ * and of the issues the event is attached to the file lists only those they
+ * may view, the way the event page does.
+ *
+ * @param int $p_event_id Event the file is of.
+ * @param int $p_user_id  User the file is built for.
+ * @return array 'filename' => name of the file, 'content' => its text.
+ * @throws \Mantis\Exceptions\ClientException When the event or the user is
+ *                                            unknown, or the user may not
+ *                                            view the event.
+ * @access public
+ */
+function calendar_api_event_ics( int $p_event_id, int $p_user_id ) : array {
+
+    plugin_push_current( 'Calendar' );
+
+    # the same reason as in calendar_api_event_create(): an API consumer has no
+    # error page to fall back to, so every ERROR becomes a catchable exception
+    set_error_handler( function( $p_severity, $p_message ) {
+        $t_code = is_numeric( $p_message ) ? (int)$p_message : ERROR_GENERIC;
+        throw new \Mantis\Exceptions\ClientException( error_string( $p_message ), $t_code );
+    }, E_USER_ERROR );
+
+    try {
+        event_ensure_exists( $p_event_id );
+        user_ensure_exists( $p_user_id );
+
+        $t_event = event_get_row( $p_event_id );
+
+        # the threshold is read per user and per project, so that project
+        # specific overrides are honoured
+        $t_threshold = plugin_config_get( 'view_event_threshold', NULL, FALSE, $p_user_id, (int)$t_event['project_id'] );
+
+        if( !access_has_event_level( $t_threshold, $p_event_id, $p_user_id ) ) {
+            access_denied();
+        }
+
+        return array(
+            'filename' => calendar_ical_filename( $t_event ),
+            'content'  => calendar_ical_event( $p_event_id, $p_user_id ),
+        );
     } finally {
         restore_error_handler();
         plugin_pop_current();

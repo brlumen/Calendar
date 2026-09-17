@@ -331,15 +331,16 @@ function calendar_notify_recipients( array $p_event, $p_action, $p_actor_id = nu
 /**
  * Send the mail of one action to one recipient.
  *
- * Every body is formatted with the same four arguments - name, project, date
- * and link - so that a translation is free to leave out the link of an event
- * that no longer exists without changing the call. An action that has more to
- * say appends its own arguments after those four.
+ * Every body is formatted with the same five arguments - name, project, date,
+ * link to the event and link to its iCalendar file - so that a translation is
+ * free to leave out the links of an event that no longer exists without
+ * changing the call. An action that has more to say appends its own arguments
+ * after those five.
  * @param array        $p_event   Event row with id, project_id, name, date_from.
  * @param integer      $p_user_id Integer representing user identifier.
  * @param string       $p_action  Suffix of the notify_<action>_email_* strings.
  * @param integer|null $p_date    Timestamp shown in the mail, defaults to the start of the event.
- * @param array        $p_args    Further arguments of the action, from %5$s on.
+ * @param array        $p_args    Further arguments of the action, from %6$s on.
  * @return boolean true if the mail was queued
  * @access public
  * @uses email_api.php
@@ -381,6 +382,7 @@ function calendar_notify_send( array $p_event, $p_user_id, $p_action, $p_date = 
                                                     project_get_name( (int)$p_event['project_id'], false ),
                                                     $t_date_text,
                                                     $t_url,
+                                                    calendar_ical_url( (int)$p_event['id'] ),
                                           ), $p_args ) );
 
     email_store( $t_email, $t_subject, $t_body );

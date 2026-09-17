@@ -144,6 +144,7 @@ $s_plugin_Calendar_goto_date_button = 'Перейти к дате:';
 $s_plugin_Calendar_assigned_event = 'Назначенные события';
 $s_plugin_Calendar_not_assigned_event = 'Нет назначеных событий';
 $s_plugin_Calendar_event_view_title = 'Просмотр события';
+$s_plugin_Calendar_event_ics_button = 'Скачать .ics';
 $s_plugin_Calendar_id = 'Номер';
 $s_plugin_Calendar_last_update = 'Дата редактирования';
 $s_plugin_Calendar_view_event_google_last_sync = 'Синхронизированно с google';
@@ -256,7 +257,9 @@ $s_plugin_Calendar_notify_created_email_body = 'Вы участвуете в н�
 Проект: %2$s
 Начало: %3$s
 
-%4$s';
+%4$s
+
+Файл для календаря (.ics): %5$s';
 $s_plugin_Calendar_notify_updated_email_subject = 'Событие изменено: %1$s';
 $s_plugin_Calendar_notify_updated_email_body = 'Событие, в котором вы участвуете, изменено.
 
@@ -264,7 +267,9 @@ $s_plugin_Calendar_notify_updated_email_body = 'Событие, в которо�
 Проект: %2$s
 Начало: %3$s
 
-%4$s';
+%4$s
+
+Файл для календаря (.ics): %5$s';
 $s_plugin_Calendar_notify_deleted_email_subject = 'Событие отменено: %1$s';
 $s_plugin_Calendar_notify_deleted_email_body = 'Событие, в котором вы участвовали, удалено.
 
@@ -278,7 +283,9 @@ $s_plugin_Calendar_notify_occurrence_cancelled_email_body = 'Отменено о
 Проект: %2$s
 Отменённое вхождение: %3$s
 
-%4$s';
+%4$s
+
+Файл для календаря (.ics): %5$s';
 $s_plugin_Calendar_notify_from_date_cancelled_email_subject = 'Вхождения отменены: %1$s';
 $s_plugin_Calendar_notify_from_date_cancelled_email_body = 'Событие, в котором вы участвуете, отменено начиная с указанной даты, более ранние вхождения не изменились.
 
@@ -286,7 +293,9 @@ $s_plugin_Calendar_notify_from_date_cancelled_email_body = 'Событие, в �
 Проект: %2$s
 Отменено начиная с: %3$s
 
-%4$s';
+%4$s
+
+Файл для календаря (.ics): %5$s';
 $s_plugin_Calendar_notify_member_added_email_subject = 'Вас добавили в событие: %1$s';
 $s_plugin_Calendar_notify_member_added_email_body = 'Вас добавили в состав участников события.
 
@@ -294,7 +303,9 @@ $s_plugin_Calendar_notify_member_added_email_body = 'Вас добавили в 
 Проект: %2$s
 Начало: %3$s
 
-%4$s';
+%4$s
+
+Файл для календаря (.ics): %5$s';
 $s_plugin_Calendar_notify_member_removed_email_subject = 'Вас исключили из события: %1$s';
 $s_plugin_Calendar_notify_member_removed_email_body = 'Вас исключили из состава участников события.
 
@@ -321,18 +332,22 @@ $s_plugin_Calendar_notify_config_revert_to_global = 'Вернуть глобал
 $s_plugin_Calendar_notify_config_revert_to_default = 'Вернуть значения по умолчанию';
 
 $s_plugin_Calendar_notify_member_added_others_email_subject = 'В событие добавлен участник: %1$s';
-$s_plugin_Calendar_notify_member_added_others_email_body = 'В событие, в котором вы участвуете, добавлен участник %5$s.
+$s_plugin_Calendar_notify_member_added_others_email_body = 'В событие, в котором вы участвуете, добавлен участник %6$s.
 
 Событие: %1$s
 Проект: %2$s
 Начало: %3$s
 
-%4$s';
+%4$s
+
+Файл для календаря (.ics): %5$s';
 $s_plugin_Calendar_notify_member_removed_others_email_subject = 'Из события исключён участник: %1$s';
-$s_plugin_Calendar_notify_member_removed_others_email_body = 'Из события, в котором вы участвуете, исключён участник %5$s.
+$s_plugin_Calendar_notify_member_removed_others_email_body = 'Из события, в котором вы участвуете, исключён участник %6$s.
 
 Событие: %1$s
 Проект: %2$s
 Начало: %3$s
 
-%4$s';
+%4$s
+
+Файл для календаря (.ics): %5$s';
