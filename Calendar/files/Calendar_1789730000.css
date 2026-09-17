@@ -664,6 +664,22 @@ a.event-band-continues-right {
     color: #999;
 } 
 
+/* Keep the block header below the fixed navbar when the page is opened at the anchor */
+#calendar_event_attachments {
+    scroll-margin-top: 60px;
+}
+
+/* The time range toggle of the issue page block sits in the left corner of the header */
+.widget-header > .calendar-issue-range {
+    float: left;
+    padding-left: 0;
+}
+
+.calendar-issue-range > .btn {
+    min-width: 5em;
+    vertical-align: middle;
+}
+
 .btn-toolbar {
     display: flex;
     /*width: 100%;*/

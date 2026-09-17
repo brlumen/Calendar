@@ -683,7 +683,7 @@ class CalendarPlugin extends MantisPlugin {
                                   'EVENT_FILTER_COLUMNS'    => 'column_add_in_view_all_bug_page',
                                   'EVENT_DISPLAY_TEXT'      => 'column_title_formating',
                                   'EVENT_CRONJOB'           => 'process_reminders_cron',
-                                  'EVENT_CORE_READY'        => 'process_reminders_web',
+                                  'EVENT_CORE_READY'        => 'core_ready',
                                   'EVENT_MENU_ACCOUNT'      => 'menu_account',
         );
     }
@@ -728,6 +728,16 @@ class CalendarPlugin extends MantisPlugin {
      * Throttled, silent and free of output, so that page loads stay unaffected.
      * @return void
      */
+    /**
+     * Per-request work that has to happen before any output: remember the
+     * time range chosen for the issue page block and dispatch web reminders.
+     * @return void
+     */
+    function core_ready() {
+        calendar_issue_full_time_get();
+        $this->process_reminders_web();
+    }
+
     function process_reminders_web() {
 
         if( !calendar_reminder_feature_enabled() ) {
@@ -742,7 +752,7 @@ class CalendarPlugin extends MantisPlugin {
     }
 
     function resources() {
-        return '<link rel="stylesheet" type="text/css" href="' . plugin_file( 'Calendar_1789700000.css' ) . '"></link>'
+        return '<link rel="stylesheet" type="text/css" href="' . plugin_file( 'Calendar_1789730000.css' ) . '"></link>'
                 . '<script type="text/javascript" src="' . plugin_file( 'calendar_filter.js' ) . '"></script>'
 //                . '<script type="text/javascript" src="' . plugin_file( 'calendar_modal.js' ) . '"></script>'
 //                . '<script type="text/javascript" src="' . plugin_file( 'calendar_event_create.js' ) . '"></script>'
@@ -802,7 +812,7 @@ class CalendarPlugin extends MantisPlugin {
         $t_events_id = get_events_id_from_bug_id( $p_bug_id );
         $t_dates     = calendar_column_objects_get_from_event_ids( $t_events_id );
 
-        $t_calendar_issue_view = new ViewIssue( $t_dates, $p_bug_id );
+        $t_calendar_issue_view = new ViewIssue( $t_dates, $p_bug_id, calendar_issue_full_time_get() );
         $t_calendar_issue_view->print_html();
     }
     

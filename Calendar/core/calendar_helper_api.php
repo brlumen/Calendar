@@ -180,21 +180,45 @@ function calendar_view_type_get() {
 }
 
 /**
- * Get the full day (0-24) display flag.
+ * Get a boolean display flag.
  * A value coming from the request wins and is remembered in a cookie,
  * otherwise the previously stored one is used.
+ *
+ * @param string $p_param  Request parameter name
+ * @param string $p_cookie Cookie name
+ * @return boolean
+ */
+function calendar_state_flag_get( $p_param, $p_cookie ) {
+    if( !gpc_isset( $p_param ) ) {
+        return gpc_get_cookie( $p_cookie, '0' ) == '1';
+    }
+
+    $t_flag = gpc_get_bool( $p_param );
+    calendar_state_cookie_set( $p_cookie, $t_flag ? '1' : '0' );
+
+    return $t_flag;
+}
+
+/**
+ * Get the full day (0-24) display flag of the calendar pages.
  *
  * @return boolean
  */
 function calendar_full_time_get() {
-    if( !gpc_isset( 'full_time' ) ) {
-        return gpc_get_cookie( 'calendar_full_time', '0' ) == '1';
-    }
+    return calendar_state_flag_get( 'full_time', 'calendar_full_time' );
+}
 
-    $t_full_time = gpc_get_bool( 'full_time' );
-    calendar_state_cookie_set( 'calendar_full_time', $t_full_time ? '1' : '0' );
-
-    return $t_full_time;
+/**
+ * Get the full day (0-24) display flag of the calendar block on the issue
+ * page. Kept apart from the one of the calendar pages, so that the compact
+ * block and the week view are switched independently. The block is printed
+ * after the page headers are sent, so the cookie is stored from
+ * EVENT_CORE_READY (see CalendarPlugin::core_ready()).
+ *
+ * @return boolean
+ */
+function calendar_issue_full_time_get() {
+    return calendar_state_flag_get( 'issue_full_time', 'calendar_issue_full_time' );
 }
 
 /**
