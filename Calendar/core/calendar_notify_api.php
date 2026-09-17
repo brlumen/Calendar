@@ -199,9 +199,10 @@ function calendar_notify_user_enabled( $p_user_id, $p_action ) {
  * Users to be notified about the given event, as the matrix of its project
  * has it: the author, the members, and the user who acts.
  *
- * The member list is read directly, because event_get_members() checks the
- * access level of the session user, which the public API does not have; it is
- * only read when the matrix asks for the members at all.
+ * The member list is read with event_get_member_ids(), because
+ * event_get_members() checks the access level of the session user, which the
+ * public API does not have; it is only read when the matrix asks for the
+ * members at all.
  *
  * Other plugins have a say through two signals, modelled on
  * EVENT_NOTIFY_USER_INCLUDE and EVENT_NOTIFY_USER_EXCLUDE of the core:
@@ -235,18 +236,7 @@ function calendar_notify_recipients( array $p_event, $p_action, $p_actor_id = nu
     }
 
     if( $t_flags['members'] == ON ) {
-
-        $t_event_member_table = plugin_table( 'event_member' );
-
-        db_param_push();
-        $t_query  = "SELECT user_id
-						  FROM $t_event_member_table
-						  WHERE event_id=" . db_param();
-        $t_result = db_query( $t_query, Array( $t_event_id ) );
-
-        while( $t_member = db_fetch_array( $t_result ) ) {
-            $t_user_ids[] = (int)$t_member['user_id'];
-        }
+        $t_user_ids = array_merge( $t_user_ids, event_get_member_ids( $t_event_id ) );
     }
 
     # users named by other plugins, before anything is filtered out: they are

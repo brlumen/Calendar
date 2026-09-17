@@ -10,8 +10,8 @@ enough to know whether Calendar is installed and loaded.
 The [TelegramBot](https://github.com/mantisbt-plugins/TelegramBot) plugin uses this
 API since its version 2.0: it creates calendar events from Telegram and
 subscribes to the calendar signals to send Telegram notifications about
-created and changed events to the same recipients the calendar mails go to,
-so it doubles as a worked example of the integration.
+created and changed events, choosing the recipients by a notification matrix
+of its own, so it doubles as a worked example of the integration.
 
 ```php
 if( class_exists( 'CalendarPluginApi\\EventCreateRequest' ) ) {
@@ -74,6 +74,14 @@ one of `created`, `updated`, `deleted`, `member_added`, `member_removed` —
 after the recipient matrix, the personal settings and the access checks have
 been applied. Use it to deliver the same notification through your own channel;
 the master switch of the calendar mails is deliberately not consulted.
+
+`calendar_api_event_members( $p_event_id )` returns the user ids of the
+members of an event as they are stored, without the
+`show_member_list_threshold` check — the author is in the event row, the
+members are nowhere else. Use it when your plugin keeps a notification matrix
+of its own and needs the circle the matrix is applied to; every further
+check — the access of a member to the event, their personal settings — is
+yours to make, the way `calendar_api_event_notify_recipients()` makes them.
 
 Calendar also declares events other plugins can hook. The first three receive
 the event id as their only parameter; `EVENT_CALENDAR_EVENT_CREATED` is

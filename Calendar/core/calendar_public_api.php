@@ -437,6 +437,45 @@ function calendar_api_event_notify_recipients( int $p_event_id, string $p_action
 }
 
 /**
+ * Members of the given event, as they are stored.
+ *
+ * The raw member list, for a plugin that keeps a notification matrix of its
+ * own: calendar_api_event_notify_recipients() answers who the mails of the
+ * calendar would reach, while a caller with its own matrix needs the circle
+ * the matrix is applied to - the author, whom the event row names, and the
+ * members, whom nothing but this function does. The answer is the one of
+ * event_get_member_ids(): it does not depend on the session user and is not
+ * gated by show_member_list_threshold, because the list is not shown to
+ * anybody here, it is the input of a choice of recipients, and every check
+ * the caller wants - the access of a member to the event, their own
+ * preferences - is theirs to make, the way the calendar makes them in
+ * calendar_notify_recipients().
+ *
+ * @param int $p_event_id Event the members belong to.
+ * @return array List of user identifiers, may be empty.
+ * @throws \Mantis\Exceptions\ClientException When the event is unknown.
+ * @access public
+ */
+function calendar_api_event_members( int $p_event_id ) : array {
+
+    plugin_push_current( 'Calendar' );
+
+    set_error_handler( function( $p_severity, $p_message ) {
+        $t_code = is_numeric( $p_message ) ? (int)$p_message : ERROR_GENERIC;
+        throw new \Mantis\Exceptions\ClientException( error_string( $p_message ), $t_code );
+    }, E_USER_ERROR );
+
+    try {
+        event_ensure_exists( $p_event_id );
+
+        return event_get_member_ids( $p_event_id );
+    } finally {
+        restore_error_handler();
+        plugin_pop_current();
+    }
+}
+
+/**
  * Add a record of the calling plugin to the history of the given event.
  *
  * The counterpart of the core plugin_history_log() for the change log of a

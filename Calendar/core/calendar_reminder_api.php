@@ -337,8 +337,9 @@ function event_reminder_delete_all( $p_event_id ) {
 
 /**
  * Users to be reminded about the given event: its author and its members.
- * The member list is read directly, because event_get_members() checks the
- * access level of the session user, which the command line does not have.
+ * The member list is read with event_get_member_ids(), because
+ * event_get_members() checks the access level of the session user, which the
+ * command line does not have.
  * @param integer $p_event_id  Integer representing event identifier.
  * @param integer $p_author_id Integer representing the author of the event.
  * @return array user identifiers
@@ -347,18 +348,7 @@ function event_reminder_delete_all( $p_event_id ) {
  */
 function event_reminder_recipients( $p_event_id, $p_author_id ) {
 
-    $t_event_member_table = plugin_table( 'event_member' );
-
-    db_param_push();
-    $t_query  = "SELECT user_id
-						  FROM $t_event_member_table
-						  WHERE event_id=" . db_param();
-    $t_result = db_query( $t_query, Array( (int)$p_event_id ) );
-
-    $t_user_ids = array( (int)$p_author_id );
-    while( $t_row       = db_fetch_array( $t_result ) ) {
-        $t_user_ids[] = (int)$t_row['user_id'];
-    }
+    $t_user_ids = array_merge( array( (int)$p_author_id ), event_get_member_ids( $p_event_id ) );
 
     $t_recipients = array();
     foreach( array_unique( $t_user_ids ) as $t_user_id ) {

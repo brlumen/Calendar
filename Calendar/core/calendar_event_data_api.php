@@ -595,6 +595,34 @@ function event_member_delete( $p_event_id, $p_user_id = NULL ) {
 }
 
 /**
+ * Returns the members of the specified event as they are stored, without any
+ * access check: the raw list for the code that chooses recipients or answers
+ * another plugin, where no session user is involved. Use event_get_members()
+ * wherever the list is shown to somebody.
+ *
+ * @param integer $p_event_id Integer representing event identifier.
+ * @return array List of user identifiers, may be empty.
+ * @access public
+ * @uses database_api.php
+ */
+function event_get_member_ids( $p_event_id ) {
+    $t_event_member_table = plugin_table( 'event_member' );
+
+    db_param_push();
+    $t_query  = "SELECT user_id
+			FROM $t_event_member_table
+			WHERE event_id=" . db_param();
+    $t_result = db_query( $t_query, array( (int)$p_event_id ) );
+
+    $t_user_ids = array();
+    while( $t_row = db_fetch_array( $t_result ) ) {
+        $t_user_ids[] = (int)$t_row['user_id'];
+    }
+
+    return $t_user_ids;
+}
+
+/**
  * Returns the list of users members the specified event
  *
  * @param integer      $p_event_id Integer representing event identifier.
@@ -606,18 +634,7 @@ function event_get_members( $p_event_id, $p_user_id = null ) {
         return array();
     }
 
-    # get the eventnote data
-    $t_event_member_table = plugin_table( 'event_member' );
-    db_param_push();
-    $t_query              = "SELECT user_id
-			FROM $t_event_member_table 
-			WHERE event_id=" . db_param();
-    $t_result             = db_query( $t_query, array( $p_event_id ) );
-
-    $t_users = array();
-    while( $t_row   = db_fetch_array( $t_result ) ) {
-        $t_users[] = $t_row['user_id'];
-    }
+    $t_users = event_get_member_ids( $p_event_id );
 
     user_cache_array_rows( $t_users );
 
