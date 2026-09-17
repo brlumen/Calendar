@@ -31,6 +31,10 @@ class ViewWeekSelect extends ViewWeekCalendar {
         return plugin_page( 'event_insert_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=TRUE" . '&id=' . $this->bug_id;
     }
 
+    protected function day_range_url() {
+        return plugin_page( 'event_insert_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . '&id=' . $this->bug_id;
+    }
+
     protected function print_spacer_top() {
         echo '';
     }
@@ -61,14 +65,6 @@ class ViewWeekSelect extends ViewWeekCalendar {
     protected function print_menu_top() {
         echo '<div class="widget-toolbox padding-8 clearfix">';
         echo '<div class="btn-toolbar">';
-
-        echo '<div class="btn-group pull-left">';
-        if( WeekCalendar::$full_time_is == FALSE ) {
-            print_small_button( $this->full_time_url(), "0-24" );
-        } else {
-            print_small_button( plugin_page( 'event_insert_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . '&id=' . $this->bug_id, gmdate( "H", plugin_config_get( 'time_day_start' ) ) . "-" . gmdate( "H", plugin_config_get( 'time_day_finish' ) ) );
-        }
-        echo '</div>';
 
         echo '<div class="btn-group pull-right">';
         if( WeekCalendar::$full_time_is == FALSE ) {

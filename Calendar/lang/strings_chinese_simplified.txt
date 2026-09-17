@@ -142,6 +142,9 @@ $s_plugin_Calendar_previous_period = '后退';
 $s_plugin_Calendar_goto_date_button = '转到日期:';
 
 $s_plugin_Calendar_assigned_event = '已分配事件';
+$s_plugin_Calendar_assigned_event_count = '已分配的事件 - %d 个';
+$s_plugin_Calendar_issue_block_settings = '日历区块设置';
+$s_plugin_Calendar_switch_time_range = '切换时间范围';
 $s_plugin_Calendar_not_assigned_event = '未分配事件';
 $s_plugin_Calendar_event_view_title = '事件查看';
 $s_plugin_Calendar_event_ics_button = '下载 .ics';

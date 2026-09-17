@@ -81,11 +81,18 @@ abstract class ColumnForm {
         return self::$band_lanes * self::BAND_HEIGHT;
     }
 
+    /**
+     * The title cell of the column; HEADER_HEIGHT pixels high in every column
+     */
+    protected function html_header() {
+        return '<ul class="column-header-day"><span>' . $this->title_text . '</span></ul>';
+    }
+
     final public function html() {
         $t_result = '';
 
         $t_result .= $this->html_column_param();
-        $t_result .= '<ul class="column-header-day"><span>' . $this->title_text . '</span></ul>';
+        $t_result .= $this->html_header();
 
         if( self::$band_lanes > 0 ) {
             $t_result .= '<div class="event-bands" style="height: ' . self::bands_height() . 'px"></div>';

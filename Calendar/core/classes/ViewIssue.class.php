@@ -21,11 +21,17 @@
  */
 class ViewIssue extends WeekCalendar {
     private $bug_id;
+    private $events_count;
 
-    //put your code here
-
-    public function __construct( $p_days_events, $p_bug_id, $p_is_full_time = FALSE ) {
-        $this->bug_id = $p_bug_id;
+    /**
+     * @param array   $p_days_events
+     * @param integer $p_bug_id
+     * @param boolean $p_is_full_time
+     * @param integer $p_events_count events attached to the issue, shown in the title
+     */
+    public function __construct( $p_days_events, $p_bug_id, $p_is_full_time = FALSE, $p_events_count = 0 ) {
+        $this->bug_id       = $p_bug_id;
+        $this->events_count = $p_events_count;
         parent::__construct( $p_days_events, plugin_page( 'view' ), $p_is_full_time );
     }
 
@@ -45,6 +51,10 @@ class ViewIssue extends WeekCalendar {
         return $this->issue_url( TRUE );
     }
 
+    protected function collapse_name() {
+        return 'calendar_issue';
+    }
+
     protected function print_spacer_top() {
         # a widget of its own keeps the same distance from the notes as the
         # other blocks of the page; inside the details table the cell pads
@@ -54,27 +64,32 @@ class ViewIssue extends WeekCalendar {
         }
     }
 
+    protected function day_range_url() {
+        return $this->issue_url( FALSE );
+    }
+
     protected function print_headline() {
         echo '<div class="widget-header widget-header-small">';
 
-        # the time range toggle before the title, only when there is a grid to switch
-        if( count( $this->day_colums ) > 0 ) {
-            echo '<div class="widget-toolbar no-border calendar-issue-range">';
-            if( self::$full_time_is ) {
-                print_link_button( $this->issue_url( FALSE ), gmdate( "H", plugin_config_get( 'time_day_start' ) ) . "-" . gmdate( "H", plugin_config_get( 'time_day_finish' ) ), 'btn-xs' );
-            } else {
-                print_link_button( $this->full_time_url(), "0-24", 'btn-xs' );
-            }
+        $this->print_collapse_toolbar();
+
+        # the account tab where the user picks the placement of this block
+        if( calendar_bug_block_user_choice() ) {
+            echo '<div class="widget-toolbar no-border">';
+            echo '<a class="btn btn-primary btn-white btn-round btn-xs calendar-issue-settings" href="' . plugin_page( 'reminders_page' ) . '#bug_calendar_block" title="' . string_attribute( plugin_lang_get( 'issue_block_settings' ) ) . '">';
+            echo '<i class="fa fa-cog"></i>';
+            echo '</a>';
             echo '</div>';
         }
 
         echo '<h4 class="widget-title lighter">';
         echo '<i class="ace-icon fa fa-list-alt"></i>';
 
+        # the count keeps the events in sight while the widget is collapsed
         if( count( $this->day_colums ) == 0 ) {
             echo plugin_lang_get( 'not_assigned_event' );
         } else {
-            echo plugin_lang_get( 'assigned_event' );
+            echo sprintf( plugin_lang_get( 'assigned_event_count' ), $this->events_count );
         }
 
         echo '</h4>';

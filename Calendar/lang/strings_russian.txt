@@ -142,6 +142,9 @@ $s_plugin_Calendar_previous_period = 'Назад';
 $s_plugin_Calendar_goto_date_button = 'Перейти к дате:';
 
 $s_plugin_Calendar_assigned_event = 'Назначенные события';
+$s_plugin_Calendar_assigned_event_count = 'Назначенные события - %d шт.';
+$s_plugin_Calendar_issue_block_settings = 'Настройки блока календаря';
+$s_plugin_Calendar_switch_time_range = 'Переключить диапазон времени';
 $s_plugin_Calendar_not_assigned_event = 'Нет назначеных событий';
 $s_plugin_Calendar_event_view_title = 'Просмотр события';
 $s_plugin_Calendar_event_ics_button = 'Скачать .ics';

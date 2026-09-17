@@ -47,6 +47,10 @@ class ViewWeekCalendar extends WeekCalendar {
         return plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=TRUE" . "&date_select=" . $this->date_to_display();
     }
 
+    protected function day_range_url() {
+        return plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=FALSE" . "&date_select=" . $this->date_to_display();
+    }
+
     protected function print_spacer_top() {
         echo '<div class="space-10">';
         echo '</div>';
@@ -104,18 +108,9 @@ class ViewWeekCalendar extends WeekCalendar {
         print_small_button($t_url, plugin_lang_get('month_view'));
         echo '</div>';
         
-        # Time range toggle button
-        echo '<div class="btn-group">';
+        # the time range toggle is the title of the time column
+        print_hidden_inputs( array( 'full_time' => self::$full_time_is ? 'TRUE' : 'FALSE' ) );
         $t_date_to_display = $this->date_to_display();
-
-        if( self::$full_time_is == FALSE ) {
-            print_hidden_inputs( array( 'full_time' => 'FALSE' ) );
-            print_small_button( $this->full_time_url(), "0-24" );
-        } else {
-            print_hidden_inputs( array( 'full_time' => 'TRUE' ) );
-            print_small_button( plugin_page( 'calendar_user_page' ) . "&for_user=" . $this->for_user . "&week=" . $this->week . "&year=" . $this->year . "&full_time=FALSE" . "&date_select=" . $t_date_to_display, gmdate( "H", plugin_config_get( 'time_day_start' ) ) . "-" . gmdate( "H", plugin_config_get( 'time_day_finish' ) ) );
-        }
-        echo '</div>';
 
         # Navigation buttons
         echo '<div id="nav-button" class="btn-group pull-right">';

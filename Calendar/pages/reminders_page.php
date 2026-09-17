@@ -150,7 +150,7 @@ print_account_menu( plugin_page( 'reminders_page', TRUE ) );
             <?php } ?>
 
             <?php if( $t_bug_block_user_choice ) { ?>
-            <div class="widget-box widget-color-blue2">
+            <div id="bug_calendar_block" class="widget-box widget-color-blue2">
                 <div class="widget-header widget-header-small">
                     <h4 class="widget-title lighter">
                         <i class="ace-icon fa fa-list-alt"></i>

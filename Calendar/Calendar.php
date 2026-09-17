@@ -756,7 +756,7 @@ class CalendarPlugin extends MantisPlugin {
     }
 
     function resources() {
-        return '<link rel="stylesheet" type="text/css" href="' . plugin_file( 'Calendar_1789730000.css' ) . '"></link>'
+        return '<link rel="stylesheet" type="text/css" href="' . plugin_file( 'Calendar_1789643015.css' ) . '"></link>'
                 . '<script type="text/javascript" src="' . plugin_file( 'calendar_filter.js' ) . '"></script>'
 //                . '<script type="text/javascript" src="' . plugin_file( 'calendar_modal.js' ) . '"></script>'
 //                . '<script type="text/javascript" src="' . plugin_file( 'calendar_event_create.js' ) . '"></script>'
@@ -816,7 +816,7 @@ class CalendarPlugin extends MantisPlugin {
         $t_events_id = get_events_id_from_bug_id( $p_bug_id );
         $t_dates     = calendar_column_objects_get_from_event_ids( $t_events_id );
 
-        $t_calendar_issue_view = new ViewIssue( $t_dates, $p_bug_id, calendar_issue_full_time_get() );
+        $t_calendar_issue_view = new ViewIssue( $t_dates, $p_bug_id, calendar_issue_full_time_get(), count( $t_events_id ) );
         $t_calendar_issue_view->print_html();
     }
     

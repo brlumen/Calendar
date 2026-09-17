@@ -669,15 +669,28 @@ a.event-band-continues-right {
     scroll-margin-top: 60px;
 }
 
-/* The time range toggle of the issue page block sits in the left corner of the header */
-.widget-header > .calendar-issue-range {
-    float: left;
-    padding-left: 0;
+/* The time column title as the time range toggle: a two-line button laid
+   over the plain title, which keeps the cell as high as the day titles */
+ul.column-header-range > a.btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    line-height: 1.2;
+    font-size: inherit;
+    font-weight: bold;
+    white-space: normal;
 }
 
-.calendar-issue-range > .btn {
-    min-width: 5em;
-    vertical-align: middle;
+/* The settings button of the issue page block header */
+.widget-header .btn.calendar-issue-settings {
+    min-width: 4em;
 }
 
 .btn-toolbar {

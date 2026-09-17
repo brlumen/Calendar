@@ -121,6 +121,29 @@ abstract class WeekCalendar {
 
     abstract protected function print_headline();
 
+    /**
+     * Name the collapse state of the widget is stored under (see is_collapsed());
+     * NULL keeps the widget always open
+     */
+    protected function collapse_name() {
+        return NULL;
+    }
+
+    /**
+     * The collapse toggle of the widget header; prints nothing without a collapse name
+     */
+    protected function print_collapse_toolbar() {
+        $t_name = $this->collapse_name();
+        if( $t_name === NULL ) {
+            return;
+        }
+
+        $t_icon = is_collapsed( $t_name ) ? 'fa-chevron-down' : 'fa-chevron-up';
+        echo '<div class="widget-toolbar">';
+        echo '<a data-action="collapse" href="#"><i class="ace-icon fa ' . $t_icon . ' bigger-125"></i></a>';
+        echo '</div>';
+    }
+
     protected function print_menu_top() {
         echo '';
     }
@@ -132,6 +155,34 @@ abstract class WeekCalendar {
      */
     protected function full_time_url() {
         return NULL;
+    }
+
+    /**
+     * URL of this view with the working hours range; NULL when the view cannot switch.
+     */
+    protected function day_range_url() {
+        return NULL;
+    }
+
+    /**
+     * The time range toggle of the time column title: array( 'url', 'text' )
+     * with the link to the other range and the shown one; NULL for a plain title
+     */
+    protected function time_range_toggle() {
+        $t_url = self::$full_time_is ? $this->day_range_url() : $this->full_time_url();
+        if( $t_url === NULL ) {
+            return NULL;
+        }
+
+        if( self::$full_time_is ) {
+            return array( 'url' => $t_url, 'text' => '0-24' );
+        }
+
+        $t_user_id = auth_get_current_user_id();
+        $t_start   = plugin_config_get( 'time_day_start', NULL, FALSE, $t_user_id );
+        $t_finish  = plugin_config_get( 'time_day_finish', NULL, FALSE, $t_user_id );
+
+        return array( 'url' => $t_url, 'text' => gmdate( "H", $t_start ) . "-" . gmdate( "H", $t_finish ) );
     }
 
     /**
@@ -158,7 +209,8 @@ abstract class WeekCalendar {
         echo '<table class="calendar-user week"' . $t_select_options . '>';
         echo '<tr class="row-day">';
 
-        echo (new TimeColumn() )->html();
+        $t_range_toggle = $this->time_range_toggle();
+        echo (new TimeColumn( $t_range_toggle['url'] ?? NULL, $t_range_toggle['text'] ?? '' ) )->html();
 
         foreach( $this->day_colums as $t_column ) {
             echo $t_column->html();
@@ -185,7 +237,13 @@ abstract class WeekCalendar {
         $this->print_spacer_top();
         echo '<a id="calendar_event_attachments"></a>';
 
-        echo '<div class="widget-box widget-color-blue2">';
+        # the id lets the core script remember the collapse state in the cookie
+        $t_name = $this->collapse_name();
+        if( $t_name === NULL ) {
+            echo '<div class="widget-box widget-color-blue2">';
+        } else {
+            echo '<div id="' . $t_name . '" class="widget-box widget-color-blue2' . ( is_collapsed( $t_name ) ? ' collapsed' : '' ) . '">';
+        }
 
         echo $this->print_headline();
 

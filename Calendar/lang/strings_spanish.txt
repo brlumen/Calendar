@@ -142,6 +142,9 @@ $s_plugin_Calendar_previous_period = 'Atrás';
 $s_plugin_Calendar_goto_date_button = 'Ir a la fecha:';
 
 $s_plugin_Calendar_assigned_event = 'Eventos asignados';
+$s_plugin_Calendar_assigned_event_count = 'Eventos asignados - %d uds.';
+$s_plugin_Calendar_issue_block_settings = 'Ajustes del bloque de calendario';
+$s_plugin_Calendar_switch_time_range = 'Cambiar el rango horario';
 $s_plugin_Calendar_not_assigned_event = 'No hay eventos asignados';
 $s_plugin_Calendar_event_view_title = 'Visor de eventos';
 $s_plugin_Calendar_event_ics_button = 'Descargar .ics';
