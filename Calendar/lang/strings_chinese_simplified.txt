@@ -230,9 +230,11 @@ $s_plugin_Calendar_reminders_pref_enabled = 'Receive reminders about events';
 $s_plugin_Calendar_reminders_pref_default = 'Default reminders';
 $s_plugin_Calendar_reminders_pref_hint = 'These reminders are used for the events that do not define their own ones.';
 $s_plugin_Calendar_reminder_email_subject = 'Reminder: %1$s';
-$s_plugin_Calendar_reminder_email_body = 'Event: %1$s
-Project: %2$s
-Starts: %3$s (in %4$s)
+$s_plugin_Calendar_reminder_email_body = '日历事件将在 %4$s 后开始。
+
+事件: %1$s
+项目: %2$s
+开始时间: %3$s
 
 %5$s';
 
@@ -251,7 +253,7 @@ $s_plugin_Calendar_notify_pref_deleted = '接收关于事件取消的邮件';
 $s_plugin_Calendar_notify_pref_hint = '仅发送您参与的事件的邮件。您本人所做的变更不会向您发送邮件。';
 
 $s_plugin_Calendar_notify_created_email_subject = '新事件: %1$s';
-$s_plugin_Calendar_notify_created_email_body = '您参与了一个新事件。
+$s_plugin_Calendar_notify_created_email_body = '新的日历事件。
 
 事件: %1$s
 项目: %2$s
@@ -261,7 +263,7 @@ $s_plugin_Calendar_notify_created_email_body = '您参与了一个新事件。
 
 日历文件 (.ics)：%5$s';
 $s_plugin_Calendar_notify_updated_email_subject = '事件已变更: %1$s';
-$s_plugin_Calendar_notify_updated_email_body = '您参与的事件已变更。
+$s_plugin_Calendar_notify_updated_email_body = '日历事件已变更。
 
 事件: %1$s
 项目: %2$s
@@ -271,13 +273,13 @@ $s_plugin_Calendar_notify_updated_email_body = '您参与的事件已变更。
 
 日历文件 (.ics)：%5$s';
 $s_plugin_Calendar_notify_deleted_email_subject = '事件已取消: %1$s';
-$s_plugin_Calendar_notify_deleted_email_body = '您参与的事件已被删除。
+$s_plugin_Calendar_notify_deleted_email_body = '日历事件已取消。
 
 事件: %1$s
 项目: %2$s
 原开始时间: %3$s';
 $s_plugin_Calendar_notify_occurrence_cancelled_email_subject = '重复项已取消: %1$s';
-$s_plugin_Calendar_notify_occurrence_cancelled_email_body = '您参与的事件的一次重复已取消，系列中的其余重复不变。
+$s_plugin_Calendar_notify_occurrence_cancelled_email_body = '事件的一次重复已取消，系列中的其余重复不变。
 
 事件: %1$s
 项目: %2$s
@@ -287,7 +289,7 @@ $s_plugin_Calendar_notify_occurrence_cancelled_email_body = '您参与的事件�
 
 日历文件 (.ics)：%5$s';
 $s_plugin_Calendar_notify_from_date_cancelled_email_subject = '多个重复项已取消: %1$s';
-$s_plugin_Calendar_notify_from_date_cancelled_email_body = '您参与的事件自指定日期起已取消，此前的重复不变。
+$s_plugin_Calendar_notify_from_date_cancelled_email_body = '事件自指定日期起已取消，此前的重复不变。
 
 事件: %1$s
 项目: %2$s

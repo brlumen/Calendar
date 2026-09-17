@@ -230,9 +230,11 @@ $s_plugin_Calendar_reminders_pref_enabled = 'Получать напоминан
 $s_plugin_Calendar_reminders_pref_default = 'Напоминания по умолчанию';
 $s_plugin_Calendar_reminders_pref_hint = 'Эти напоминания используются для событий, у которых нет своих собственных.';
 $s_plugin_Calendar_reminder_email_subject = 'Напоминание: %1$s';
-$s_plugin_Calendar_reminder_email_body = 'Событие: %1$s
+$s_plugin_Calendar_reminder_email_body = 'Событие календаря начнётся через %4$s.
+
+Событие: %1$s
 Проект: %2$s
-Начало: %3$s (через %4$s)
+Начало: %3$s
 
 %5$s';
 
@@ -251,7 +253,7 @@ $s_plugin_Calendar_notify_pref_deleted = 'Получать письма об о�
 $s_plugin_Calendar_notify_pref_hint = 'Письма приходят о событиях, в которых вы участвуете. О собственных изменениях письма не отправляются.';
 
 $s_plugin_Calendar_notify_created_email_subject = 'Новое событие: %1$s';
-$s_plugin_Calendar_notify_created_email_body = 'Вы участвуете в новом событии.
+$s_plugin_Calendar_notify_created_email_body = 'Новое событие календаря.
 
 Событие: %1$s
 Проект: %2$s
@@ -261,7 +263,7 @@ $s_plugin_Calendar_notify_created_email_body = 'Вы участвуете в н�
 
 Файл для календаря (.ics): %5$s';
 $s_plugin_Calendar_notify_updated_email_subject = 'Событие изменено: %1$s';
-$s_plugin_Calendar_notify_updated_email_body = 'Событие, в котором вы участвуете, изменено.
+$s_plugin_Calendar_notify_updated_email_body = 'Событие календаря изменено.
 
 Событие: %1$s
 Проект: %2$s
@@ -271,13 +273,13 @@ $s_plugin_Calendar_notify_updated_email_body = 'Событие, в которо�
 
 Файл для календаря (.ics): %5$s';
 $s_plugin_Calendar_notify_deleted_email_subject = 'Событие отменено: %1$s';
-$s_plugin_Calendar_notify_deleted_email_body = 'Событие, в котором вы участвовали, удалено.
+$s_plugin_Calendar_notify_deleted_email_body = 'Событие календаря отменено.
 
 Событие: %1$s
 Проект: %2$s
 Начало было назначено на: %3$s';
 $s_plugin_Calendar_notify_occurrence_cancelled_email_subject = 'Вхождение отменено: %1$s';
-$s_plugin_Calendar_notify_occurrence_cancelled_email_body = 'Отменено одно вхождение события, в котором вы участвуете, остальная серия не изменилась.
+$s_plugin_Calendar_notify_occurrence_cancelled_email_body = 'Отменено одно вхождение события, остальная серия не изменилась.
 
 Событие: %1$s
 Проект: %2$s
@@ -287,7 +289,7 @@ $s_plugin_Calendar_notify_occurrence_cancelled_email_body = 'Отменено о
 
 Файл для календаря (.ics): %5$s';
 $s_plugin_Calendar_notify_from_date_cancelled_email_subject = 'Вхождения отменены: %1$s';
-$s_plugin_Calendar_notify_from_date_cancelled_email_body = 'Событие, в котором вы участвуете, отменено начиная с указанной даты, более ранние вхождения не изменились.
+$s_plugin_Calendar_notify_from_date_cancelled_email_body = 'Событие отменено начиная с указанной даты, более ранние вхождения не изменились.
 
 Событие: %1$s
 Проект: %2$s

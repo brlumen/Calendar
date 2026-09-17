@@ -230,9 +230,11 @@ $s_plugin_Calendar_reminders_pref_enabled = 'Receive reminders about events';
 $s_plugin_Calendar_reminders_pref_default = 'Default reminders';
 $s_plugin_Calendar_reminders_pref_hint = 'These reminders are used for the events that do not define their own ones.';
 $s_plugin_Calendar_reminder_email_subject = 'Reminder: %1$s';
-$s_plugin_Calendar_reminder_email_body = 'Event: %1$s
+$s_plugin_Calendar_reminder_email_body = 'The calendar event starts in %4$s.
+
+Event: %1$s
 Project: %2$s
-Starts: %3$s (in %4$s)
+Starts: %3$s
 
 %5$s';
 
@@ -251,7 +253,7 @@ $s_plugin_Calendar_notify_pref_deleted = 'Receive mail about cancelled events';
 $s_plugin_Calendar_notify_pref_hint = 'Mail is sent about the events you take part in. Your own changes are never mailed back to you.';
 
 $s_plugin_Calendar_notify_created_email_subject = 'New event: %1$s';
-$s_plugin_Calendar_notify_created_email_body = 'You take part in a new event.
+$s_plugin_Calendar_notify_created_email_body = 'New calendar event.
 
 Event: %1$s
 Project: %2$s
@@ -261,7 +263,7 @@ Starts: %3$s
 
 Calendar file (.ics): %5$s';
 $s_plugin_Calendar_notify_updated_email_subject = 'Event changed: %1$s';
-$s_plugin_Calendar_notify_updated_email_body = 'An event you take part in has been changed.
+$s_plugin_Calendar_notify_updated_email_body = 'The calendar event has been changed.
 
 Event: %1$s
 Project: %2$s
@@ -271,13 +273,13 @@ Starts: %3$s
 
 Calendar file (.ics): %5$s';
 $s_plugin_Calendar_notify_deleted_email_subject = 'Event cancelled: %1$s';
-$s_plugin_Calendar_notify_deleted_email_body = 'An event you took part in has been deleted.
+$s_plugin_Calendar_notify_deleted_email_body = 'The calendar event has been cancelled.
 
 Event: %1$s
 Project: %2$s
 Was starting: %3$s';
 $s_plugin_Calendar_notify_occurrence_cancelled_email_subject = 'Occurrence cancelled: %1$s';
-$s_plugin_Calendar_notify_occurrence_cancelled_email_body = 'One occurrence of an event you take part in has been cancelled, the rest of the series is unchanged.
+$s_plugin_Calendar_notify_occurrence_cancelled_email_body = 'One occurrence of the event has been cancelled, the rest of the series is unchanged.
 
 Event: %1$s
 Project: %2$s
@@ -287,7 +289,7 @@ Cancelled occurrence: %3$s
 
 Calendar file (.ics): %5$s';
 $s_plugin_Calendar_notify_from_date_cancelled_email_subject = 'Occurrences cancelled: %1$s';
-$s_plugin_Calendar_notify_from_date_cancelled_email_body = 'An event you take part in has been cancelled from the given date on, the earlier occurrences are unchanged.
+$s_plugin_Calendar_notify_from_date_cancelled_email_body = 'The event has been cancelled from the given date on, the earlier occurrences are unchanged.
 
 Event: %1$s
 Project: %2$s
